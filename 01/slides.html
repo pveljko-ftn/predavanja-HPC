@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Uvod</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Uvod</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Oktobar, 2022</p>
+</section>
+
+<section>
+<section id="servisne-informacije" class="title-slide slide level1">
+<h1>Servisne informacije</h1>
+<p>Opšti podaci o predmetu.</p>
+</section>
+<section id="malo-o-predavaču" class="slide level2">
+<h2>Malo o predavaču</h2>
+<ul>
+<li>Veljko Petrović</li>
+<li>Sedim u NTP 330 kancelariji</li>
+<li>Termin konsultacija je za sada Sreda u 10:00</li>
+<li>Uvek je dobro najaviti se na konsultacije</li>
+<li>Konsultacije mogu i po posebnom dogovoru kada je potrebno</li>
+<li>Možemo da se čujemo i online, naravno.</li>
+<li>Da li vama i dalje prave naloge na Teams platformi?</li>
+</ul>
+</section>
+<section id="kontaktiranje---elektronska-pošta" class="slide level2">
+<h2>Kontaktiranje - elektronska pošta</h2>
+<ul>
+<li>Najbolje me je tražiti na pveljko@uns.ac.rs</li>
+<li>Vodite računa da neretko dobijam čitav <em>tsunami</em> elektronske pošte, možda vašu ne vidim ili ne vidim na vreme.</li>
+<li>Ako ste zabrinuti da vam nisam video poruku, slobodno je šaljite opet.</li>
+<li>Ako želite da dobijete odmah odgovor (makar on bio samo ‘video’) molim stavite reč HITNO u subject poruke.</li>
+</ul>
+</section>
+<section id="šta-je-rvp" class="slide level2">
+<h2>Šta je RVP</h2>
+<ul>
+<li>U pitanju je prevod—tehnički kalk—engleskog termina  ‘High Performance Computing’  čiju ću skraćenicu (HPC) ja koristiti kao ime kursa u budućnosti.</li>
+<li>Opšte govoreći, videćete neobično puno engleskih termina u ovim predavanjima.</li>
+<li>Što?
+<ul>
+<li>Nekad nema prevoda</li>
+<li>Nekad prevod odudara zbog naše nenaviknutosti</li>
+<li>Uvek je neophodno znati engleski termin ako želite da koristite Internet pretragu.</li>
+</ul></li>
+</ul>
+</section>
+<section id="šta-je-cilj-predmeta" class="slide level2">
+<h2>Šta je cilj predmeta</h2>
+<ul>
+<li>Uvod u programiranje, ali za super-računare.</li>
+<li>Formalnije rečeno, namena predmeta jeste da se steknu veštine iz:
+<ul>
+<li>Arhitekture sistema visokih performansi.</li>
+<li>Alata, biblioteka, i tehnologija za opšte visoko-paralelno programiranje.</li>
+<li>Alata, biblioteka i tehnologija za domenski-specifično visoko-paralelno programiranje.</li>
+<li>Alata, biblioteka, i tehnologija za merenje performansi algoritama.</li>
+<li>Alata, biblioteka, i tehnologija za vizualizaciju velikih skupova podataka.</li>
+</ul></li>
+<li>Neformalnije rečeno, namena predmeta jeste da se nateraju programi da idu jako <strong>jako</strong> brzo.</li>
+</ul>
+</section>
+<section id="literatura" class="slide level2">
+<h2>Literatura</h2>
+<ul>
+<li>Dokumentacija, ovi slajdovi, i beleške sa predavanja bi trebali da budu sasvim dovoljni.</li>
+<li>Predavanja su bazirana u velikoj meri na izvrsnoj knjizi  “High Performance Computing: Modern System and Practices” čiji su autori T. Sterling, M. Anderson, i M. Brodowicz.  Takođe se preporučuje:  “Introduction to High Performance Scientific Computing,” Victor Eijkhout  koja je dostupna kroz CreativeCommons licencu. http://pages.tacc.utexas.edu/~eijkhout/Articles/EijkhoutIntroToHPC.pdf</li>
+</ul>
+</section>
+<section id="sterlingova-knjiga" class="slide level2">
+<h2>Sterlingova Knjiga</h2>
+<p><img data-src="image6.jpeg" /></p>
+</section>
+<section id="o-slajdovima" class="slide level2">
+<h2>O slajdovima</h2>
+<ul>
+<li>Slajdovi su novi za ovu generaciju i predstavljaju proširenu verziju slajdova ranijih godina</li>
+<li>Promenila se i tehnologija slajdova koji se sada generišu u dve forme, statičan PDF i interaktivna HTML prezentacija</li>
+<li>PDF prezentacija će biti na ACS repozitorijumu, dok će HTML verzija biti dostupna online</li>
+<li>Možete pratiti prezentaciju dok je slušate preko online verzije.</li>
+</ul>
+</section>
+<section id="kako-se-polaže" class="slide level2">
+<h2>Kako se polaže?</h2>
+<ul>
+<li>Predispitne obaveze nose 70 bodova</li>
+<li>Kako te bodove stičete čućete na vežbama</li>
+<li>Ispit nosi 30 bodova</li>
+<li>Te bodove stičete na klasičnom ispitu koji će gotovo sigurno biti usmen i pokrivaće gradivo koje ste radili na predmetu.</li>
+</ul>
+</section>
+<section id="infrastruktura" class="slide level2">
+<h2>Infrastruktura</h2>
+<ul>
+<li>Budući da je predmet zahtevan, nemamo baš najbolju moguću podršku u laboratorijama fakulteta</li>
+<li>Trebaće vam Linux, idealno najsvežija Fedora ili Ubuntu bilo direktno instaliran, bilo u virtuelnoj mašini.</li>
+<li>Dosta posla će se raditi iz komandne linije.</li>
+<li>Naš primarni jezik je C/C++, mada će biti i malo  Python-a  i  R-a  kasnije.</li>
+<li>Sav naš alat će biti  Open Source  izuzimajući, opciono, CLion IDE.
+<ul>
+<li>CLion se plaća i to puno, ali kao studenti FTN-a imate pravo na besplatnu JetBrains licencu.</li>
+<li>Ako ne želite IDE,  Visual Studio Code / Codium  je sasvim prikladan</li>
+</ul></li>
+</ul>
+</section>
+<section id="linux" class="slide level2">
+<h2>Linux?</h2>
+<ul>
+<li class="fragment">Da, Linux.</li>
+<li class="fragment">Ispostavilo se, avaj, da nijedna godina nije godina  Linux-a  na  desktop-u  ali kao utešna nagrada, svaka godina je godina  Linux-a  u HPC primenama.</li>
+<li class="fragment">Upotreba bilo čega drugog nije ni opcija za nas.</li>
+<li class="fragment">Ako vam rad sa  Linux-om  nije udoban, krajnje je vreme da se naviknete.</li>
+<li class="fragment"> <strong>Embrace the penguin.</strong> </li>
+</ul>
+</section>
+<section id="komandna-linija" class="slide level2">
+<h2>Komandna linija</h2>
+<ul>
+<li>Resursima HPC sistema se pristupa manje-više isključivo iz komandne linije i dosta alata se može, u stvari, samo razumeti u kontekstu komandne linije i nikako drugačije.</li>
+<li>Treba će vam razumevanje osnovnih komandi i sistemskih promenljivih da bi razumeli kako alati koje mi koristimo rade.</li>
+</ul>
+</section>
+<section id="cc" class="slide level2">
+<h2> C/C++ </h2>
+<ul>
+<li>Nemamo izbora.</li>
+<li>Ovo, baš ovo, je mesto gde C i C++ briljiraju.</li>
+<li>Ima modernih jezika koji su interesantni i obećavaju da će eventualno smaknuti u ovoj oblasti primenu C i C++-a, ali još nisu u potpunosti zavladali
+<ul>
+<li>Rust je naročito bitan jezik</li>
+<li>Go je takođe bitan kada se govori o performantnim sistemima</li>
+</ul></li>
+<li>C/C++ je tehnički… pipav termin. Ono što ja ovde mislim jeste C i, gde možemo, moderan C++.</li>
+<li>Budite srećni, mogli smo da koristimo FORTRAN.</li>
+</ul>
+</section>
+<section id="python-i-r" class="slide level2">
+<h2>Python i R</h2>
+<ul>
+<li>Biće malo ova dva jezika kada budemo pričali o vizuelizaciji.</li>
+<li>HPC rad je retko rad sam za sebe—tipično rešavamo nekakav problem.
+<ul>
+<li>Stoga, heterogenost jezika je česta.</li>
+</ul></li>
+<li>Neretko postoji prototip u nečemu udobnom kao što je Python, a vaš posao je da uzmete to i učinite ga mnogo bržim.</li>
+</ul>
+</section></section>
+<section>
+<section id="problemi-performansi" class="title-slide slide level1">
+<h1>Problemi Performansi</h1>
+<p>Brzo o bzini i optimizaciji.</p>
+</section>
+<section id="šta-su-performanse" class="slide level2">
+<h2>Šta su performanse</h2>
+<ul>
+<li>Imamo dve moguće definicije:
+<ul>
+<li>Teoretske performanse.</li>
+<li>Praktične performanse.</li>
+</ul></li>
+<li>Teoretske performanse su apsolutni maksimum koji neki hardverski sistem može da izvuče i meri se u broju nekakvih operacija u sekundi. Najčešće, jedinica je  FLOPS—FLoating point OPeration per Second. </li>
+<li>Računari kakve vi, realistično, imate imaju performanse koje se mere u desetinama  gigaFLOPSa  ne računajući GPU.</li>
+<li>Najbrži računar? Frontier. 1685 petaflops. 8 730 112 jezgara. Čudo šta 21MW može da uradi.</li>
+</ul>
+</section>
+<section id="šta-su-performanse-1" class="slide level2">
+<h2>Šta su performanse?</h2>
+<ul>
+<li>To je lepo, ali nama ne treba računar da troši struju i zvuči impresivno.</li>
+<li>Nama treba rešenje, i to dovodi do praktičnih performansi.</li>
+<li>Praktične performanse su, efektivno, koliko vremena treba da se dođe do rešenja.</li>
+<li>Mnogo su realističnije (pošto nas baš to zanima) ali dobiti ih je jako jako teško.</li>
+<li>Tipično se procenjuju na osnovu kalibracionog programa—Benchmark-a.</li>
+</ul>
+</section>
+<section id="kako-programer-zamišlja-računar" class="slide level2">
+<h2>Kako programer zamišlja računar?</h2>
+<ul>
+<li>Moj program ima nekakve podatke i sam kod.</li>
+<li>I jedno i drugo živi u memoriji.</li>
+<li>Kod se sastoji od atomskih operacija, instrukcija koje traju neku jedinicu vremena <span class="math inline">\(t_i\)</span>.</li>
+<li>Procesor izvršava moje instrukcije, jednu po jednu.</li>
+<li>Ako hoću brži program, opcije su mi:
+<ul>
+<li>Manje instrukcija.</li>
+<li>Kraće <span class="math inline">\(t_i\)</span>.</li>
+</ul></li>
+</ul>
+</section>
+<section id="oh-sweet-child-of-summer" class="slide level2">
+<h2> Oh, sweet child of summer… </h2>
+<ul>
+<li>…svi vi, znate, nadam se, da ovo nije tačno.</li>
+<li>Ali možda ne znate <em>koliko</em> nije tačno.</li>
+<li>Ipak, iako nije tačno ovo nije potpuno beskorisno.</li>
+<li>Minimizacija broja instrukcija je, generalno govoreći, dobar način da se program ubrza.</li>
+<li>Možete misliti o ovome kao o kontroli vremenske kompleksnosti algoritma.
+<ul>
+<li>Da li ste vi ovo radili?</li>
+</ul></li>
+<li>To je dobra ideja, ali ne svrha ovog kursa.</li>
+</ul>
+</section>
+<section id="dobro-šta-ne-valja-sa-ovom-pričom" class="slide level2">
+<h2>Dobro, šta ne valja sa ovom pričom?</h2>
+<ul>
+<li>Vaš procesor ima u sebi, efektivno, više procesora.</li>
+<li>Ali svaki od tih procesora izvršava više stvari istovremeno.</li>
+<li>Takođe, ta istovremenost je kompleksna zahvaljujući pipelining-u.</li>
+<li>Takođe takođe, mehanizmi u računaru operišu na kompletno različitim vremenskim skalama.</li>
+<li>Takođe takođe…</li>
+</ul>
+</section>
+<section id="ovo-je-komplikovanije-nego-što-izgleda" class="slide level2">
+<h2>Ovo je komplikovanije nego što izgleda</h2>
+<ul>
+<li>Računar se jako trudi da vam predstavi sliku da je samo instancirana Fon Nojmanova arhitektura i da je memorija lako i proizvoljno adresabilna.</li>
+<li>Lakše je tako programirati i većinu vremena želite tu iluziju, ali ne i kada hoćete da iscedite svaki poslednji dram performansi iz sistema.</li>
+</ul>
+</section>
+<section id="dijagram-procesora" class="slide level2">
+<h2>Dijagram procesora</h2>
+<p><img data-src="cpuArch.png" /></p>
+</section>
+<section id="šta-su-glavne-komplikacije-na-jednom-računaru" class="slide level2">
+<h2>Šta su glavne komplikacije na jednom računaru?</h2>
+<ul>
+<li>Ne zaboravite, ovde još pričamo o prostom računaru koji vam stoji na radnom stolu.</li>
+<li>Prvo, ima više jezgara.</li>
+<li>Drugo, instrukcije mogu da traju različiti broj ciklusa.</li>
+<li>Dalje ima paralelizam na nivou instrukcija (eng.  Instruction Level Paralelism) </li>
+<li>Memorija ima striktnu hijerarhiju</li>
+</ul>
+</section>
+<section id="ilp" class="slide level2">
+<h2>ILP</h2>
+<ul>
+<li>Nezavisne instrukcije mogu da krenu da se izvršavaju u isto vreme, koristeći paralelne strukture u samom silikonu.</li>
+<li>Zahvaljujući sekvenci izvršavanja, više funkcija može da ide jedno za drugim u protočnom režimu (eng.  “pipelining” </li>
+<li>Da ne bi bilo praznog hoda, procesor izvršava grane u vašem kodu pre nego što se zna u koju će se ući. Ako je pogodio kako treba, odlično, ako ne rezultat se baca i program se vraća u prethodno stanje.</li>
+<li>Da bi pipelining radio što bolje, instrukcije za koje je to moguće će biti izvršene u najoptimalnijem redosledu ne vašem redosledu.</li>
+<li>Podaci se dostavljaju iz nivoa memorije u nivo memorije spekulativno, tj. ako se misli da će možda trebati.</li>
+</ul>
+</section>
+<section id="dijagram-pipeline-pristupa" class="slide level2">
+<h2>Dijagram pipeline pristupa</h2>
+<p><img data-src="pipelineDiagram.png" /></p>
+</section>
+<section id="pipeline-ubrzanje" class="slide level2">
+<h2>Pipeline ubrzanje</h2>
+<ul>
+<li><span class="math inline">\(n\)</span> — broj proruačna koje hoćemo</li>
+<li><span class="math inline">\(l\)</span> — broj koraka u procesnom toku</li>
+<li><span class="math inline">\(\tau\)</span> — vreme za jedan ciklus sistemskog sata</li>
+<li><span class="math inline">\(t(n)\)</span> — vreme za n operacija</li>
+<li><span class="math inline">\(s\)</span> — vreme neophodno da se namesti da pipelining radi</li>
+</ul>
+</section>
+<section id="brzina-serijskog-izvršavanja" class="slide level2">
+<h2>Brzina serijskog izvršavanja</h2>
+<p><span class="math display">\[
+t(n) = n \cdot l \cdot \tau
+\]</span></p>
+</section>
+<section id="brzina-ilp-izvršavanja" class="slide level2">
+<h2>Brzina ILP izvršavanja</h2>
+<p><span class="math display">\[
+t(n) = (s + l + n - 1) \cdot \tau
+\]</span></p>
+</section>
+<section id="hijerarhija-memorije" class="slide level2">
+<h2>Hijerarhija memorije</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Tip memorije</th>
+<th>Red veličine</th>
+<th>Brzina učitavanja</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Registar</td>
+<td>128 bajtova</td>
+<td>Koliko i procesor</td>
+</tr>
+<tr class="even">
+<td>L1 Keš</td>
+<td>~16KB</td>
+<td>Pola procesora</td>
+</tr>
+<tr class="odd">
+<td>L2 Keš</td>
+<td>~256KB</td>
+<td>Oko šestina procesora</td>
+</tr>
+<tr class="even">
+<td>L3 Keš</td>
+<td>~8MB</td>
+<td>Oko <span class="math inline">\(\frac{1}{12}\)</span> procesora</td>
+</tr>
+<tr class="odd">
+<td>Glavna memorija</td>
+<td>~16GB</td>
+<td>100 ciklusa sa oko 5% protoka</td>
+</tr>
+<tr class="even">
+<td>SSD disk</td>
+<td>~512GB</td>
+<td>Jako dugo</td>
+</tr>
+<tr class="odd">
+<td>HDD disk</td>
+<td>~2TB</td>
+<td>Večnost.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="keš" class="slide level2">
+<h2>Keš</h2>
+<ul>
+<li>Nikad nema dovoljno.</li>
+<li>Ko se seća Celerona, Durona, i sl.?</li>
+<li>U praksi, automatski mehanizmi pokušavaju da u kešu drže podatke koje nama trebaju.</li>
+<li>Ako, kada program zatraži podatak, on stoji u kešu odlično. Imamo ubrzanje.</li>
+<li>Ako ne, imamo omašaj, ond.  “cache miss.” </li>
+</ul>
+</section>
+<section id="katalog-omašaja" class="slide level2">
+<h2>Katalog omašaja</h2>
+<ul>
+<li>Neizbežan
+<ul>
+<li>Kada prvi put tražimo podatke.</li>
+</ul></li>
+<li>Kapacitetski
+<ul>
+<li>Kada nema više mesta.</li>
+</ul></li>
+<li>Konflikt
+<ul>
+<li>Kada mapiramo (keš menja memoriju, tj. lokacije u kešu su ubrzane memorijske lokacije sa tačke gledišta adresiranja), mapirali smo dve stvari na isto mesto.</li>
+</ul></li>
+<li>Invalidacija
+<ul>
+<li>Više jezgara se posvađalo oko toga šta je najsvežija verzija nekog podatka.</li>
+</ul></li>
+</ul>
+</section>
+<section id="keš-blok" class="slide level2">
+<h2>Keš blok</h2>
+<ul>
+<li>Instrukcije ne mogu da direktno adresiraju keš</li>
+<li>I dalje misle da pričaju sa glavnom memorijom</li>
+<li>Ovo je česta apstrakcija odgovorna i za, npr.  memory-mapped I/O </li>
+<li>Iza kulisa, mikrokontroler procesora uzima podatke iz memorije i smešta ih u keš u jedinicama fiksne veličine (blokovima).</li>
+<li>Tipično, 128 bajtova. To znači da dobijamo ceo taj komad memorije hteli mi to ili ne.</li>
+<li>Zatim se beleži koji deo memorije je mapiran na koji deo keša i, kada ponestane prostora, menja se najdavnije korišćeni deo. LRU
+<ul>
+<li>Ovo je laž. Više o tome kasnije.</li>
+</ul></li>
+</ul>
+</section>
+<section id="koja-je-praktična-primena-znanja-o-keš-blokovima" class="slide level2">
+<h2>Koja je praktična primena znanja o keš blokovima?</h2>
+<ul>
+<li>Pakovanje podataka.</li>
+<li>Ako prolazimo kroz niz element po element, kada učitamo prvi element, uz njega dolazi <span class="math inline">\(N\)</span> sledećih džabe.</li>
+<li>Ako procesiramo svaki element, onda to je to.</li>
+<li>Ali šta ako je ovo niz tačaka u 3D prostoru a nas samo zanima <span class="math inline">\(X\)</span> vrednost.</li>
+<li>Imamo jako puno bačenih učitavanja.</li>
+<li>Ako znamo kako će neki podaci biti procesirani, isplati se da se upakuju tako da podaci koji se zajedno koriste budu blizu.</li>
+</ul>
+</section>
+<section id="array-stride" class="slide level2">
+<h2> Array Stride </h2>
+<ul>
+<li>Recimo da hoćemo da saberemo dva niza kompleksnih brojeva.</li>
+<li>To znači (ako koristimo double preciznost) da nam treba 16 bajtova po broju.</li>
+<li>Keš linija je, recimo, 128.</li>
+<li>To znači da bi trebalo da je brže da se brojevi sa sabiranje prepletu u jedan niz.
+<ul>
+<li>Re(A0)</li>
+<li>Im(A0)</li>
+<li>Re(B0)</li>
+<li>Im(B0)</li>
+<li>Re(A1)</li>
+<li>…</li>
+</ul></li>
+</ul>
+</section>
+<section id="address-alignment" class="slide level2">
+<h2>Address alignment</h2>
+<ul>
+<li>Lukaviji možda mogu da primete da ja mogu da adresiram bilo koju adresu u glavnoj memoriji na bajt nivou, čak i ako radim na nivou reči.</li>
+<li>Da li to znači da nekako, magično, ima poravnanje između keša i memorije?</li>
+<li>Ne. Multi-bajt vrednost može vrlo lako da bude u dva keš bloka.</li>
+<li>Ovo je spektakularno loše po performanse.</li>
+<li>Ponekad, kompajler je dovoljno pametan da to otkloni.</li>
+<li>A ako nije?</li>
+</ul>
+</section>
+<section id="address-alignment-1" class="slide level2">
+<h2> Address alignment </h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(){</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span><span class="op">*</span> a<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> malloc<span class="op">(</span><span class="dv">1024</span> <span class="op">*</span> <span class="dv">8</span> <span class="op">+</span> <span class="dv">8</span><span class="op">);</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;%p</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> a<span class="op">);</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">((</span><span class="dt">size_t</span><span class="op">)</span>a <span class="op">%</span> <span class="dv">8</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">){</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> <span class="op">(</span><span class="dt">double</span><span class="op">*)((</span> <span class="op">((</span><span class="dt">size_t</span><span class="op">)</span>a <span class="op">&gt;&gt;</span> <span class="dv">3</span><span class="op">)</span> <span class="op">&lt;&lt;</span> <span class="dv">3</span><span class="op">));</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">&quot;%p</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> a<span class="op">);</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="rezultat-eksperimenta" class="slide level2">
+<h2>Rezultat eksperimenta</h2>
+<ul>
+<li>Na mom GCC7, ovo je beskorisno. Već dobijam poravnanu memoriju.</li>
+<li>Jako puno zavisi od kompajlera, i često morate kod da tetošite predprocesorskim direktivama da dobijete ono što želite.</li>
+</ul>
+</section>
+<section id="malo-sam-lagao-o-kešu" class="slide level2">
+<h2>Malo sam lagao o kešu…</h2>
+<ul>
+<li>Rekao sam ranije da se beleži region memorije i lokacija u kešu</li>
+<li>To… baš i nije tačno.</li>
+<li>To bi zahtevalo tkzv. asocijativan keš. Ovi su spori.</li>
+<li>Ono što se koristi u praksi je <span class="math inline">\(k\)</span>-struki asocijativan keš.</li>
+<li>To znači da postoji transformaciona funkcija koja mapira lokaciju u memorji na lokaciju u kešu na više mogućih načina. Tipično od 2 do 8.</li>
+<li>Onda, u slučaju konflikta u mapiranju, koristi se jedna od dodatnih lokacija oslobođena po LRU principu.</li>
+</ul>
+</section>
+<section id="šta-je-sve-ovo-trebalo-da-me-nauči" class="slide level2">
+<h2>Šta je sve ovo trebalo da me nauči?</h2>
+<ul>
+<li>Osim malo o arhitekturi računara ima još i ovo:</li>
+<li>Kako se nešto implementira interaguje jako komplikovano sa hardverom procesora i računara uopšte da proizvede performanse.</li>
+<li>Stoga, programiranje performantnog koda može biti jako izazovno.</li>
+<li>A sve ovo je na samo jednom računaru…</li>
+</ul>
+</section></section>
+<section>
+<section id="uvod-u-koncept-modernog-hpc-a" class="title-slide slide level1">
+<h1>Uvod u koncept modernog HPC-a</h1>
+<p>Šta kada procesor jednostavno nije dovoljno brz…?</p>
+</section>
+<section id="paralelizam" class="slide level2">
+<h2>Paralelizam</h2>
+<ul>
+<li>Prethodna sekcija je pokazala da su performanse teške, ali je sva bila opsednuta time da se iz jednog procesora izvuče maksimum.</li>
+<li>Budući da se naš kod, na kraju dana, izvršava na nekom procesoru, negde, to nije loša ideja i uvek će biti relevantno, ali šta kada 100% nekog procesora nije dovoljno brzo?</li>
+<li>Postoje praktične granice gigahercaži koju možemo da dobijemo iz čipa
+<ul>
+<li>Bakar</li>
+<li>Brzina svetlosti</li>
+</ul></li>
+</ul>
+</section>
+<section id="paralelizam-1" class="slide level2">
+<h2>Paralelizam</h2>
+<ul>
+<li>Zbog ovoga superračunari danas nisu (i verovatno nikad više neće biti) jedan jako moćan procesor.</li>
+<li>Ono što čini superračunar super jeste broj procesorskih elemenata.</li>
+<li>Da bi se broj procesorskih elemenata iskoristio kako treba, potrebno je pisati kod koji je paralelan, tj. izvršava više stvari istovremeno.</li>
+<li>Ovo nije paralelizam na nivou instrukcije, koliko je paralelizam na nivou algoritma.</li>
+<li>Priroda algoritma dramatično utiče na to koliko je lako odn. teško izvršiti paralelizaciju.</li>
+</ul>
+</section>
+<section id="šta-je-naš-posao" class="slide level2">
+<h2>Šta je naš posao?</h2>
+<ul>
+<li class="fragment">Da dobijemo odgovor jako jako brzo.</li>
+<li class="fragment">Da, ali kako?</li>
+<li class="fragment">Napadamo problem sa dve strane:
+<ul>
+<li class="fragment">Arhitektura</li>
+<li class="fragment">Algoritam</li>
+</ul></li>
+<li class="fragment">Dakle, treba da napravimo mašinu koja ima jako efektan dijapazon procesora koji brzo komuniciraju i imaju šta im treba da ostvare blizu svom teoretskom maksimumu.</li>
+<li class="fragment">Sa druge strane treba da upravljamo tom mašinom i podelimo algoritme na takav način da se adekvatni delovi algoritma izvršavaju na pravom mestu radi brzine.</li>
+</ul>
+</section>
+<section id="anatomija-jednog-superračunara" class="slide level2">
+<h2>Anatomija jednog superračunara</h2>
+<ul>
+<li>Superračunar tipično ima neki broj čvorova.</li>
+<li>Čvor se može zamisliti kao jedan računar.</li>
+<li>Trenutno najbrži računar na svetu je Frontier</li>
+<li>Svaki čvor Sadrži 1 procesor (To je AMD Epyc model) koji ima 2 seta memorije plus 4 GPU odnosno akcelerator kartice (Opet AMD specifično njihove Instinct kartice)</li>
+<li>Što 2 memorije? Usko grlo paralelizacije.</li>
+</ul>
+</section>
+<section id="anatomija-jednog-superračunara-1" class="slide level2">
+<h2>Anatomija jednog superračunara</h2>
+<figure>
+<img data-src="frontierArch.png" alt="Izvor https://www.olcf.ornl.gov/frontier" /><figcaption aria-hidden="true">Izvor https://www.olcf.ornl.gov/frontier</figcaption>
+</figure>
+</section>
+<section id="primer-za-ibm-summit" class="slide level2">
+<h2>Primer za  IBM Summit </h2>
+<ul>
+<li> IBM Summit  je još jedan super-računar, trenutno peti u svetu, o čijoj arhitekturi znamo nešto više</li>
+<li>Svaki čvor je jako moćan i sadrži više procesora (2) sa više jezgara (21) gde svako jezgro podržava 4 nezavisna izvršavanja i više izuzetno moćnih  GPU-ova  (6).</li>
+<li>Takođe ima oko 1600 GB memorije po čvoru.</li>
+<li>I on ima dvostruku memoriju</li>
+</ul>
+</section>
+<section id="ibm-summit" class="slide level2">
+<h2> IBM Summit </h2>
+<p><img data-src="summitArch.png" /></p>
+</section>
+<section id="mnogo-paralelizama" class="slide level2">
+<h2>Mnogo paralelizama</h2>
+<ul>
+<li>Ovde ima jako puno stvari koje podržavaju paralelizam</li>
+<li>Izazov jeste napraviti kod koji ima odgovarajući posao za svaki paralelizam koji hardver nudi</li>
+<li>Neke stvari su taman za rad na jednom jezgru ili jednom procesoru</li>
+<li>A neki poslovi se najbolje dele između individualnih čvorova gde je komunikacija između njih izuzetno retka.</li>
+<li>Različite tehnologije su dobre za različite nivoe paralelizma. Gledano iz ptičije perspektive</li>
+</ul>
+</section>
+<section id="mnogo-paralelizama-1" class="slide level2">
+<h2>Mnogo paralelizama</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Hardverski nivo paralelizma</th>
+<th>Tehnologija</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Unutar jednog procesora</td>
+<td>pThreads / OpenMP</td>
+</tr>
+<tr class="even">
+<td>Između čvorova</td>
+<td>MPI</td>
+</tr>
+<tr class="odd">
+<td>Na GPU uređajima</td>
+<td>OpenACC / CUDA</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="skaliranje" class="slide level2">
+<h2>Skaliranje</h2>
+<ul>
+<li>Skaliranje je kako ukupne ostvarne performanse zavise od veličine sistema.</li>
+<li>Tj. ako povećamo računar dva puta koliko dodatnih performansi dobijemo od toga?</li>
+<li>Idealno dva, da, ali…</li>
+<li>Skaliranje ima dva tipa
+<ul>
+<li>Slabo
+<ul>
+<li>Uniformni rast veličine sistema, memorije i problema.</li>
+</ul></li>
+<li>Jako
+<ul>
+<li>Veličina problema ostaje ista, skalira se veličina sistema za povećanje brzine.</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="šta-smeta-skaliranju" class="slide level2">
+<h2>Šta smeta skaliranju</h2>
+<ul>
+<li>Koristi se mnemonik SLOW za faktore koji sprečavaju da sistem dostigne svoj teoretski maksimum. SLOW su:</li>
+<li>Starvation
+<ul>
+<li>Nema dovoljno posla da se uposle svi resursi sistema.</li>
+<li>Možda sistem može da radi 600 svari istovremeno, ali ako trenutno postoji samo 6 nezavisnih zadataka, sistem radi na 1% svojih performansi.</li>
+</ul></li>
+<li>Latency
+<ul>
+<li>Sistem može da bude veliki, i ako informacija sa jednog kraja sistema bude neophodna na drugom, čekanje na nju proizvodi značajno usporenje. Setite se dijagram od ranije i različitih protoka podataka.</li>
+</ul></li>
+<li>Overhead
+<ul>
+<li>Sav taj kod koji deli podatke i vodi računa ko radi kada šta i integriše rezultate itd. itd. itd. oduzima neko vreme i neke resurse da se izvrši.</li>
+</ul></li>
+<li>Waiting
+<ul>
+<li>Čim ima više niti izvršavanja može doći do problema nadmetanja (%contention%) oko deljenih resursa. Ovo se rešava čekanjem.  In a stunning turn of events, waiting turns out to be bad for performance. Who knew? </li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="kratka-istorija" class="title-slide slide level1">
+<h1>Kratka istorija</h1>
+<p>Kako smo stigli ovde?</p>
+</section>
+<section id="mehaničko-računanje" class="slide level2">
+<h2>Mehaničko računanje</h2>
+<ul>
+<li>Želja za mašinom koja računa umesto nas, ili barem proces čini lakšim je verovatno samo par minuta mlađa od samog koncepta računanja.</li>
+<li>Rano računanje je, u stvari, bilo samo po sebi fundamentalno vezano za nekakvo pomoćno ustrojstvo.</li>
+<li>Drevni Rimljani su imali brojeve koji su bili prilično teški za mehaničku manipulaciju</li>
+<li>Mislim, koliko je LXVII puta XI? A da ne prebacite prvo u arapske brojeve?</li>
+<li>Rimljani su imali metod koji je uključivao pažljivo napravljenu tablicu i kamenčiće.</li>
+<li>Deminutivska množina reči za ’kamen’ na latinskom je ’calculi’</li>
+<li>Odatle kalkulator, kalkulisanje, itd. itd.</li>
+</ul>
+</section>
+<section id="mehaničko-računanje-1" class="slide level2">
+<h2>Mehaničko računanje</h2>
+<ul>
+<li>Ovo je nastalo, toliko da su ljudi koji su radili sa novcem (te mnogo računali) u kasnosrednjevekovnoj Italiji uvek imali pri ruci klupu sa ucrtanom šemom za račun.</li>
+<li>Termin za klupa je bio ’banca’</li>
+<li>Kasnije su prešli na novi, divni metod za računanje koji ne zahteva klupu no upotrebljava čudne strane cifre. Taj metod su zvali po iskvarenom imenu osobe koju su držali za njegovog kreatora,  (Muhammad ibn Musa al-Khwarizmi), ’algorismus’ </li>
+<li>Mušterije nisu verovale ovakom algorismičnom bankarstvu i hteli su klupe nazad. Naročito omrznuta je bio potpuno novi simbol—nula. Toliko je bila omrznuta da je arapsko ime za nju— %al sifr% —ušlo u skoro sve evropske jezike.</li>
+<li>Kao ’šifra.’</li>
+</ul>
+</section>
+<section id="mehaničko-računanje-2" class="slide level2">
+<h2>Mehaničko računanje</h2>
+<ul>
+<li>Ne možemo, očigledno da se oslobodimo mehaničkih računala.</li>
+<li>Prva mehanička računala su bila fundamentalno samo računaljke.</li>
+</ul>
+</section>
+<section id="abakus" class="slide level2">
+<h2>Abakus</h2>
+<p><img data-src="abakus.jpg" /></p>
+</section>
+<section id="logaritmar" class="slide level2">
+<h2>Logaritmar</h2>
+<p><img data-src="logaritmar.jpg" /></p>
+</section>
+<section id="paskalina" class="slide level2">
+<h2>Paskalina</h2>
+<p><img data-src="paskalina.jpg" /></p>
+</section>
+<section id="curta" class="slide level2">
+<h2>Curta</h2>
+<p><img data-src="curta.jpg" /></p>
+</section>
+<section id="da-li-su-ovo-računari" class="slide level2">
+<h2>Da li su ovo računari?</h2>
+<ul>
+<li>Nikako.</li>
+<li>Ovo ne radi posao računara.</li>
+<li>Ako išta simulira ponašanje aritmetičko-logičke jedinice računara, ništa više.</li>
+</ul>
+</section>
+<section id="antikiteranski-mehanizam" class="slide level2">
+<h2>Antikiteranski mehanizam</h2>
+<p><img data-src="antikitera.jpg" /></p>
+</section>
+<section id="dijagram" class="slide level2">
+<h2>Dijagram</h2>
+<p><img data-src="antikiteraDijagram.png" /></p>
+</section>
+<section id="analogni-računar" class="slide level2">
+<h2>Analogni računar</h2>
+<ul>
+<li>Možete misliti o analognom računaru kao o kompleksnoj fizičkoj inkarnaciji matematičke funkcije</li>
+<li>Recimo, neka kombinacija zupčanika ili električnih kola ili spojenih sudova odgovara, recimo, nekoj klasi diferencijalne jednačine.</li>
+<li>Možemo da menjamo parametre i koeficijente</li>
+<li><em>Ne možemo</em> da programiramo takav računar, tj. on ne poseduje osobinu <em>univerzalne izračunljivosti</em></li>
+</ul>
+</section>
+<section id="the-difference-engine" class="slide level2">
+<h2> The Difference Engine </h2>
+<p><img data-src="differenceEngine.jpg" /></p>
+</section>
+<section id="računar" class="slide level2">
+<h2>Računar?</h2>
+<ul>
+<li>Ne <em>sasvim</em></li>
+<li>Ovo je inkarnacija <em>ogromne</em> porodice funkcija.</li>
+<li>Ali i dalje nije univerzalan u Čerč-Tjuringovom smislu.</li>
+<li>Ne može da se programira u istinskom smislu te reči.</li>
+</ul>
+</section>
+<section id="the-analytic-engine" class="slide level2">
+<h2> The Analytic Engine </h2>
+<p><img data-src="analytic.jpg" /></p>
+</section>
+<section id="prvi-pravi-računar" class="slide level2">
+<h2>Prvi pravi računar…</h2>
+<ul>
+<li>…ali samo na papiru.</li>
+<li>Memorija, programi, opšta namena…</li>
+<li>Ceo računarski sistem kakvim ga mi razumemo</li>
+<li>Nikad nije bio napravljen</li>
+<li>Moderne studije pokazuju da bi apslutno radio, samo što bi investicija bila neverovatna.</li>
+</ul>
+</section>
+<section id="da-se-uozbiljimo" class="slide level2">
+<h2>Da se uozbiljimo</h2>
+<ul>
+<li>Šta je sa istorijom elektronskih super-računara?</li>
+<li>Tradicionalno ovo se deli u epohe gde svaku karakteriše dominacija određenih tehnologija.</li>
+<li>Te epohe su kao, npr. ‘generacije’ u koju se dele igračke konzole: konvencionalne i donekle  ad hoc </li>
+</ul>
+</section>
+<section id="epoha-1---era-elektromehanike" class="slide level2">
+<h2>Epoha 1 - Era elektromehanike</h2>
+<figure>
+<img data-src="z1.jpg" alt=" Zuse 1 " /><figcaption aria-hidden="true"> Zuse 1 </figcaption>
+</figure>
+</section>
+<section id="epoha-1---era-elektromehanike-1" class="slide level2">
+<h2>Epoha 1 - Era elektromehanike</h2>
+<figure>
+<img data-src="hvmk1.jpg" alt=" Harvard Mk 1 " /><figcaption aria-hidden="true"> Harvard Mk 1 </figcaption>
+</figure>
+</section>
+<section id="epoha-1---era-elektromehanike-2" class="slide level2">
+<h2>Epoha 1 - Era elektromehanike</h2>
+<ul>
+<li>Brzine od čak jedne instrukcije u sekundi!</li>
+<li>Bušene kartice za I/O</li>
+<li>Još nema programskih jezika kao takvih</li>
+<li>Čerč i Tjuring postavljaju teoretske osnove računara</li>
+</ul>
+</section>
+<section id="epoha-2---fon-nojmanova-arhitektura-i-vakumske-cevi" class="slide level2">
+<h2>Epoha 2 - Fon Nojmanova Arhitektura i Vakumske Cevi</h2>
+<ul>
+<li> ENIAC</li>
+<li>EDSAC (1949)</li>
+<li>Colossus</li>
+<li>IBM 704  (Rana veštačka inteligencija) </li>
+<li>UNIVAC (1951) </li>
+</ul>
+</section>
+<section id="epoha-2---fon-nojmanova-arhitektura-i-vakumske-cevi-1" class="slide level2">
+<h2>Epoha 2 - Fon Nojmanova Arhitektura i Vakumske Cevi</h2>
+<p><img data-src="ep2.JPG" /></p>
+</section>
+<section id="epoha-2---fon-nojmanova-arhitektura-i-vakumske-cevi-2" class="slide level2">
+<h2>Epoha 2 - Fon Nojmanova Arhitektura i Vakumske Cevi</h2>
+<ul>
+<li>Vrhunske mašine ere postižu do 10 KIPS</li>
+<li>4KB memorije</li>
+<li>U ranom dobu koriste se živina kola za memoriju</li>
+<li>Kasnije magnetna jezgra
+<ul>
+<li>Ovo je ostavilo traga do danas—ako vam je ikada pukao program u Linux-u i ostavio ’core dump,’ sada znate odakle ime.</li>
+</ul></li>
+<li>U ovom periodu:
+<ul>
+<li>Fon Nojman postavlja osnove moderne arhitekture računara.</li>
+<li>Klod Šanon postavlja osnove informatike.</li>
+</ul></li>
+</ul>
+</section>
+<section id="epoha-3-paralelizam-na-nivou-instrukcije-i-uspon-tranzistora" class="slide level2">
+<h2>Epoha 3 — Paralelizam na nivou instrukcije i uspon tranzistora</h2>
+<ul>
+<li>Era počinje sa TX-0 računarom i vodi preko DEC PDP-1 i IBM 7090 do vrhunca treće epohe</li>
+<li>CDC 6600 (1965)</li>
+</ul>
+</section>
+<section id="epoha-3-paralelizam-na-nivou-instrukcije-i-uspon-tranzistora-1" class="slide level2">
+<h2>Epoha 3 — Paralelizam na nivou instrukcije i uspon tranzistora</h2>
+<figure>
+<img data-src="cdc6600.jpg" alt="CDC 6600" /><figcaption aria-hidden="true">CDC 6600</figcaption>
+</figure>
+</section>
+<section id="epoha-3-paralelizam-na-nivou-instrukcije-i-uspon-tranzistora-2" class="slide level2">
+<h2>Epoha 3 — Paralelizam na nivou instrukcije i uspon tranzistora</h2>
+<ul>
+<li>CDC6600 je imao
+<ul>
+<li>1 MFLOPS!</li>
+<li>10 MHz takt!</li>
+<li>10 logičkih jedinica!</li>
+<li>Prvi ILP!</li>
+<li>Jedan od prvih uređaja koji se zvao „superkompjuter“</li>
+</ul></li>
+</ul>
+</section>
+<section id="epoha-4vektorski-procesori-i-integrisana-kola" class="slide level2">
+<h2>Epoha 4—Vektorski procesori i integrisana kola</h2>
+<ul>
+<li>Računar koji je obeležio ovu epohu je legendarni Krej-1 (1976)
+<ul>
+<li>Sasvim moguće <em>najlepši</em> računar svih vremena</li>
+</ul></li>
+<li>Karakteriše ga izuzetno dugačak pipeline.</li>
+<li>Pošto je ovaj pristup doneo tolike dividende prošli put u ovoj epohi je odguran onoliko daleko koliko može da ide.</li>
+</ul>
+</section>
+<section id="epoha-4vektorski-procesori-i-integrisana-kola-1" class="slide level2">
+<h2>Epoha 4—Vektorski procesori i integrisana kola</h2>
+<figure>
+<img data-src="Cray.jpg" alt="Cray-1" /><figcaption aria-hidden="true">Cray-1</figcaption>
+</figure>
+</section>
+<section id="epoha-4vektorski-procesori-i-integrisana-kola-2" class="slide level2">
+<h2>Epoha 4—Vektorski procesori i integrisana kola</h2>
+<ul>
+<li>Krej-1 je mogao
+<ul>
+<li>80 MHz!</li>
+<li>160 MFLOPS!</li>
+<li>8.39 MB memorije!</li>
+<li>303 MB diska!</li>
+</ul></li>
+</ul>
+</section>
+<section id="epoha-5-simd-i-spor-uspon-mikroprocesora" class="slide level2">
+<h2>Epoha 5 — SIMD i spor uspon mikroprocesora</h2>
+<ul>
+<li>SIMD je jedna od fundamentalnih HPC arhitektura po Flinovoj taksonomiji (vidi kasnije)</li>
+<li>Podelimo podatke na blokove, a onda radimo istu stvar svakom bloku podataka.</li>
+<li> SIMD — Single Instruction Multiple Data </li>
+<li>Problem sa SIMD-om jeste što su algoritmi bili fantastični za neke stvari i potpuno beskorisni za sve ostalo.</li>
+<li>SIMD i dalje živi—postoji način na koji je svaki GPU u stvari široka SIMD implementacija.</li>
+<li> NEC SX-2 
+<ul>
+<li>Prvi računar da probije GFLOPS barijeru</li>
+</ul></li>
+</ul>
+</section>
+<section id="epoha-6-mnogo-procesora" class="slide level2">
+<h2>Epoha 6 — Mnogo Procesora</h2>
+<ul>
+<li> Touchstone Paragon (1994)</li>
+<li>IBM SP-2</li>
+<li>Thinking Machines Corporation CM-5 (1992) </li>
+<li>Prvi moderni superkompjuteri</li>
+<li>Prosleđivanje poruka i odvojena memorija, po prvi put.</li>
+<li>Takođe, prvi put se pojavio potrošački klaster (commodity cluster) </li>
+<li>UC Berkley NOW</li>
+<li>Beowulf</li>
+<li>PC + Linux + Ethernet + MPI = Supercomputing For Everyone </li>
+</ul>
+</section>
+<section id="epoha-7" class="slide level2">
+<h2>Epoha 7?</h2>
+<ul>
+<li>Mi smo ovde.</li>
+<li>I dalje su dominantne tehnologije iz šeste epohe ali uz dodatak ekstremne heterogenosti.</li>
+<li>U jednom čvoru imamo i SIMD i shared-memory i message-passing.</li>
+<li>Moglo bi se reći da ovo predstavlja odrastanje HPCa.</li>
+</ul>
+</section>
+<section id="dalje" class="slide level2">
+<h2>Dalje?</h2>
+<ul>
+<li>Masivne online mreže.</li>
+<li>3D čipovi i sintetički dijamant</li>
+<li>Neuroprocesori i domain specific arhitekture</li>
+<li>Kvantni računari</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
