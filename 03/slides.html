@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Merenje performansi</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Merenje performansi</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Oktobar, 2022</p>
+</section>
+
+<section>
+<section id="zatečeno-stanje" class="title-slide slide level1">
+<h1>Zatečeno stanje</h1>
+<p>Šta je to što imamo?</p>
+</section>
+<section id="commodity-cluster" class="slide level2">
+<h2> Commodity Cluster </h2>
+<ul>
+<li>Dosta je priče o tome kako računari možda izgledaju i kako su nekad izgledali.</li>
+<li>Kako izgleda super-računar danas?
+<ul>
+<li>Ključnije: Kako izgleda super-računar koji <em>mi</em> koristimo.</li>
+</ul></li>
+</ul>
+</section>
+<section id="arhitektura-ugrubo" class="slide level2">
+<h2>Arhitektura ugrubo</h2>
+<ul>
+<li>Imamo više čvorova koji su povezani nekakvom mrežom.</li>
+<li>Svaki čvor ima:
+<ul>
+<li><span class="math inline">\(n\)</span> fizičkih procesora koji imaju</li>
+<li><span class="math inline">\(m\)</span> logičkih procesora (jezgara) koji podržavaju</li>
+<li><span class="math inline">\(k\)</span> niti izvršavanja</li>
+<li>neku količinu <span class="math inline">\(l\)</span> memorije koji ti procesori dele</li>
+<li><span class="math inline">\(g\)</span> kartica za ubrzanje sa svojim specijalizovanim resursima za proračunavanje</li>
+</ul></li>
+<li>Ti čvorovi su povezani u jedan sistem kroz nekakvu mrežu</li>
+</ul>
+</section>
+<section id="u-praksi" class="slide level2">
+<h2>U praksi…</h2>
+<ul>
+<li>Računari sa kojima mi radimo će gotovo sigurno biti commodity cluster tipa.</li>
+<li>To znači 1 čvor = 1 PC</li>
+<li>Taj neki čvor ima:
+<ul>
+<li>1 procesor</li>
+<li>4-32 jezgara koji podržavaju po</li>
+<li>2 niti izvršavanja</li>
+<li>Neki broj GB memorije  (~16GB) </li>
+<li>jednu ili dve grafičke kartice tipično NVidia tipa</li>
+</ul></li>
+<li>Svi čvorovi su povezani na brzu Ethernet mrežu.</li>
+</ul>
+</section>
+<section id="tipično-nvidia" class="slide level2">
+<h2>Tipično  NVidia? </h2>
+<ul>
+<li>Ovaj predmet ne sponzoriše NVidia</li>
+<li>Razlog što su NVidia kartice tipične se vrti oko toga što, kada je u pitanju naučna primena GPU uređaja, NVidia je stigla prva.</li>
+<li>Kao rezultat toga što je to prvo počelo na NVidia karticama, dosta softvera je napravljeno sa tom idejom na umu</li>
+<li>Danas, polako, svi proizvođači kartica počinju da podržavaju naučni rad</li>
+<li>Najbrži računar, na primer, je napajan AMD-om</li>
+</ul>
+</section>
+<section id="u-praksi-1" class="slide level2">
+<h2>U praksi…</h2>
+<ul>
+<li>Svaki računar je individualna mašina, sa svojom instalacijom  Linux-a. </li>
+<li>Na svakom računaru su instalirani određeni alati, biblioteke, itd. koje omogućavaju da se resursi između računara efektno iskoriste.</li>
+<li>Primer:
+<ul>
+<li>OpenMP nam omogućava da koristimo paralelizam na nivou te jedne mašine.</li>
+<li>OpenMPI nam omogućava da koristimo paralelizam između mašina.</li>
+<li>OpenACC nam omogućava da koristimo GPU resurse na udoban način.
+<ul>
+<li>Alternative su CUDA ili OpenCL</li>
+</ul></li>
+<li>SLURM nam omogućava da kontrolišemo šta se izvršava i gde.</li>
+</ul></li>
+</ul>
+</section>
+<section id="naš-plan" class="slide level2">
+<h2>Naš plan</h2>
+<ul>
+<li>Da bi savladali ovo, naš plan jeste da:
+<ul>
+<li> <strong>Benchmarking.</strong>  Naučimo kako merimo i biramo super-računarsku instalaciju.</li>
+<li> <strong>Resource</strong>  management. Naučimo kako da upravljamo onim što imamo.</li>
+<li> <strong>Parallel programming.</strong>  Naučimo tehnologije koje nam omogućavaju paralelizme.</li>
+<li> <strong>The Problem.</strong>  Savladamo neke primere problema sa kojima se suočavamo i smislimo kako da ih ubrzamo.</li>
+<li> <strong>Domain specific libraries.</strong>  Naučimo kako da koristimo specijalizovane biblioteke za istu svrhu.<br />
+</li>
+<li> <strong>Profiling.</strong>  Naučimo kako da izmerimo to što smo napravili.</li>
+<li> <strong>Visualization.</strong>  Naučimo kako da prikažemo šta smo izračunali.</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="merenje-performansi-hpc-sistema" class="title-slide slide level1">
+<h1>Merenje performansi HPC sistema</h1>
+<p>Koliko je brzo ‘brzo’</p>
+</section>
+<section id="koncept" class="slide level2">
+<h2>Koncept</h2>
+<ul>
+<li>Sabiranje performansi konstituenata HPC sistema proizvodi nekakve brojeve: toliko-i-toliko FLOPS-a.</li>
+<li>To nisu osobito korisni brojevi. Mogli bi i da sabiramo težine komponenti: koja je svrha ako nam ta vrednost nešto ne kaže.</li>
+<li>Možemo da modeliramo ponašanje, ali taj model bi uskoro postao izuzetno nezgodan za korišćenje i opet ne bi uhvatio sve detalje ponašanja.</li>
+<li>Rešenje je jednostavno: postavimo nekakav problem i merimo koliko je naš sistem dobar u njegovom rešavanju.</li>
+<li>Ako razmislite o tome, ovo je isto što se radi studentima:
+<ul>
+<li>Postavi se problem (ispit)</li>
+<li>I mere se performanse (ocena).</li>
+</ul></li>
+</ul>
+</section>
+<section id="problemi" class="slide level2">
+<h2>Problemi</h2>
+<ul>
+<li>Naravno, ni ovo nije savršeno.</li>
+<li>Kakav tip problema se izabere, kako se postavi, konfiguriše, i koristi jako utiče na rezultat koji se dobije.</li>
+<li>Grubo gledajući, možemo da podelimo sva merenja performansi na:
+<ul>
+<li>Sintetičke</li>
+<li>Prirodne</li>
+</ul></li>
+<li>Sintetički se lako kontrolišu i skaliraju.</li>
+<li>Prirodni daju izuzetno verodostojne rezultate—samo što nismo sigurni šta je to što mere.</li>
+<li>Primer van HPC: 3DMark vs. framerate.</li>
+</ul>
+</section>
+<section id="malo-istorije" class="slide level2">
+<h2>Malo istorije…</h2>
+<ul>
+<li>Prvi benchmark ikada je bio za ENIAC (prikladno) i bio je računanje trajektorije đuleta u odnosu na isti proračun koji obavlja balistički računar ili ljudsko biće.</li>
+<li>Inženjer je, na kraju krajeva, prvobitno bio vojni termin.</li>
+<li>Prvi benchmark u široj upotrebi je ‘Whetstone’ nazvana po gradiću u kome je razvijena.</li>
+<li>Whetstone benchmark je bila kolekcija programa koji su stvarali sintetički problem koji je evaluirao broj instrukcija u datoj sekundi. Kasnije, kako su se potrebe menjale, počeo je da uključuje i floating-point instrukcije, te je merio i FLOPS.</li>
+</ul>
+</section>
+<section id="malo-istorije-1" class="slide level2">
+<h2>Malo istorije…</h2>
+<ul>
+<li>Pošto je Whetstone specijalizovan za FLOPS, napravljen mu je pandan koji meri performanse sa celim brojevima.</li>
+<li>A pošto programeri vole malo šta više od igre rečima, ovaj pandan se zvao ‘Dhrystone.’</li>
+<li>Danas Dhrystone je zamenjen sa SPECint paketom.</li>
+<li>I Whetstone i Dhrystone nisu bili namenjeni za HPC, već za evaluaciju procesora.</li>
+</ul>
+</section>
+<section id="linpack" class="slide level2">
+<h2>Linpack</h2>
+<ul>
+<li>Najuticajniji benchmark u upotrebi se pojavio 1979 i baziran je na bibliotekama za linearnu algebru poznate kao Linpack (danas zamenjene sa Lapack/BLAS paketom softvera).</li>
+<li>Linpack meri performanse floating-point operacija, i baziran je na rešenju problma oblika:</li>
+</ul>
+</section>
+<section id="linpack-1" class="slide level2">
+<h2>Linpack</h2>
+<p><span class="math display">\[
+Ax = B
+\]</span> Gde je <span class="math inline">\(A\)</span> <span class="math inline">\(n \times n\)</span> matrica, <span class="math inline">\(x\)</span> je vektor <span class="math inline">\(x_0, x_1, \ldots x_{n-1}\)</span>, <span class="math inline">\(b\)</span> je vektor <span class="math inline">\(b_0, b_1, \ldots b_{n-1}\)</span> <strong>Ograničenje:</strong> A mora da ima malo ili nimalo elemenata koji su jednaki ili blizu nule, još se kaže i <span class="math inline">\(A\)</span> je <em>gusta</em> matrica. Ovo je efektivno zadatak rešavanja sistema od <span class="math inline">\(n\)</span> jednačina sa <span class="math inline">\(n\)</span> nepoznatih.</p>
+</section>
+<section id="linpack-2" class="slide level2">
+<h2>Linpack</h2>
+<ul>
+<li>Linpack je prošao kroz iteracije:
+<ul>
+<li>Prva iteracija je stavljala n na 100 i algoritam koji je koristila je bio serijski. Da bi rezultat bio merodavan, izvorni kod nije smeo da bude modifikovan: jedino parametri kompajliranja.</li>
+<li>Druga iteracija je podigla n na 1000 i:
+<ul>
+<li>Dozvolila je da se prilagođava izvorni kod faktorizatora i rešavača.</li>
+<li>Dozvolila je, konsekventno, paralelizaciju.</li>
+<li>Uvela je uslov tačnosti nad rezultatima.</li>
+</ul></li>
+</ul></li>
+<li>Treća iteracija je HPL.</li>
+</ul>
+</section>
+<section id="highly-parallel-linpack" class="slide level2">
+<h2>Highly Parallel Linpack</h2>
+<ul>
+<li>Highly Parallel Linpack — HPL je naznačajniji benchmark svoje vrste. On, pre svega, se koristi da meri FLOPS vrednosti za super-računare i služi da se lista 500 najbržih odredi.</li>
+<li>HPL je uveo još značajnije promene:
+<ul>
+<li>Samo je problem fiksan</li>
+<li>Veličina ulaznih podataka može da varira.</li>
+<li>Softver može da varira</li>
+</ul></li>
+<li>Ove promene dozvoljavaju HPLu da se izvršava na uređajima sa distribuiranom memorijom.</li>
+</ul>
+</section>
+<section id="parametri-hpl-a" class="slide level2">
+<h2>Parametri HPL-a</h2>
+<ul>
+<li>Do 20 različitih zadataka je dozvoljeno, mi specificiramo koliko hoćemo da probamo.</li>
+<li>Svaki od zadataka je specificiran preko ‘n,’ tj. broja jednačina i broja nepoznatih.</li>
+<li>Zatim je dozvoljeno do 20 različitih veličina bloka
+<ul>
+<li>Bloka? Način na koji algoritmi ovog tipa rade jeste da rekurzivno razbijaju matricu na pod-matrice. Blok definiše koliki će biti individualni segment.</li>
+<li>Gotovo sigurno je u rasponu 32..256 a određuje se empirijski.</li>
+</ul></li>
+<li>Zatim se specificira kako se matrica deli po čvorovima</li>
+<li>Dalje, kaže se koliko različitih konfiguracija procesnih čvorova se koristi za proračun.</li>
+</ul>
+</section>
+<section id="malo-više-o-blokovima" class="slide level2">
+<h2>Malo više o blokovima</h2>
+<ul>
+<li>Neka je naš zadatak da odredimo <span class="math inline">\(C = AB\)</span> gde su A, B, i C <span class="math inline">\(8 \times 8\)</span> matrice.</li>
+<li>Onda možemo da izdelimo sve te matrice u 4 <span class="math inline">\(4 \times 4\)</span> podmatrice. <span class="math display">\[
+\begin{bmatrix}
+C_{11} &amp; C_{12} \\
+C_{21} &amp; C_{22} 
+\end{bmatrix}
+=
+\begin{bmatrix}
+A_{11} &amp; A_{12} \\
+A_{21} &amp; A_{22} 
+\end{bmatrix}
+\begin{bmatrix}
+B_{11} &amp; B_{12} \\
+B_{21} &amp; B_{22} 
+\end{bmatrix}
+\]</span></li>
+</ul>
+</section>
+<section id="malo-više-o-blokovima-1" class="slide level2">
+<h2>Malo više o blokovima</h2>
+<p>Gde je, npr: <span class="math display">\[
+A_{i,j} = \begin{bmatrix}
+a_{i,j} &amp; a_{i,j+1} \\
+a_{i+1,j} &amp; a_{i+1,j+1} 
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="malo-više-o-blokovima-2" class="slide level2">
+<h2>Malo više o blokovima</h2>
+<p>A mi računamo: <span class="math display">\[
+C_{11} = A_{11}B_{11} + A_{12}B_{21}
+\]</span> <span class="math display">\[
+C_{12} = A_{11}B_{12} + A_{12}B_{22}
+\]</span> <span class="math display">\[
+C_{21} = A_{21}B_{11} + A_{22}B_{21}
+\]</span> <span class="math display">\[
+C_{22} = A_{21}B_{12} + A_{22}B_{22} 
+\]</span></p>
+</section>
+<section id="malo-više-o-blokovima-3" class="slide level2">
+<h2>Malo više o blokovima</h2>
+<ul>
+<li>Onda su ove pod-matrice su naši blokovi</li>
+<li>Naravno, umesto <span class="math inline">\(4 \times 4\)</span> to su, recimo, <span class="math inline">\(256 \times 256\)</span><br />
+</li>
+<li>U praksi, ovo je ideal: nisu sve matrice.</li>
+<li>Veličine i distribucije ovih blokova se stalno menjaju i podešavaju</li>
+<li>Ideja je da se promoviše u kodu osobina <em>lokalnosti</em></li>
+<li>Setite se situacije sa kešom</li>
+</ul>
+</section>
+<section id="parametri-hpl-a-1" class="slide level2">
+<h2>Parametri HPL-a</h2>
+<ul>
+<li>Zatim se specificiraju sve konfiguracije, jedna po jedna, u obliku <span class="math inline">\(P \times Q\)</span></li>
+<li>Zašto tako? Zato što se matrica bukvalno deli među čvorovima tako što se čvorovi zamisle u matričnoj organizaciji, te se svakom čvoru “odseče” određeni segment matrice.</li>
+<li>Ovo znači da će naš proces biti pokrenut, nužno, na <span class="math inline">\(P \times Q\)</span> čvorova, šta god drugo mi specificirali prilikom pokretanja.</li>
+<li><span class="math inline">\(P\)</span> i <span class="math inline">\(Q\)</span> se biraju empirijki i zavise od topoloigije naše mreže. Ako je mreža u mesh topologiji tako da imamo više linija za svaki računar onda je najbolje da je <span class="math inline">\(P\)</span> blizu <span class="math inline">\(Q\)</span> a <span class="math inline">\(Q\)</span> malo veće od <span class="math inline">\(P\)</span>. U slučaju prostog Ethernet-a najbolje je biti pljosnat: Za klaster od 4 računara, recimo, <span class="math inline">\(1 \times 4\)</span></li>
+</ul>
+</section>
+<section id="parametri-hpl-a-2" class="slide level2">
+<h2>Parametri HPL-a</h2>
+<ul>
+<li>Definiše se još i stepen tačnosti do kog računamo. <code>16.0</code> je tipična vrednost, mada se ona može povećavati i do stotina hiljada. Ovo je zbog nepreciznosti poređenja floating point brojeva, prvo, i skale koja se koristi za test.</li>
+<li>Ostatak služi za podešavanje algoritma o čemu više kada budemo radili linearnu algebru u HPC okruženju.</li>
+</ul>
+</section>
+<section id="rezultati-hpl-a" class="slide level2">
+<h2>Rezultati HPL-a</h2>
+<ul>
+<li>HPL nam omogućava da odredimo veći broj vrednosti i od njih nas zanima:
+<ul>
+<li><code>Rpeak</code> — Broj FLOPSa koji smo izračunali da je teoretski moguć</li>
+<li><code>Rmax + Nmax</code> — Ovo je veličina ulaznog skupa (<code>Nmax</code>) za koju je ostvaren najveći stvarni broj FLOPSa (<code>Rmax</code>).</li>
+<li><code>N1/2</code> — Veličina ulaznog skupa za koju je ostvareno pola maksimalne ostvarene performanse.</li>
+</ul></li>
+</ul>
+</section>
+<section id="osobine-dobrog-benchmark-sistema" class="slide level2">
+<h2>Osobine dobrog benchmark sistema</h2>
+<ul>
+<li>Da li je HPL dobar benchmark? Šta znači biti “dobar” u ovom kontekstu?</li>
+<li>Bazirano na iskustvu može se reći da dobar benchmark ima sledeće osobine:
+<ul>
+<li><strong>Realizam.</strong> Mora simulirati tip rada na koji se nailazi u praksi.</li>
+<li><strong>Univerzalnost.</strong> Adekvatno radi na velikom broju arhitektura.</li>
+<li><strong>Popularnost.</strong> Dosta korisnika znači da imamo dosta uporedivih rezultata.</li>
+<li><strong>Kompaktnost.</strong> Mali broj linija koda znači manje šuma.</li>
+<li><strong>Uređenost.</strong> Postoje jasna pravila oko toga kako se dobijaju merodavni rezultati.</li>
+<li><strong>Standardizovanost.</strong> Upotreba standardnih tehnologija.</li>
+</ul></li>
+</ul>
+</section>
+<section id="hpc-challenge" class="slide level2">
+<h2> HPC Challenge </h2>
+<ul>
+<li> HPC Challenge Benchmark Suite  je malo opširnija alternativa HPL sistemu.</li>
+<li>Sa pozitivne strane: meri mnogo više stvari.</li>
+<li>Sa negativne strane: ne proizvodi jednu stvar, nego više, što čini samerljivost kompleksnijom. Čak i da primenimo matematičku koncepciju razdaljine u višedimenzionalnom prostoru, i dalje moramo da ustanovimo zajedničku skalu plus da odredimo funkciju metrike. Kao rezultat moguće je formulisati beskonačno mnogo samerljivosti što nas ostavlja sa ogromnim koordinacionim problemom.</li>
+</ul>
+</section>
+<section id="hpc-challenge-1" class="slide level2">
+<h2> HPC Challenge </h2>
+<ul>
+<li>HPCC se sastoji od sledećih mera:
+<ul>
+<li><code>DGEMM</code>
+<ul>
+<li>Množenje matrica * matrica, slično HPL u nameni</li>
+</ul></li>
+<li><code>STREAM</code>
+<ul>
+<li>Sintetički problem koji meri dugoročnu protočnu moć memorije</li>
+</ul></li>
+<li><code>PTRANS</code>
+<ul>
+<li>Paralelizovano transponovanje matrica</li>
+</ul></li>
+<li><code>RandomAccess</code>
+<ul>
+<li>Nasumično postavlja nove celobrojne vrednosti u nasumične delove memorije. Meri se u Giga Updates Per Second: GUPS.</li>
+</ul></li>
+<li><code>FFT</code>
+<ul>
+<li>Jednodimenzionalna kompleksna diskretizovana Furjeova transformacija</li>
+</ul></li>
+<li><code>B_eff</code>
+<ul>
+<li>Kašnjenje i protočna moć za različite obrasce komunikacije</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="šta-odlikuje-hpcc" class="slide level2">
+<h2>Šta odlikuje  HPCC? </h2>
+<ul>
+<li>Fokus na memoriju.</li>
+<li>Distribuirani sistemi su izuzetno osetljivi na zadatke koji zahtevaju slobodan tok podataka kroz ceo sistem.</li>
+<li>HPCC stress-testira baš ovaj deo koji konvencionalniji HPL uglavnom ignoriše.</li>
+<li>Ovo ne čini HPL-lošim niti HPCC dobrim.
+<ul>
+<li>Što?</li>
+<li><strong>Namena računara diktira šta želimo da merimo.</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="high-performance-conjugate-gradients" class="slide level2">
+<h2> High Performance Conjugate Gradients </h2>
+<ul>
+<li>HPCG održavaju isti ljudi kao i HPL i služi da meri stvari koje HPL ne dodiruje.</li>
+<li>Problem koji HPC rešava je sasvim isti kao onaj koji rešava HPL<br />
+</li>
+<li>Pa koja je onda razlika?</li>
+</ul>
+</section>
+<section id="hpcg" class="slide level2">
+<h2>HPCG</h2>
+<p>Rešavamo problem: <span class="math display">\[
+Ax = B
+\]</span> Gde je <span class="math inline">\(A\)</span> <span class="math inline">\(n \times n\)</span> matrica, <span class="math inline">\(x\)</span> je vektor <span class="math inline">\(x_0, x_1, \ldots x_{n-1}\)</span>, <span class="math inline">\(b\)</span> je vektor <span class="math inline">\(b_0, b_1, \ldots b_{n-1}\)</span> <strong>Ograničenje:</strong> Ali sada <span class="math inline">\(A\)</span> ima <strong>većinu</strong> elemenata koji su 0 ili vrlo blizu nula, odnosno A je <em>retka</em> matrica.</p>
+</section>
+<section id="hpcg-1" class="slide level2">
+<h2>HPCG</h2>
+<ul>
+<li>To što je <span class="math inline">\(A\)</span> retka matrica menja tehnologiju za rešavanje potpuno.</li>
+<li>Glavna je stvar to što ima puno komunikacije između čvorova i puno redukcionih operacija o čemu više uskoro.</li>
+<li>Ovo menja rezultate jako, jako, jako puno.</li>
+<li>Koliko puno?
+<ul>
+<li>Razlika između ostvarenih performansi za HPL i HPCG je 15000%.</li>
+<li>Prosečno. Vrhunski sistemi ostvaruju na HPCG oko 1% onoga što ostvaruju na HPL</li>
+<li>Postoje izuzeci, ali čak i šampion, tkzv. K-računar ostvaruje samo 5.3%.</li>
+</ul></li>
+</ul>
+</section>
+<section id="nas-parallel-benchmarks" class="slide level2">
+<h2> NAS Parallel Benchmarks </h2>
+<ul>
+<li>NPB je sličan HPCC sistemu u tome što predstavlja kombinaciju tipičnih problema.</li>
+<li>Specifično predstavlja 8 tipičnih problema koji su poznati pod svojim dvoslovnim skraćenicama.</li>
+</ul>
+</section>
+<section id="npb" class="slide level2">
+<h2>NPB</h2>
+<ul>
+<li> <strong>IS</strong> (Integer Sort)  - Sortiranje celih brojeva. Testira celobrojnu brzinu i performanse mreže.</li>
+<li> <strong>EP</strong> (Embarassingly parallel)  - Testira brzine blizu teoretskog maksimuma.</li>
+<li> <strong>CG</strong> (Conjugate Gradient)  - Radi račun karakteristične vrednosti retke matrice.</li>
+<li> <strong>MG</strong> (MultiGrid)  - Integracija diferencijalne jednačine kroz metodu više rezolucija.</li>
+</ul>
+</section>
+<section id="npb-1" class="slide level2">
+<h2>NPB</h2>
+<ul>
+<li> <strong>FT</strong> (Discrete 3D FFT)  - Integracija parcijalne diferencijalne jednačine kroz brze Furijeove transformacije</li>
+<li> <strong>BT</strong> (Block Tridiagonal Solver)  - Rešavanje sistema jednačina trodijagonalnog tipa.</li>
+<li> <strong>SP</strong> (Scalar Pentadiagonal Solver)  - Rešavanje sistema jednačina pentadijagonalnog tipa.</li>
+<li> <strong>LU</strong> (LU Gauss-Seidel solver)  - Isto što i HPL efektivno</li>
+</ul>
+</section>
+<section id="pentadijagonalno-tridijagonalno" class="slide level2">
+<h2>Pentadijagonalno? Tridijagonalno?</h2>
+<ul>
+<li>HPC <em>mnogo</em> voli matrice te je korisno da znate terminologiju</li>
+<li><em>Retka</em> matrica je takva da joj je većina elemenata nula.</li>
+<li><em>Trakasta</em> matrica je retka matrica takva da su joj nenulti elementi isključivo na glavnoj dijagonali i na nekim dijagonalama iznad glavne i ispod glavne, ili formalno govoreći:</li>
+</ul>
+<p><span class="math inline">\(a_{i,j}=0\)</span> ako <span class="math inline">\(j&lt;i-k_1\)</span> ili <span class="math inline">\(j&gt;i+k_2\)</span> za <span class="math inline">\(k_1, k_2 \ge 0\)</span></p>
+</section>
+<section id="trakaste-matrice" class="slide level2">
+<h2>Trakaste matrice</h2>
+<ul>
+<li>Vrednosti <span class="math inline">\(k_1\)</span> i <span class="math inline">\(k_2\)</span> su gornja i donja <em>širina trake</em></li>
+<li>Ako <span class="math inline">\(k_1 = k_2\)</span> onda je ovo simetrična trakasta matrica, i obično se zove <span class="math inline">\(n\)</span>-dijagonalna, po tome koliko ukupno dijagonala ima popunjenih ili delimično popunjenih.</li>
+<li>Stoga:
+<ul>
+<li>Ako je <span class="math inline">\(k_1 = k_2 = 1\)</span> onda je tridijagonalna matrica u pitanju</li>
+<li>Ako je <span class="math inline">\(k_1 = k_2 = 2\)</span> onda je pentadijagonalna matrica u pitanju</li>
+<li>Ako je <span class="math inline">\(k_1 = k_2 = 3\)</span> onda je heptadijagonalna matrica u pitanju</li>
+<li>…</li>
+</ul></li>
+</ul>
+</section>
+<section id="graph-500" class="slide level2">
+<h2>Graph 500</h2>
+<ul>
+<li>Do ovog trenutka, postoji određena tendencija u svim ovim merama:
+<ul>
+<li>Diferencijalne jednačine.</li>
+<li>Sistemi linearnih jednačina raznih tipova.</li>
+<li>Bazične celobrojne operacije.</li>
+</ul></li>
+<li>Ovo su primeri problema simulacija za građevinu, mašinstvo, i fiziku, opšte govoreći.</li>
+<li>To je lepo, ali nisu svi problemi ovakvi.</li>
+<li>Veliki skupovi problema se predstavljaju kroz operacije nad grafovima.</li>
+</ul>
+</section>
+<section id="graph500" class="slide level2">
+<h2>Graph500</h2>
+<ul>
+<li>Graph500 ne samo da odgovara tom domenu nego radi i u širem kontekstu—simulira aplikacije sa intenzivnim pristupom podacima.</li>
+<li>Graph500 definiše, u stvari, 3 benchmark-a
+<ul>
+<li>Graph500 1 — konkurentna pretraga</li>
+<li>Graph500 2 — Najkraća putanja</li>
+<li>Graph500 3 — Najveći nezavisni skup (tj. najveći skup čvorova grafa takvih da nikoja dva nisu povezana)</li>
+</ul></li>
+<li>Samo Graph500 1 je implementiran i to preko  Breadth First Search  pristupa, tako što za 64 jedinstvena početna čvora u tom grafu nađe sve čvorove do kojih se može doći.</li>
+<li>Graf je cikličan, bez težina, i neusmeren.</li>
+</ul>
+</section>
+<section id="graph500-1" class="slide level2">
+<h2>Graph500</h2>
+<ul>
+<li>Graph500 je implementiran sa istovremenim OpenMP i OpenMPI paralelizmom što odgovara modernim sistemima.</li>
+<li>Rezultate ne vraća u FLOPS nego u TEPS  (Traversed Edges Per Second) </li>
+<li>Poređenje između FLOPS i TEPS je teško ali ima jedna druga stvar koja je <em>jako bitna:</em>
+<ul>
+<li>U FLOPS-ima računari nastavljaju svoj eksponencijalni rast.</li>
+<li>U TEPS-ima performanse stagniraju.</li>
+<li>Arhitekture deljene memorije su mnogo bolje (u kontekstu TEPS po jezgru) od arhitektura distribuirane memorije.</li>
+<li>Ovo možete čitati kao  “breakthrough wanted”  znak.</li>
+</ul></li>
+</ul>
+</section>
+<section id="miniaplikacije" class="slide level2">
+<h2>Miniaplikacije</h2>
+<ul>
+<li>Sve do sada, svi ovi benchmark-ovi rade sa sintentičkim podacima koji pokušavaju da simuliraju šta bi stvarna aplikativna primena postigla.</li>
+<li>Mogu se meriti rezultati punih aplikacija, naravno, ali su oni tako specifični da nisu osobito korisni: nisu univerzalni i nisu sveprisutni.</li>
+<li>Pokušaj da se odradi kvadratura kruga ovde jesu miniaplikacije: pojednostavljeni ali realni poslovi.</li>
+<li>Ovoga se dotičemo kada budemo radili domenski-specifične biblioteke mnogo, mnogo kasnije.</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
