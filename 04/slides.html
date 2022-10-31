@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Upravljanje</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Upravljanje</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Oktobar, 2022</p>
+</section>
+
+<section>
+<section id="upravljanje-superračunarskim-sistemima" class="title-slide slide level1">
+<h1>Upravljanje superračunarskim sistemima</h1>
+<p>Podešavanje za performanse</p>
+</section>
+<section id="čime-to-moramo-da-upravljamo" class="slide level2">
+<h2>Čime to moramo da upravljamo?</h2>
+<ul>
+<li>Nema nekakve magije u HPC klasteru.</li>
+<li>To su stvarno samo Linux računari u mreži.</li>
+<li>Brzi računari povezani brzom mrežom, istina, ali to je sve.</li>
+<li>OpenMP programi su samo multi-threaded programi na jednom računaru. To se pokreće na isti način kao i svaki drugi program—to ste probali.</li>
+<li>OpenMPI tehnologija je neophodna da se uključi više čvorova.</li>
+<li>Tu se programi moraju pokretati posebnom komandom i to na svakom čvoru. Kada pokretati koliko programa i koje im resurse dodeliti… to je dosta posla da se radi rukom čak i na malom klasteru.</li>
+</ul>
+</section>
+<section id="upravljanje-hpc-klasterima" class="slide level2">
+<h2>Upravljanje HPC klasterima</h2>
+<ul>
+<li>Rešenje je specijalizovan softver koji služi da upravlja čvorovima i pokreće stvari kad mi hoćemo kako mi hoćemo.</li>
+<li>Softver se tipično sastoji od servisa koji rade na raznim delovima HPC klastera i komandama koje komuniciraju sa tim servisima.</li>
+</ul>
+</section>
+<section id="resursi-koje-kontroliše-upravljački-softver" class="slide level2">
+<h2>Resursi koje kontroliše upravljački softver</h2>
+<ul>
+<li>Čvorovi za računanje.
+<ul>
+<li>Osnovna stvar koja se kontroliše. Na svaki računar se moraju slati podaci, pokretati procesi, gasiti procesi, itd.</li>
+</ul></li>
+<li>Procesorska jezgra.
+<ul>
+<li>U okviru jednog računara je neophodno alocirati individualna jezgra i to na drugačiji način budući da su njihove karakteristike drugačije.</li>
+</ul></li>
+<li>Računarske veze.
+<ul>
+<li>Mreža u klasterima može biti jako kompleksna i heterogena. Upravljački softver se stara i da to radi kako treba.</li>
+</ul></li>
+<li>Eksterna memorija.
+<ul>
+<li>Upravljački softver se stara da je eksterna memorija dostupna i maksimalno performantna.</li>
+</ul></li>
+<li>I/O
+<ul>
+<li>Komunikacija sa spoljnim svetom ne može biti  ad hoc. </li>
+</ul></li>
+<li>Akceleratori.
+<ul>
+<li>U heterogenim sistemima akceleratori proračuna (najčešće ali ne uvek %GPU%) su odvojen resurs koji se posebno alocira i posebno programira.</li>
+</ul></li>
+</ul>
+</section>
+<section id="ključni-koncepti-upravljačkog-softvera" class="slide level2">
+<h2>Ključni koncepti upravljačkog softvera</h2>
+<ul>
+<li>Glavni koncept su zadaci  (jobs)  koji predstavljaju jednu celinu koju korisnik hoće da pokrene.</li>
+<li>Zadaci mogu biti:
+<ul>
+<li>Interaktivni  (interactive).  — Postoji ljudski operator.</li>
+<li>Automatski  (batch).  — Nema operatora. Najčešće zadaci su ovakvi.</li>
+</ul></li>
+<li>Iako mogu biti monolitni, tipično zadaci se sastoje od više koraka  (task/step).  Ono što karakteriše korake jeste da mogu imati potpuno različite zahteve nad resursima.</li>
+<li>Zadaci idu u redove  (queue)  izvršavanja i koji od zadataka koji stoje u redu se izvršava kada određuje proces reda izvršavanja  (scheduling) </li>
+</ul>
+</section>
+<section id="faktori-koji-utiču-na-proces-reda-izvršavanja" class="slide level2">
+<h2>Faktori koji utiču na proces reda izvršavanja</h2>
+<ul>
+<li>Dostupnost neophodnih resursa.
+<ul>
+<li>Ako nema gde da se nešto izvrši onda se sigurno neće izvršiti.</li>
+</ul></li>
+<li>Prioritet.
+<ul>
+<li>U zavisnosti ko zahteva izvršavanje i šta je priroda posla može da dođe na red ranije ili kasnije.<br />
+</li>
+</ul></li>
+<li>Korisnički budžet resursa.
+<ul>
+<li>Svaki korisnik može imati fiksnu količinu resursa koju sme da angažuje.<br />
+</li>
+</ul></li>
+<li>Ograničenje broja zadataka.
+<ul>
+<li>Svaki korisnik može imati ograničeni broj zadataka koji sme zatražiti u nekom trenutku.</li>
+</ul></li>
+<li>Procenjeno vreme izvršavanja.
+<ul>
+<li>Kada zadajemo zadatak uvek navodimo koliko vremena tražimo.</li>
+</ul></li>
+</ul>
+</section>
+<section id="faktori-koji-utiču-na-proces-reda-izvršavanja-1" class="slide level2">
+<h2>Faktori koji utiču na proces reda izvršavanja</h2>
+<ul>
+<li>Ostvareno vreme izvršavanja.
+<ul>
+<li>Zadatak može biti prekinut u zavisnosti od toga koliko dugo se već izvršava.</li>
+</ul></li>
+<li>Uslovljenost zadatka.
+<ul>
+<li>Zadaci mogu zavisiti od završetka drugih zadataka.</li>
+</ul></li>
+<li>Događaji.
+<ul>
+<li>Neki zadaci se samo dešavaju kada se na nivou celog sistema desi nekakav događaj.</li>
+</ul></li>
+<li>Dostupnost operatora.
+<ul>
+<li>Interaktivni zadaci su samo mogući ako ima neko fizički prisutan za terminalom.</li>
+</ul></li>
+<li>Dostupnost licence.
+<ul>
+<li>Ponekad naš kod zahteva licence koje se prodaju po jezgru. To znači da je to samo još jedan resurs koji treba alocirati.</li>
+</ul></li>
+</ul>
+</section>
+<section id="popularni-alati-za-upravljanje-hpc-sistemima." class="slide level2">
+<h2>Popularni alati za upravljanje HPC sistemima.</h2>
+<p> Simple Linux Utility for Resource Management (SLURM)  — moćno, proširivo FOSS rešenje.  Portable Batch System  — Alternativa koja je nekad bila komercijalan kod, a sada postoji u FOSS varijanti.  OpenLava  — Još jedna alternativa.  Moab Cluster Suite  — Komercijalan softver fokusiran na ekstremnu skalabilnost.  LoadLeveler  — IBM proizvod prvobitno namenjen za AIX.<br />
+ Univa Grid Engine  —  Oracle/Sun  rešenje za heterogene računarske sisteme.  HTCondor  — FOSS rešenje za high-throughput coarse-grained  HPC.   OAR  — Rešenje fokusirano oko data-intensive problema  Hadoop Yet Another Resource Negotiator  — Rešenje za map-reduce.</p>
+</section></section>
+<section>
+<section id="slurm" class="title-slide slide level1">
+<h1>SLURM</h1>
+<p> Simple Linux Utility for Resource Management (SLURM) </p>
+</section>
+<section id="slurm-1" class="slide level2">
+<h2>SLURM</h2>
+<p><img data-src="logo.png" /></p>
+</section>
+<section id="zašto-fokus-na-alat" class="slide level2">
+<h2>Zašto fokus na alat?</h2>
+<ul>
+<li>Uopšteno govoreći, nije svrha ovakvog kursa da vam se čitaju uputstva odnosno <code>man</code> stranice.</li>
+<li>No, ipak će tu i tamo biti baš toga.</li>
+<li>Što?</li>
+<li>Pa ovde je razlog jednostavan: kroz razumevanje parametara i komandi SLURM sistema imamo priliku i da naučimo:
+<ul>
+<li>Šta su faktori u upravljanju klasterima?</li>
+<li>Kako se pažljivim upravljanjem resursima podižu performanse sistema i naročito performanse po utrošenom novcu?</li>
+<li>Kao bonus, takođe možete da naučite i kako se SLURM može koristiti što će vam biti od koristi.</li>
+</ul></li>
+</ul>
+</section>
+<section id="zašto-je-slurm-odličan" class="slide level2">
+<h2>Zašto je SLURM odličan?</h2>
+<ul>
+<li>Jednostavan</li>
+<li>Gotovo beskonačno skalabilan:</li>
+<li>SLURM se koristi, na primer, na TaihuLight mašini sa nekih 40 000 CPU-ova i 10 000 000 jezgara.</li>
+<li>Od najbržih 10 računara oko 5 koristi SLURM. (podatak je malo zastareo i stvarni broj osciluje, ali obično je oko pola)</li>
+<li>1000 zadataka se može zakazati po sekundi a 500 izvršiti.</li>
+<li>Podržava heterogene tehnologije</li>
+</ul>
+</section>
+<section id="arhitektura-slurm-sistema" class="slide level2">
+<h2>Arhitektura SLURM sistema</h2>
+<p><img data-src="arch.gif" /></p>
+</section>
+<section id="grupisanje-elemenata-upravljanja-u-slurm-sistemima" class="slide level2">
+<h2>Grupisanje elemenata upravljanja u SLURM sistemima</h2>
+<ul>
+<li>Čvorovi se mogu ubacivati u particije.</li>
+<li>Particije mogu biti:
+<ul>
+<li>Disjunktne</li>
+<li>Preklapajuće</li>
+</ul></li>
+<li>Particije odgovaraju redovima izvršavanja</li>
+<li>Zadaci se grupišu u nizove zadataka koje odlikuju isti parametri izvršavanja.</li>
+</ul>
+</section>
+<section id="raspored-izvršavanja-scheduling-u-slurm-sistemima" class="slide level2">
+<h2>Raspored izvršavanja  (scheduling)  u SLURM sistemima</h2>
+<ul>
+<li>Ovo je sve proširivo, ali grubo govoreći imamo tri različita pristupa koja rade istovremeno.</li>
+<li>Raspored izvršavanja vođen događajima.</li>
+<li>Ukupni raspored izvršavanja.</li>
+<li>Unazad propagirajući raspored izvršavanja.</li>
+</ul>
+</section>
+<section id="raspored-izvršavanja-vođen-događaijma" class="slide level2">
+<h2>Raspored izvršavanja vođen događaijma</h2>
+<ul>
+<li>Ovo je najjednostavniji način da se rasporede zadaci.</li>
+<li>Takođe je najbrži.</li>
+<li>Kada god se promeni status sistema (neki čvor se uključi, neki zadatak se završi, itd.) pokrene se ovaj algoritam.</li>
+<li>Algoritam uzme određeni broj zadataka sa prednjeg kraja reda i analizira ih u skladu sa ranije pomenutim faktorima.</li>
+<li>Sve što je nazad u redu se ignoriše dok ne stigne na prednji kraj.</li>
+<li>Ovo je brzo ali može dovesti do ne baš efikasne raspodele.</li>
+</ul>
+</section>
+<section id="ukupni-raspored-izvršavanja." class="slide level2">
+<h2>Ukupni raspored izvršavanja.</h2>
+<ul>
+<li>Ukupni algoritam se pokreće samo povremeno zato što mora da posmatra sve zadatke koji su zakazani.</li>
+<li>Ovo ga čini sporim.</li>
+<li>Balans između efikasnijeg sistema rasporeda zadataka i usporenja usled troškova sistema se postiže povremenim pokretanjem koje sprečava da se nisko-efikasne situacije u rasporedu propagiraju.</li>
+</ul>
+</section>
+<section id="unazad-propagirajući-raspored-izvršavanja." class="slide level2">
+<h2>Unazad propagirajući raspored izvršavanja.</h2>
+<ul>
+<li>Naročit primer ne-efikasnosti jeste kada imamo zadatke niskog prioriteta a velikih zahteva.</li>
+<li>Jasno je da oni moraju da čekaju, ali ako stalno stižu prioritetniji poslovi, čekaće zauvek.</li>
+<li>Unazad propagirajući sistem za raspored analizira očekivano vreme kada svi poslovi treba da počnu, koliko treba da traju, i do kada se izvršavaju i traži vremena gde se izvršavanje nisko-prioritetnih poslova može udenuti tako da ne izazove kašnjenja u opštem rasporedu sistema.</li>
+</ul>
+</section>
+<section id="napredni-koncepti-u-sistemu-rasporeda-izvršavanja-slurm" class="slide level2">
+<h2>Napredni koncepti u sistemu rasporeda izvršavanja SLURM</h2>
+<ul>
+<li> Gang scheduling </li>
+<li> Preemption </li>
+<li> Generic resource allocation </li>
+<li> Trackable resources. </li>
+<li> Elastic computing. </li>
+<li> High-throughput computing. </li>
+</ul>
+</section>
+<section id="gang-scheduling" class="slide level2">
+<h2> Gang scheduling </h2>
+<ul>
+<li>Mehanizam gde poslovi koji imaju slične prohteve za resursima dele iste resurse tako što jedni drugima predaju ekskluzivnu kontrolu.</li>
+<li>Najbolje radi ako imamo particiju čija konfiguracija odgovara prohtevima te klase poslova.</li>
+<li>Particije baš za to i služe.</li>
+<li>Mehanizam odredi dužinu alokacije (koja se zove ‘timeslice’ i konfigurabilna je) i kada god prođe jedan timeslice suspenduje tekući zadatak i aktivira suspendovan zadatak iste klase zahteva koji najduže čeka u suspendovanom stanju.</li>
+<li>Ovo jako liči na to kako se radi mulit-tasking na računarima sa jednom niti izvršavanja.</li>
+</ul>
+</section>
+<section id="preemption" class="slide level2">
+<h2>Preemption</h2>
+<ul>
+<li>Mehanizam gde zadaci nižeg prioriteta mogu da se zaustave kada se alociraju zadaci višeg prioriteta kojima trebaju resursi koji su već u upotrebi.</li>
+<li>Radi isto kao gang scheduling sa tim da:
+<ul>
+<li>Iniciranje algoritma ne radi proticanje vremena, no alokacija resursa za nov zadatak.</li>
+<li>Promena ko se izvršava nije u round-robin sistemu, no je vođena prioritetom.</li>
+</ul></li>
+</ul>
+</section>
+<section id="generic-resources" class="slide level2">
+<h2>Generic resources</h2>
+<ul>
+<li>Odnosi se na posebne hardverske module koje može da ima nekakav čvor i koji ga, stoga, čine osobenim.</li>
+<li>Šta je to?
+<ul>
+<li>GPU</li>
+<li>MIC</li>
+<li>A, u budućnosti?
+<ul>
+<li>FPGA (nije više budućnost)</li>
+<li>Kripto-modul</li>
+<li>Kvantni računar</li>
+<li>Kvantni simulator kaljenja</li>
+<li>Neuro-akcelerator (nije više budućnost)</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="generic-resources-1" class="slide level2">
+<h2> Generic resources </h2>
+<ul>
+<li>Šta god da je generički resurs, mi možemo da zahtevamo čvor koji ga ima i sistem za raspored izvršavanja će voditi računa o tom zahtevu.</li>
+<li>Menadžment GRES-ovima nije baš savršen: suspendovanje zadataka trenutno ne oslobađa GRES-ove zato što se postavlja pitanje šta GRES može da sačuva a šta ne i šta je “bezbedno početno stanje” za GRES.</li>
+<li>Praktično, za nas, readback iz GPU memorije je… pipava stvar.</li>
+</ul>
+</section>
+<section id="trackable-resources." class="slide level2">
+<h2> Trackable resources. </h2>
+<ul>
+<li>SLURM ima mehanizam koji omogućava da se pažljivo prati i beleži upotreba raznih resursa  (TRES): 
+<ul>
+<li></li>
+<li>Bafera</li>
+<li>Energije</li>
+<li>GRES-ova</li>
+<li>Licenci</li>
+<li>Memorija</li>
+<li>Čvorova</li>
+</ul></li>
+<li>Ovo omogućava dijagnostiku i, tužno je reći, naplatu.</li>
+</ul>
+</section>
+<section id="elastic-computing" class="slide level2">
+<h2> Elastic computing </h2>
+<ul>
+<li>Mehanizam kojim sistem za upravljanje resursima može da analizira trenutne prohteve sistema i menja veličinu sistema na adekvatan način.</li>
+<li>Sistem se može smanjiti tako što se čvorovi za kojima nema potrebe automatski isključe.</li>
+<li>Kako se povećava? Normalno nikako, ali ako je u pitanju cloud-baziran sistem, moguće je raditi automatski provisioninig još resursa po potrebi, ili barem dok Amazonu ne ponestane.</li>
+<li>Naravno to košta stoga ovaj deo mora biti konfigurisan izuzetno pažljivo.</li>
+</ul>
+</section>
+<section id="high-throughput-computing" class="slide level2">
+<h2>High-throughput computing</h2>
+<ul>
+<li>HTC je poseban scenario u okviru HPC problema gde je najprirodniji način da se problem opiše jeste preko jako velikog broja slabo povezanih zadataka.</li>
+<li>Idealan primer jeste renderovanje: svaki frejm je za sebe, a potencijalno želimo jako mnogo frejmova.</li>
+<li>Film od 90 minuta, na kraju krajeva, zahteva da renderujemo 129600 frejmova.</li>
+<li>Stoga SLURM ima posebnu logiku za slabo povezane mnogobrojne poslove koja dozvoljava da se pokrene po 500 takvih poslova u sekundi.</li>
+</ul>
+</section>
+<section id="komanda-srun" class="slide level2">
+<h2>Komanda <code>srun</code></h2>
+<ul>
+<li>Najosnovnija komanda SLURM sistema je <code>srun</code></li>
+<li>Opšta sintaksa komande je: <code>srun [&lt;options&gt;] &lt;executable&gt; [&lt;arguments&gt;]</code></li>
+<li>Značenje je da se sa određenim opcijama pokreće u okviru klastera komanda <code>executable</code> kao zadatak</li>
+<li>Ako se <code>srun</code> pokrene u okviru već pokrenutog zadatka definiše ne nov zadatak već nov korak.</li>
+<li>Kompleksnost ove naizgled jednostavne komande jeste u opcijama koje su često ključne za dobro izvršavanje</li>
+</ul>
+</section>
+<section id="n-opcija" class="slide level2">
+<h2><code>-N</code> opcija</h2>
+<ul>
+<li>Opcija <code>–N</code> određuje broj čvorova koji se traži za komandu</li>
+<li>Mora imati makar jedan broj posle sebe, taj broj je minimalan broj čvorova koji tražimo.</li>
+<li>Može i da ima dva broja u obliku <code>–N&lt;n1&gt;-&lt;n2&gt;</code>
+<ul>
+<li><code>n1</code> je minimalni broj čvorova</li>
+<li><code>n2</code> je maksimalni broj čvorova</li>
+</ul></li>
+</ul>
+</section>
+<section id="n-i-c-opcije" class="slide level2">
+<h2><code>-n</code> i <code>–c</code> opcije</h2>
+<ul>
+<li><code>-n</code> opcija služi da se podesi broj procesa koji će se pokrenuti</li>
+<li>Svaki proces je jedna instanca naše aplikacije</li>
+<li>Da bi ovo imalo smisla nadamo se da naša aplikacija zna kako da se ponaša u takvom okruženju.</li>
+<li>Podrazumevano je da 1 proces dobije 1 čvor</li>
+<li>Ovo menja <code>–c</code> opcija ona određuje koliko će jezgara biti alocirano po svakom procesu. To omogućava da imamo višestruke ali i više-nitne procese, tj. <code>OpenMPI</code> + <code>OpenMP.</code></li>
+<li>Ako bi zvršili <code>srun –n4 –c8 app0</code> onda bi pokrenuli app0 četiri puta i to tako da svako pokretanje zauzme barem osam jezgara. To znači da ako imamo sistem sa po 16 jezgara po čvoru zauzećemo 2 čvora.</li>
+</ul>
+</section>
+<section id="mincpus-opcija" class="slide level2">
+<h2><code>--mincpus</code> opcija</h2>
+<ul>
+<li>Možemo komplikovati stvar tako što koristimo ovu opciju, jednu od mnogih koja postavlja ograničenje na tip čvora koji može da se koristi</li>
+<li>Sintaksa je, na primer, <code>--mincpus=32</code> što, kao opcija, bi reklo da se naš program može izvršiti isključivo na čvorovima koji imaju bar 32 procesora/jezgra/niti (terminologija je malo labava, ali se misli na 32 paralelna izvršavanja).</li>
+<li>Ako bi komandu sa prošlog slajda promenili da bude <code>srun –n4 –c8 –mincpus=32 app0</code> pokrenuli bi 4 procesa app0, svaki bi dobio 8 jezgara i svi bi bili na jednom čvoru sa 32 jezgra pod uslovom da takav postoji.</li>
+</ul>
+</section>
+<section id="labava-terminologija" class="slide level2">
+<h2>Labava terminologija</h2>
+<ul>
+<li>Budući da je ponekad nejasno šta se misli pod CPU ovih dana, SLURM uvodi jasnu terminologiju i komande koje manipulišu tim jasnim terminima u svrhu uvođenja ograničenja</li>
+<li>Po SLURM terminologiji:
+<ul>
+<li>Core je fizičko jezgro kojih je tipično više po čipu</li>
+<li>Socket je fizički čip utaknut u ZIF utičnicu na nekom računaru</li>
+<li>Thread je sistemska nit izvršavanja</li>
+</ul></li>
+<li>Opcije su:
+<ul>
+<li><code>--cores-per-socket=&lt;vrednost0&gt;</code></li>
+<li><code>--sockets-per-node=&lt;vrednost1&gt;</code></li>
+<li><code>--threads-per-core=&lt;vrednost2&gt;</code></li>
+</ul></li>
+<li>Ovo se može napisati i brže ovako:
+<ul>
+<li><code>-B&lt;vrednost1&gt;[:&lt;vrednost0&gt;[:&lt;vrednost2&gt;]]</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="m-opcija" class="slide level2">
+<h2><code>-m</code> opcija</h2>
+<ul>
+<li>Ova opcija podešava kako se procesi raspoređuju između čvorova/procesora itd.</li>
+<li>Ima izuzetnog uticaja na performanse i “tačne” vrednosti jako zavise od toga kako naš kod radi i kako funkcioniše lokalnost.</li>
+<li>Sintaksa je: <code>-m&lt;nodeDist&gt;[:&lt;socketDist&gt;[:&lt;coreDist&gt;]][,{Pack,NoPack}]</code></li>
+</ul>
+</section>
+<section id="a-kako-radi-nodedist" class="slide level2">
+<h2>A kako radi <code>nodeDist?</code></h2>
+<ul>
+<li><code>*</code> — podrazumevana opcija, najčešće block</li>
+<li><code>block</code> — procesi će biti dodeljeni redom čvoru dok ne ponestane resursa, te će onda biti slati dalje.</li>
+<li><code>cyclic</code> — procesi se dele po čvorovima tako što se da jedan prvoj, pa onda drugi drugoj i tako dok ne ponestane mogućih čvorova a onda se počinje od prvog, opet.</li>
+<li><code>plane=&lt;n&gt;</code> — stavi <code>n</code> procesa na jedan čvor i onda ide dalje da stavi n procesa na drugi čvor i tako.</li>
+<li><code>arbitrary</code> — čita ponašanje iz sistemske promenljive</li>
+</ul>
+</section>
+<section id="coredist-i-socketdist" class="slide level2">
+<h2><code>coreDist</code> i <code>socketDist</code></h2>
+<ul>
+<li>Rade isto kao <code>nodeDist</code> samo što:</li>
+<li>Podrazumevani režim je <code>cyclic</code></li>
+<li><code>Cyclic</code> će grupisati zadatke po jezgru/procesoru</li>
+<li><code>Fcyclic</code> je neophodan da bi se zadaci među njima raspoređivali po 100%  round-robin  pristupu</li>
+</ul>
+</section>
+<section id="pack-i-nopack" class="slide level2">
+<h2><code>Pack</code> i <code>NoPack</code></h2>
+<ul>
+<li><code>Pack</code> i <code>NoPack</code> su hintovi sistemu koji određuju kako se sistem ponaša kada ima “izbor”</li>
+<li><code>Pack</code> kaže da se procesi rasporede tako da maksimalno popune čvor</li>
+<li><code>NoPack</code> kaže da se procesi rasporede tako da podela po alociranim resursima bude maksimalno fer, tj. ravnomerna</li>
+</ul>
+</section>
+<section id="w-opcija" class="slide level2">
+<h2><code>-w</code> opcija</h2>
+<ul>
+<li>Dobija kao parametar ili listu čvorova koje hoćemo da alociramo poimence ili putanju do fajla gde se ta lista čvorova nalazi</li>
+<li>Ima više smisla u malim klasterima gde ponekad znamo tačno šta hoćemo</li>
+<li>U sistemima sa 40 000 procesora… ima manje smisla.</li>
+</ul>
+</section>
+<section id="alokacija-memorije" class="slide level2">
+<h2>Alokacija memorije</h2>
+<ul>
+<li>Možemo tražiti memoriju po čvoru sa komandom <code>–mem=&lt;m&gt;</code> gde je <code>&lt;m&gt;</code> broj megabajta koji se alocira za zadatak.</li>
+<li>Možemo i tražiti memoriju tako što specificiramo koliko nam treba memorije po procesoru koristeći <code>–mem-per-cpu = &lt;m&gt;</code> na isti način.</li>
+</ul>
+</section>
+<section id="automatsko-podešavanje" class="slide level2">
+<h2>Automatsko podešavanje</h2>
+<ul>
+<li>Možemo zatražiti pomoć sistema tako što sugerišemo kakav je tip problema sa kojim se suočavamo koristeći opciju <code>--hint=&lt;type&gt;</code> gde je tip jedno od:
+<ul>
+<li><code>compute_bound</code> — algoritmu je usko grlo proračun, tako da se alociraju sva jezgra u svakom čipu sa po jednom niti po jezgru.</li>
+<li><code>memory_bound</code> — algoritmu je usko grlo memorija, tako da se koristi po jedno jezgro u svakom čipu i jedna nit po jezgru</li>
+<li><code>multithread</code> — koristi više niti po jezgru</li>
+<li><code>nomultithread</code> — nemoj koristiti više niti po jezgru</li>
+</ul></li>
+</ul>
+</section>
+<section id="ograničavanje-broja-procesa" class="slide level2">
+<h2>Ograničavanje broja procesa</h2>
+<ul>
+<li>Možemo podesiti da se nad jednim čvorom, čipom, ili jezgrom izvršava ne više od neke vrednosti n procesa kroz sintaksu:
+<ul>
+<li><code>--ntasks-per-core=&lt;n&gt;</code></li>
+<li><code>--ntasks-per-socket=&lt;n&gt;</code></li>
+<li><code>--ntasks-per-node=&lt;n&gt;</code></li>
+</ul></li>
+<li><code>--ntasks-per-node=&lt;n&gt;</code> je naročito važna opcija jer ako se tu stavi 1, to je idealno za aplikacije koje koriste <code>OpenMP</code> kombinovan sa <code>OpenMPI</code> budući da svaki čvor dobije jedan proces koji onda koristi niti za paralelizam unutar čvora.</li>
+</ul>
+</section>
+<section id="ekskluzivnost" class="slide level2">
+<h2>Ekskluzivnost</h2>
+<ul>
+<li>Opcija <code>--exclusive</code> nam omogućava da zahtevamo da ne delimo čvorove sa drugim zadacima</li>
+<li>Ovo može biti bitno ako znamo da će rezultujuće zagušenje ugroziti performanse i našeg posla i tuđeg</li>
+</ul>
+</section>
+<section id="gres-ograničenje" class="slide level2">
+<h2>GRES ograničenje</h2>
+<ul>
+<li><code>--gres</code> opcija ima sintaksu <code>--gres=&lt;resource_list&gt;</code> gde je sintaksa za <code>resource list</code> takva da se sastoji od zarezima odvojene liste resursa, a resurs ima sintaksu koja je: <code>&lt;name&gt;[[:&lt;type&gt;]:count]</code></li>
+<li>Recimo <code>srun -N16 --gres=gpu:kepler:2 app0</code> će startovati <code>app0</code> na 16 čvorova koji moraju imati (i za upotrebu ove aplikacije alocirati) po 2  GPU-a  tipa  Kepler. </li>
+</ul>
+</section>
+<section id="c-opcija" class="slide level2">
+<h2><code>-C</code> opcija</h2>
+<ul>
+<li>Možemo anotirati čvorove sa osobinama.</li>
+<li><code>-C</code> opcija nam kasnije dozvoljava da tražimo čvor sa baš tim, anotiranim osobinama.</li>
+<li>Specifikacija za <code>-C</code> se piše odamh posle u znacima navoda i sastoji se od imena opcija razdvojenih sa <code>&amp;</code> i <code>|</code> kao <code>AND</code> i <code>OR</code> operatorima.</li>
+<li>Takođe ima posebna sintaksa oblika <code>srun -N8 -C '[rack1|rack3|rack5]' app0</code></li>
+<li>Ovo pokreće app0 na osam čvorova koji moraju da budu ili rack1 ili rack3 ili rack5.</li>
+</ul>
+</section>
+<section id="t-opcija" class="slide level2">
+<h2><code>-t</code> opcija</h2>
+<ul>
+<li>Koliko vremena u satima:minutima:sekundama želimo da radi naš softver.</li>
+<li>Kada to vreme istekne dobijamo <code>TERM</code> signal</li>
+<li>Ako ne uradimo nešto sa tim <code>TERM</code> dobijemo uskoro i <code>KILL</code> signal</li>
+</ul>
+</section>
+<section id="signali" class="slide level2">
+<h2>Signali</h2>
+<ul>
+<li><code>TERM? KILL?</code></li>
+<li>Unix ima svoju filozofiju komunikacije između procesa</li>
+<li>Jedan od glavnih jesu signali: softverski prekidi koji označavaju da se u sistemu desio nekakav događaj.</li>
+<li>Ponekad ih generišu drugi procesi, ponekad sam operativni sistem, a ponekad korisnik direktno.</li>
+<li>Signali imaju različito značenje</li>
+<li>Može se dobiti kompletna lista iz operativnog sistema</li>
+</ul>
+</section>
+<section id="signali-1" class="slide level2">
+<h2>Signali</h2>
+<pre><code>[veljko@ftn ~]$ kill -l
+ 1) SIGHUP       2) SIGINT       3) SIGQUIT      4) SIGILL       5) SIGTRAP
+ 6) SIGABRT      7) SIGBUS       8) SIGFPE       9) SIGKILL     10) SIGUSR1
+11) SIGSEGV     12) SIGUSR2     13) SIGPIPE     14) SIGALRM     15) SIGTERM
+16) SIGSTKFLT   17) SIGCHLD     18) SIGCONT     19) SIGSTOP     20) SIGTSTP
+21) SIGTTIN     22) SIGTTOU     23) SIGURG      24) SIGXCPU     25) SIGXFSZ
+26) SIGVTALRM   27) SIGPROF     28) SIGWINCH    29) SIGIO       30) SIGPWR
+31) SIGSYS      34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
+38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
+43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
+48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
+53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
+58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+63) SIGRTMAX-1  64) SIGRTMAX </code></pre>
+</section>
+<section id="reakcija-na-signale" class="slide level2">
+<h2>Reakcija na signale</h2>
+<ul>
+<li>Svaki tip signala ima jednu podrazumevanu akciju iz sledećeg skupa:
+<ul>
+<li><code>Term</code>
+<ul>
+<li>Proces koji dobija signal se terminira.</li>
+</ul></li>
+<li><code>Ign</code>
+<ul>
+<li>Proces koji dobija signal ga ignoriše.</li>
+</ul></li>
+<li><code>Core</code>
+<ul>
+<li>Podrazumevana akcija jeste da se terminira proces i da se u fajl izbaci sva memorija procesa.</li>
+</ul></li>
+<li><code>Stop</code>
+<ul>
+<li>Proces se pauzira.</li>
+</ul></li>
+<li><code>Cont</code>
+<ul>
+<li>Proces se nastavi ako je pauziran.</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="namena-signala" class="slide level2">
+<h2>Namena signala</h2>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 12%" />
+<col style="width: 9%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ime signala</th>
+<th>Broj signala</th>
+<th>Reakcija</th>
+<th>Svrha</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SIGHUP</code></td>
+<td>1</td>
+<td><code>Term</code></td>
+<td>Prekinuta veza na kontrolnom terminalu, odn. smrt kontrolišućeg procesa.</td>
+</tr>
+<tr class="even">
+<td><code>SIGINT</code></td>
+<td>2</td>
+<td><code>Term</code></td>
+<td>Kontrol-C</td>
+</tr>
+<tr class="odd">
+<td><code>SIGQUIT</code></td>
+<td>3</td>
+<td><code>Core</code></td>
+<td>Quit sa tastature</td>
+</tr>
+<tr class="even">
+<td><code>SIGILL</code></td>
+<td>4</td>
+<td><code>Core</code></td>
+<td>Ilegalna instrukcija</td>
+</tr>
+<tr class="odd">
+<td><code>SIGABRT</code></td>
+<td>6</td>
+<td><code>Core</code></td>
+<td>Abort signal</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="namena-signala-1" class="slide level2">
+<h2>Namena signala</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime signala</th>
+<th>Broj signala</th>
+<th>Reakcija</th>
+<th>Svrha</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SIGFPE</code></td>
+<td>8</td>
+<td><code>Core</code></td>
+<td>Floating-point greška</td>
+</tr>
+<tr class="even">
+<td><code>SIGKILL</code></td>
+<td>9</td>
+<td><code>Term</code></td>
+<td>Ubijanje procesa</td>
+</tr>
+<tr class="odd">
+<td><code>SIGSEGV</code></td>
+<td>11</td>
+<td><code>Core</code></td>
+<td>Memorijska greška</td>
+</tr>
+<tr class="even">
+<td><code>SIGPIPE</code></td>
+<td>13</td>
+<td><code>Term</code></td>
+<td>Greška u pisanju u dvosmerni bafer</td>
+</tr>
+<tr class="odd">
+<td><code>SIGALRM</code></td>
+<td>14</td>
+<td><code>Term</code></td>
+<td>Tajmer</td>
+</tr>
+<tr class="even">
+<td><code>SIGTERM</code></td>
+<td>15</td>
+<td><code>Term</code></td>
+<td>Signal za terminaciju</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="namena-signala-2" class="slide level2">
+<h2>Namena signala</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime signala</th>
+<th>Broj signala</th>
+<th>Reakcija</th>
+<th>Svrha</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SIGUSR1</code></td>
+<td>10</td>
+<td><code>Term</code></td>
+<td>Rezervisan za korisnika.</td>
+</tr>
+<tr class="even">
+<td><code>SIGUSR2</code></td>
+<td>12</td>
+<td><code>Term</code></td>
+<td>Rezervisan za korisnika.</td>
+</tr>
+<tr class="odd">
+<td><code>SIGCHLD</code></td>
+<td>17</td>
+<td><code>Ign</code></td>
+<td>Dete-proces je prekinut.</td>
+</tr>
+<tr class="even">
+<td><code>SIGCONT</code></td>
+<td>18</td>
+<td><code>Cont</code></td>
+<td>Nastavi izvršavanje.</td>
+</tr>
+<tr class="odd">
+<td><code>SIGSTOP</code></td>
+<td>19</td>
+<td><code>Stop</code></td>
+<td>Pauziraj izvršavanje.</td>
+</tr>
+<tr class="even">
+<td><code>SIGSTP</code></td>
+<td>20</td>
+<td><code>Stop</code></td>
+<td>Pauziraj izvršavanje (pokrenut sa terminala)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="namena-signala-3" class="slide level2">
+<h2>Namena signala</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime signala</th>
+<th>Broj signala</th>
+<th>Reakcija</th>
+<th>Svrha</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SIGTTIN</code></td>
+<td>21</td>
+<td><code>Stop</code></td>
+<td>Komunikacija sa terminalom za pozadinski proces</td>
+</tr>
+<tr class="even">
+<td><code>SIGTTOU</code></td>
+<td>22</td>
+<td><code>Stop</code></td>
+<td>Komunikacija sa terminalom za pozadinski proces</td>
+</tr>
+<tr class="odd">
+<td><code>SIGBUS</code></td>
+<td>7</td>
+<td><code>Core</code></td>
+<td>Greška magistrale</td>
+</tr>
+<tr class="even">
+<td><code>SIGPOLL</code></td>
+<td>29</td>
+<td><code>Term</code></td>
+<td>Sinonim za <code>SIGIO</code></td>
+</tr>
+<tr class="odd">
+<td><code>SIGPROF</code></td>
+<td>27</td>
+<td><code>Term</code></td>
+<td>Tajmer za profiliranje je istekao</td>
+</tr>
+<tr class="even">
+<td><code>SIGSYS</code></td>
+<td>31</td>
+<td><code>Core</code></td>
+<td>Greška u sistemskom pozivu.</td>
+</tr>
+<tr class="odd">
+<td><code>SIGTRAP</code></td>
+<td>5</td>
+<td><code>Core</code></td>
+<td>Breakpoint dostignut.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="namena-signala-4" class="slide level2">
+<h2>Namena signala</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime signala</th>
+<th>Broj signala</th>
+<th>Reakcija</th>
+<th>Svrha</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SIGURG</code></td>
+<td>23</td>
+<td><code>Ign</code></td>
+<td>Hitna reakcija na socket-u.</td>
+</tr>
+<tr class="even">
+<td><code>ISGVTALRM</code></td>
+<td>26</td>
+<td><code>Term</code></td>
+<td>Virtualni alarm</td>
+</tr>
+<tr class="odd">
+<td><code>SIGXCPU</code></td>
+<td>24</td>
+<td><code>Core</code></td>
+<td>Potrošeno svo CPU vreme.</td>
+</tr>
+<tr class="even">
+<td><code>SIGXFSZ</code></td>
+<td>25</td>
+<td><code>Core</code></td>
+<td>Potrošeno ograničenje veličine fajla.</td>
+</tr>
+<tr class="odd">
+<td><code>SIGIOT</code></td>
+<td>6</td>
+<td><code>Core</code></td>
+<td>Isto što i <code>SIGABRT.</code></td>
+</tr>
+<tr class="even">
+<td><code>SIGSTKFLT</code></td>
+<td>16</td>
+<td><code>Term</code></td>
+<td>Stek greška na koprocesoru. (Nekorišćeno)</td>
+</tr>
+<tr class="odd">
+<td><code>SIGIO</code></td>
+<td>29</td>
+<td><code>Term</code></td>
+<td> I/O  sada moguć.</td>
+</tr>
+<tr class="even">
+<td><code>SIGPWR</code></td>
+<td>30</td>
+<td><code>Term</code></td>
+<td>Greška sa napajanjem.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="slanje-signala" class="slide level2">
+<h2>Slanje signala</h2>
+<p><code>kill -&lt;signal&gt; &lt;pid&gt;</code> tj. <code>kill -SIGUSR1 10366</code></p>
+</section>
+<section id="slanje-signala-1" class="slide level2">
+<h2>Slanje signala</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;signal.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(){</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span><span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">99999999</span><span class="op">;</span>i<span class="op">++){</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    prinf<span class="op">(</span><span class="st">&quot;%d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>i <span class="op">==</span> <span class="dv">4817</span><span class="op">){</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      kill<span class="op">(</span>getpid<span class="op">(),</span> SIGTERM<span class="op">);</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="reagovanje-na-signal" class="slide level2">
+<h2>Reagovanje na signal</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;signal.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> signalCallback<span class="op">(</span><span class="dt">int</span> sig<span class="op">){</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;Primio: %d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> sig<span class="op">);</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(){</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span><span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">99999999</span><span class="op">;</span>i<span class="op">++){</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    prinf<span class="op">(</span><span class="st">&quot;%d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>i <span class="op">==</span> <span class="dv">4817</span><span class="op">){</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      kill<span class="op">(</span>getpid<span class="op">(),</span> SIGTERM<span class="op">);</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>i <span class="op">==</span> <span class="dv">5993</span><span class="op">){</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      kill<span class="op">(</span>getpid<span class="op">(),</span> SIGKILL<span class="op">);</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="zakazivanje" class="slide level2">
+<h2>Zakazivanje</h2>
+<ul>
+<li>Jako je dobra ideja da se ne specificira samo vreme nego i vrednosti za <code>--begin</code> i <code>--deadline</code> opciju koje traže idealno vreme pokretanja i rok do koga se proračun treba završiti.</li>
+<li>Ovo omogućava inteligentnom sistemu za raspored izvršavanja da udene neke procese pre našeg na način koji nas ne usporava.</li>
+<li>Mnoge politike super-računara apsolutno zahtevaju ovakva podešavanja i to sa dobrim razlogom.</li>
+</ul>
+</section>
+<section id="j-opcija" class="slide level2">
+<h2><code>-J</code> opcija</h2>
+<ul>
+<li>Omogućava da se specificira ime zadatka koje je različito od imena aplikacije.</li>
+<li>Čisto od administrativne vrednosti.</li>
+</ul>
+</section>
+<section id="checkpoint-opcije" class="slide level2">
+<h2><code>--checkpoint</code> opcije</h2>
+<ul>
+<li>Opcija <code>--checkpoint=&lt;time&gt;</code> omogućava da se specificira koliko vremena prolazi između čuvanja stanja proračuna na permanentnu memoriju</li>
+<li><code>--checkpoint-dir=&lt;path&gt;</code> određuje putanju gde se stanja proračuna čuvaju</li>
+<li><code>--restart-dir=&lt;path&gt;</code> određuje putanja odakle se stanja proračuna učitavaju, osim ako ne radimo nešto jako lukavo ovo je isto kao vrednost prethodne opcije iz očiglednih razloga</li>
+</ul>
+</section>
+<section id="d-opcija" class="slide level2">
+<h2><code>-D</code> opcija</h2>
+<ul>
+<li>Stara se da će se proces pokrenuti u specificiranom direktorijumu, a ne u direktorijumu gde izvršavamo <code>srun</code> komandu.</li>
+</ul>
+</section>
+<section id="p-opcija" class="slide level2">
+<h2><code>-p</code> opcija</h2>
+<ul>
+<li>Specificira particiju na kojoj radimo</li>
+<li>Imamo opciju da navedemo više particija razdvojenih dvotačkama</li>
+</ul>
+</section>
+<section id="mpi-opcija" class="slide level2">
+<h2><code>--mpi</code> opcija</h2>
+<ul>
+<li>SLURM samo može da radi ovo što radi uz pomoć MPI protokola</li>
+<li>Imaju razne implementacije MPI i ova opcija omogućava da se izabere prava</li>
+<li>Za nas, to je manje-više uvek <code>openmpi</code></li>
+</ul>
+</section>
+<section id="l-opcija" class="slide level2">
+<h2><code>-l</code> opcija</h2>
+<ul>
+<li>Trivijalna sa tačke gledišta upravljanja sistemom ali odlična za nas</li>
+<li><code>-l</code> nam daje oznaku na izlazu interaktivnih procesa koja specificira koji se proces startuje</li>
+</ul>
+</section>
+<section id="k-opcija" class="slide level2">
+<h2><code>-K</code> opcija</h2>
+<ul>
+<li>Ako postavimo <code>-K</code> indikujemo da ako se bilo koji korak u zadatku završi i vrati ne 0 nego nešto drugo da ceo zadatak stane.</li>
+<li>Ovo je gotovo sigurno dobra ideja.</li>
+</ul>
+</section>
+<section id="salloc-komanda" class="slide level2">
+<h2><code>salloc</code> komanda</h2>
+<ul>
+<li>Komanda ima iste parametre kao i <code>srun</code> i radi nešto vrlo slično.</li>
+<li>Alocira specificirane resurse i pokreće komandu koja je navedena.</li>
+<li>Svrha <code>salloc</code> jeste da komanda koju navedemo bude skripta puna <code>srun</code> komandi gde <code>salloc</code> alocira šta treba za sve zajedno, izvrši ih, i onda dealocira resurse.</li>
+<li><code>salloc</code> je interaktivna komanda</li>
+</ul>
+</section>
+<section id="sbatch-komanda" class="slide level2">
+<h2><code>sbatch</code> komanda</h2>
+<ul>
+<li>Služi za automatsko, grupno izvršavanje posebno dizajniranih skripti</li>
+<li><code>Sbatch</code> komanda podržava izvršavanje bez nadzora i automatski preusmerava ispis na izlazu skripte koju pokreće.</li>
+<li>Čim se izvrši, ona vrati kontrolu korisniku, a resursi se alociraju i posao odradi kasnije.</li>
+<li>Prosleđena skripta se, fizički, pokreće na prvom od alociranih čvorova.</li>
+<li>Izlaz će se naći u fajlovima oblika <code>slurm-&lt;n&gt;.out</code> gde je <code>&lt;n&gt;</code> broj posla.</li>
+</ul>
+</section>
+<section id="nizovi-poslova" class="slide level2">
+<h2>Nizovi poslova</h2>
+<ul>
+<li>Jedan vrlo efektan način da se pokrene više stvari istovremeno jeste da se radi sa nizom poslova.</li>
+<li>Ako mi ne želimo da uradimo 30 različitih stvari, recimo, nego istu stvar (sa drugim podacima) 30 puta (što je realistična mogućnost) onda je niz idealan metod.</li>
+<li>Zašto je ovo bolje? Zato što SLURM unapred zna šta to hoćemo da uradimo i mnogo manje napadamo sistem zakazivanja izvršavanja što je slaba tačka SLURM sistema.</li>
+</ul>
+</section>
+<section id="nizovi-poslova-1" class="slide level2">
+<h2>Nizovi poslova</h2>
+<ul>
+<li>Opcija da zahtevamo niz u sbatch komandi je -a praćena specifikacijom niza praćena opcionim ograničenjem konkurentnosti
+<ul>
+<li>Specifikacija niza je ili:</li>
+<li>indeksi razdvojeni zarezima</li>
+<li>Raspon (tj. dva broja razdvojena crticom, npr. 2-7)</li>
+<li>Raspon sa korakom (tj. dva broja razdvojena crticom praćena dvotačkom i korakom koji se koristi u brojanju između te dve vrednosti, npr. 2-10:2 što znači od 2 do 10 u koracima po 2)</li>
+</ul></li>
+<li>Ograničenje konkurentnosti ide posle specifikacije niza i sastoji se od znaka ‘’ posle koga ide broj poslova koji se sme istovremeno izvršavati.</li>
+</ul>
+</section>
+<section id="kontrola-imena-izlaznih-fajlova" class="slide level2">
+<h2>Kontrola imena izlaznih fajlova</h2>
+<ul>
+<li>Jako nam je bitno da izlazni fajlovi imaju dobra imena. Zašto? Zato što će tu biti naši (dragoceni) rezultati. Ako ih izgubimo ili prepišemo jedne preko drugih uzalud smo računali.</li>
+<li><code>-o</code> opcija definiše format imena izlaznog fajla sa određenim specijalizovanim simbolima koji se prilikom procesiranja posebno interpretiraju.</li>
+<li><code>%A</code> će biti zamenjen identifikatorom niza</li>
+<li><code>%a</code> će biti zamenjen indeksom posla unutar niza</li>
+<li><code>%j</code> će biti zamenjen jedinstvenim brojem posla (ako ne koristimo nizove)</li>
+<li><code>%N</code> je ime prvog čvora koji je alociran za posao.</li>
+<li><code>%u</code> je ime korisnika koji je sve ovo pokrenuo</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
