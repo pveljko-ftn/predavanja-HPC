@@ -1046,6 +1046,231 @@
 <li><code>%N</code> je ime prvog čvora koji je alociran za posao.</li>
 <li><code>%u</code> je ime korisnika koji je sve ovo pokrenuo</li>
 </ul>
+</section>
+<section id="pisanje-sbatch-skripti" class="slide level2">
+<h2>Pisanje <code>sbatch</code> skripti</h2>
+<ul>
+<li><code>sbatch</code> ima posban format za skripte</li>
+<li>U osnovi to su shell skripte iz Unix sveta sa par malih modifikacija</li>
+<li>Glavne modifikacije u odnosu na shell skripte su:
+<ul>
+<li>Prisustvo posebnih promenljivih koje nam daje <code>SLURM</code></li>
+<li><code>SBATCH</code> komentari
+<ul>
+<li><code>SBATCH</code> komentari su komentari koji počinju sa <code>#SBATCH</code> is posle kojih ide razmak a onda neki od parametara koji smo radili za <code>srun</code> opciju</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="shell-skripte" class="slide level2">
+<h2>Shell skripte?</h2>
+<ul>
+<li>Shell je kako se zove interpreter koji obrađuje interakciju korisnika sa komandnom linijom.</li>
+<li>Danas je manje-više standard  Bourne Again Shell  odn.  ‘bash.’  (<code>zsh</code> je popularan kod programera, ili <code>fish</code>, ali se ne koristi za ovakve stvari). Windows preferira <code>PowerShell</code></li>
+<li>Shell skripta je način da se izvrši više korisničkih komandi, tipično na ne-interaktivan način.</li>
+<li>Stari Windows ekvivalent su <code>.bat</code> fajlovi.</li>
+</ul>
+</section>
+<section id="format-shell-skripte" class="slide level2">
+<h2>Format shell skripte</h2>
+<ul>
+<li>To je fundamentalno samo tekstualni fajl, ništa više</li>
+<li>Tipična ekstenzija je <code>.sh</code>, mada se skripte za <code>sbatch</code> često pišu sa <code>.sbatch</code> ekstenzijom.</li>
+<li>Ako želimo da se skripta sama izvršava onda mora počinjati sa posebnom linijom:
+<ul>
+<li><code>#!/bin/bash</code></li>
+<li>Linija koja počinje sa <code>#!</code> na početku znači “ako pokreneš ovaj fajl kao izvršni, onda pokreni ovu aplikaciju i daj joj sadržaj ovog fajla”</li>
+<li>Mora biti <em>puna</em> putanja do fajla, što je ponekad problem</li>
+<li>Rešenje: <code>#!/usr/bin/env python</code> Env će naći ono što tražimo u našoj <code>PATH</code> sistemskoj promenljivoj</li>
+</ul></li>
+</ul>
+</section>
+<section id="format-shell-skripte-1" class="slide level2">
+<h2>Format shell skripte</h2>
+<ul>
+<li>Komentari u shell skriptama počinju sa znakom <code>#</code> i traju do kraja linije</li>
+<li>Sve ostale linije su komande koje se izvršavaju</li>
+</ul>
+</section>
+<section id="promenljive-u-shell-skriptama" class="slide level2">
+<h2>Promenljive u shell skriptama</h2>
+<ul>
+<li>Pišu se svim velikim slovima</li>
+<li>Traju samo u fajlu u kojem se izvršavaju, ali mogu da učitaju vrednosti spolja, tj. iz okruženja  shell-a  koji skriptu pokreće.</li>
+<li>Da bi ih podesili dovoljno je da napišemo: <code>MYVAR = "vrednost"</code></li>
+<li>Da bi ih iskoristili stavljamo ispred njihovog imena <code>$</code>, tako da da bi napravili fajl koji se zove po onome što je u <code>MYVAR</code> stavili bi <code>touch $MYVAR</code></li>
+<li>Ako postoji konfuzija oko toga gde se ime promenljive završava koriste se velike zagrade ovako</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">MYVAR</span><span class="op">=</span><span class="st">&quot;vrednost&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="va">I</span><span class="op">=</span><span class="st">&quot;4&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> <span class="va">${MYVAR}</span>_<span class="va">${I}</span></span></code></pre></div>
+</section>
+<section id="linux-sistemske-promenljive" class="slide level2">
+<h2>Linux sistemske promenljive</h2>
+<ul>
+<li>Ako hoćemo da naša promenljiva bude dostupna šire, sve što treba da uradimo jeste da ispred dodele vrednosti promenljive stavimo <code>export</code> ovako:</li>
+<li><code>export A="vrednost"</code></li>
+<li>Ovako se podešava mnogo stvari u Linux sistemima: kada se ulogujete izvrše se skripte (<code>.bashrc</code> i <code>.profile</code>) koje izpodešavaju razne sistemske promenljive na takav način da su dostupne svakom programu koji pokrenete kao pod-proces procesa koji je pozvao <code>export</code> (što je svaki program ako je <code>export</code> pozvao <code>login shell</code>).</li>
+</ul>
+</section>
+<section id="primer-sbatch-skripte" class="slide level2">
+<h2>Primer <code>SBATCH</code> skripte</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -J ime</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -p particija1</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -n 1</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -N 1</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -t 0-02:00 #radimo 2 sata</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem 4000</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -o ime_%A_%a.out</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH -e ime_%A_%a.err</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> dir<span class="va">${SLURM_ARRAY_TASK_ID}</span>_out</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> dir<span class="va">${SLURM_ARRAY_TASK_ID}</span>_out </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="ex">../prg/program</span> ../inputs/input<span class="va">${SLURM_ARRAY_TASK_ID}</span>.dat</span></code></pre></div>
+</section>
+<section id="promenljive" class="slide level2">
+<h2>Promenljive</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Promenljiva</th>
+<th>Značenje</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SLURM_NTASKS</code></td>
+<td>Šta je prosleđeno <code>-N</code> opciji</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_NTASKS_PER_CORE</code></td>
+<td>Šta je prosleđeno <code>--ntasks_per_core</code> opciji</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_NTASKS_PER_NODE</code></td>
+<td>Šta je prosleđeno <code>--ntasks_per_node opciji</code></td>
+</tr>
+<tr class="even">
+<td><code>SLURM_NTASKS_PER_SOCKET</code></td>
+<td>Šta je prosleđeno <code>--ntasks_per_socket</code> opciji</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_CPUS_PER_TASK</code></td>
+<td>Šta je prosleđeno <code>-c</code> opciji</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_DISTRIBUTION</code></td>
+<td>Šta je prosleđeno <code>-m</code> opciji</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_JOB_DEPENDENCY</code></td>
+<td>Šta je prosleđeno <code>-d</code> opciji</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="promenljive-1" class="slide level2">
+<h2>Promenljive</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Promenljiva</th>
+<th>Značenje</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SLURM_NNODES</code></td>
+<td>Broj čvorova alociranih za posao</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_JOB_CPUS_PER_NODE</code></td>
+<td>Koliko imamo CPU-ova na ovom čvoru</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_CPUS_ON_NODE</code></td>
+<td>Koliko ima CPU-ova na ovom čvoru ukupno.</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_SUBMIT_HOST</code></td>
+<td>Ime računara odakle potiče zadatak</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_CLUSTER_NAME</code></td>
+<td>Ime klastera gde se posao izvršava</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_JOB_PARTITION</code></td>
+<td>Ime particjie gde se posao izvršava</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_JOBID</code></td>
+<td>ID trenutnog zadatka</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_LOCALID</code></td>
+<td>PID trenutnog procesa na čvoru</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="promenljive-2" class="slide level2">
+<h2>Promenljive</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Promenljiva</th>
+<th>Značenje</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>SLURM_NODEID</code></td>
+<td>ID tekućeg čvora</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_PROCID</code></td>
+<td>Globalno-validan ID procesa</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_JOB_NODELIST</code></td>
+<td>Lista svih čvorova alociranih zadatku</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_TASKS_PER_NODE</code></td>
+<td>Koliko se stvari izvršava na svakom čvoru</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_ARRAY_TASK_ID</code></td>
+<td>Niz indeksa zadatak u okviru niza, ako ga ima</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_ARRAY_TASK_MIN</code></td>
+<td>Najmanji indeks niza, ako ga ima</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_ARRAY_TASK_MAX</code></td>
+<td>Najveći indeks niza, ako ga ima</td>
+</tr>
+<tr class="even">
+<td><code>SLURM_ARRAY_TASK_STEP</code></td>
+<td>Korak u brojanju indeksa niza</td>
+</tr>
+<tr class="odd">
+<td><code>SLURM_ARRAY_JOB_ID</code></td>
+<td>ID celog niza, ako ga ima</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="jednostavan-primer-upotrebe-slurm-promenljivih" class="slide level2">
+<h2>Jednostavan primer upotrebe SLURM promenljivih</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">OMP_NUM_THREADS</span><span class="op">=</span><span class="va">$SLURM_CPUS_PER_TASK</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./omp_program</span></span></code></pre></div>
 </section></section>
     </div>
   </div>
