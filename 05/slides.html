@@ -845,6 +845,28 @@ F_n = \sum^{\lfloor\frac{n-1}{2}\rfloor}_{k=0}\binom{n-k-1}{k}
 <li>Da li ovo pomaže? Ne skroz. Računanje binomijalnih koeficijenata je bazirano na računanju faktorijela što opet stvara umeren problem. Može se paralelizovati (to je proizvod niza umesto sume), ali zahteva ugnježdavanje paralelizama što može da bude nepotpuno podržano na našoj arhitekturi.</li>
 <li>Možemo da budemo direktniji, možda, naročito ako hoćemo da računamo fibonačijeve brojeve zaredom.</li>
 </ul>
+</section>
+<section id="varanje-2" class="slide level2">
+<h2>Varanje</h2>
+<p><span class="math inline">\(F(n+2) = F(n+1) + F(n)\)</span> i naravno <span class="math inline">\(F(n+3) = F(n+2) + F(n+1) = 2 \cdot F(n+1) + F(n)\)</span> <span class="math inline">\(F(n+4) = F(n+3) + F(n+2) = 3 \cdot F(n+1) + 2 \cdot F(n)\)</span> <span class="math inline">\(F(n+5) = F(n+4) + F(n+3) = 5 \cdot F(n+1) + 3 \cdot F(n)\)</span> <span class="math inline">\(F(n+6) = F(n+3) + F(n+2) = 8 \cdot F(n+1) + 5 \cdot F(n)\)</span></p>
+</section>
+<section id="varanje-3" class="slide level2">
+<h2>Varanje</h2>
+<p>Stoga, uopšteno: <span class="math display">\[
+F(n+k) = F(n+1) \cdot F(k) + F(n) \cdot F(k-1)
+\]</span></p>
+</section>
+<section id="varanje-4" class="slide level2">
+<h2>Varanje</h2>
+<ul>
+<li>Sada je naš zadatak jednostavan: izračunamo m Fibonačijevih brojeva i čuvamo ih u memoriji</li>
+<li>Zatim sve brojevo od <span class="math inline">\(m+1\)</span> do <span class="math inline">\(2m\)</span> računamo u <span class="math inline">\(m\)</span>-tostrukoj paraleli uzimajući <span class="math inline">\(n = m\)</span> a <span class="math inline">\(k = 1..m\)</span>.</li>
+<li>Onda samo pomerimo da je <span class="math inline">\(n = 2m+1\)</span> i ponovimo proces</li>
+<li>Drugim rečima, naš algoritam je serijski korak prekomputacije, a zatim serijsko ponavljanje m-tostruko paralelizovanog računanja bloka vrednosti</li>
+<li>Stepen paralelizacije je, onda, praktično neograničen.</li>
+<li>Pobeda!</li>
+<li>Više o ovakvim egzibicijama za čas-dva</li>
+</ul>
 </section></section>
     </div>
   </div>
