@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>GPU ubrzanje</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">GPU ubrzanje</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Novembar, 2022</p>
+</section>
+
+<section>
+<section id="koncept-akceleratora-i-akceleratorske-arhitektura" class="title-slide slide level1">
+<h1>Koncept akceleratora i akceleratorske arhitektura</h1>
+<p>Finalni gradivni element heterogenih super-računarskih arhitektura</p>
+</section>
+<section id="šta-je-akcelerator" class="slide level2">
+<h2>Šta je akcelerator?</h2>
+<ul>
+<li>Procesor računara je napravljen da, manje-više, bude beskonačno podesiv i prigodan bilo kom poslu.</li>
+<li>Iako su određene primene brže sve je u principu moguće na CPU arhitekturi.</li>
+<li>Ovo se plaća: univerzalnost procesora znači da on nije maksimalno prilagođen nijednom poslu.</li>
+<li>Akcelerator je komponenta koja je deo računara pored procesora, a koja omogućava računaru da radi neke stvari brže kroz hardver optimizovan za specifičan scenario korišćenja.</li>
+</ul>
+</section>
+<section id="tipovi-akceleratora" class="slide level2">
+<h2>Tipovi akceleratora</h2>
+<ul>
+<li>Akcelerator se najbolje razlikuje po svojoj poziciji u sistemu. Akcelerator može biti:
+<ul>
+<li>Na čipu</li>
+<li>Koprocesori</li>
+<li>Na magistrali</li>
+</ul></li>
+<li>Akceleratori na čipu su deo samog procesora i predstavljaju specijalizovanu komponentu u njima.</li>
+<li>Koprocesori su montirani odmah uz procesor, ali u posebnom pakovanju.</li>
+<li>Akceleratori na magistrali su odvojene komponente koje su nekakvom magistralom povezane za nekakav centralni procesor ili procesore.</li>
+</ul>
+</section>
+<section id="tipovi-akceleratora-1" class="slide level2">
+<h2>Tipovi akceleratora</h2>
+<ul>
+<li>Akceleratori koji su na čipu komuniciraju sa procesorom izuzetno brzo iz očiglednih razloga.</li>
+<li>Problem instaliranja akceleratora na čip jeste u tome što:
+<ul>
+<li>To povećava toplotno/električne zahteve prema čipu koji se koristi što nije beskonačan resurs.</li>
+<li>Povećava kompleksnost čipa što se direktno negativno odražava na cenu.</li>
+<li>Nužno deli istu vezu sa memorijom koju normalno koristi procesor što je u skoro svakom sistemu ozbiljno usko grlo.</li>
+</ul></li>
+<li>Akceleratori se i dalje integrišu na čipove, ali samo u posebnim prilikama.</li>
+</ul>
+</section>
+<section id="tipovi-akceleratora-2" class="slide level2">
+<h2>Tipovi akceleratora</h2>
+<ul>
+<li>Akcelerator na magistrali ima određene izuzetno značajne prednosti:
+<ul>
+<li>Problem upravljanja temperaturom i strujom je odvojen od glavnog procesora te ga je lakše rešiti.</li>
+<li>Akcelerator je u svom, jeftinijem, čipu.</li>
+<li>Akcelerator može da ima svoje memorijske resurse.</li>
+</ul></li>
+<li>Glavan mana akceleratora u ovoj formi jeste što stvara novo, ključno, usko grlo, a to je magistrala koja ga povezuje sa procesorom koji, nužno, mora funkcionisati kao kontroler i obavljati poslove učitavanja podataka iz glavne memorije i smeštanja rezultata u glavnu memoriju.</li>
+<li>Ovo ograničenje takođe smanjuje sposobnost upravljanja akceleratorskim resursima budući da su oni izolovani u svom malom svetu.</li>
+<li>Ova ograničenja se rešavaju programski.</li>
+</ul>
+</section>
+<section id="istorija-akceleratorakoprocesorii" class="slide level2">
+<h2>Istorija akceleratora—koprocesorii</h2>
+<ul>
+<li>Koprocesori su, fundamentalno, dodatni čipovi koji proširuju set instrukcija računara kroz hardverski-implementirane brze verzije operacija iz nekog specifičnog domena.</li>
+<li>Koprocesori mogu imati svoju memoriju (obično jako malo) ili deliti glavnu ili i jedno i drugo.</li>
+<li>U ličnim računarima i igračkim konzolama, koprocesori su dugo bili glavni način na koji su se relativno jeftino proizvodili impresivni efekti u performansama.</li>
+<li>Cena ovakve arhitekture na nivou individualne mašine jeste u ne-uniformnosti programiranja i tome što je fleksibilnost mašine dramatično ograničena.</li>
+<li>Ovo je fantastično ilustrovano u istoriji računarskih igara u periodu ranih 90-tih.</li>
+</ul>
+</section>
+<section id="koprocesori" class="slide level2">
+<h2>Koprocesori</h2>
+<ul>
+<li>Koprocesori mogu da imaju izuzetno širok dijapazon primena, recimo:
+<ul>
+<li>I/O kroz pametan DMA transfer</li>
+<li>video/audio kodiranje/dekodiranje i demultipleksiranje</li>
+<li>kriptografija</li>
+<li>DSP</li>
+<li>grafika</li>
+</ul></li>
+</ul>
+</section>
+<section id="sudbina-koprocesora" class="slide level2">
+<h2>Sudbina koprocesora</h2>
+<ul>
+<li>Koprocesori su i dalje sa nama, ali su uglavnom migrirali, specifično:</li>
+<li>Dosta I/O funkcionalnosti je (budući da je lako) završilo u ‘omnibus’ čipovima na matičnim pločama koji više nego adekvatno obavljaju sve ove poslove.</li>
+<li>Određene funkcije su ugrađene direktno u procesor uključujući FPU, MMX, i slično.</li>
+<li>Ostatak funkcionalnosti je završio u posebnim akceleratorskim dodacima, ponajviše u grafičkim karticama.</li>
+</ul>
+</section>
+<section id="istorijski-primer-koprocesoraintel-8087" class="slide level2">
+<h2>Istorijski primer koprocesora—Intel 8087</h2>
+<p><img data-src="img/2022-11-28-15-38-12.png" /></p>
+</section>
+<section id="operacije-sa-pokretnim-zarezom" class="slide level2">
+<h2>Operacije sa pokretnim zarezom</h2>
+<ul>
+<li>Operacije sa pokretnim zarezom nisu lake</li>
+<li>Sabrati dva cela broja je lako na računaru</li>
+<li>Svodi se na XOR uz upotrebu bita prenosa, lako je kolo koje to radi napraviti (uistinu, ne moramo, TTL IC 7483 je baš to)</li>
+<li>Sabiranje dva broja sa pokretnim zarezom?</li>
+</ul>
+</section>
+<section id="sabiranjeoduzimanje-brojeva-sa-pokretnim-zarezom" class="slide level2">
+<h2>Sabiranje/oduzimanje brojeva sa pokretnim zarezom</h2>
+<p><img data-src="img/2022-11-28-15-38-58.png" /></p>
+</section>
+<section id="relativna-kompleksnost-flops-ova" class="slide level2">
+<h2>Relativna kompleksnost FLOPS-ova</h2>
+<ul>
+<li>Kao rezultat ovoga za lične računare, naročito, operacije sa pokretnim zarezom su bile gotovo nemoguće spore.</li>
+<li>To je značilo da čitave kategorije proračuna ne mogu da se efektno rade.</li>
+<li>Ali, budući da su algoritmi za operacije na brojevima pokretnog zareza poznati i definisani IEEE 754 standardom, moguće je implementirati ih u hardveru i ubrzati operacije pokretnim zarezom dramatično: to je Intel i uradio čipom Intel 8087</li>
+</ul>
+</section>
+<section id="intel-8087" class="slide level2">
+<h2>Intel 8087</h2>
+<ul>
+<li>Trik je bio da se u mašinskom kodu ubaci ESCAPE komanda koja bi predavala kontrolu koprocesoru.</li>
+<li>Procesor bi (ne znajući da koprocesor uopšte postoji) izvršio očitavanje memorije koju instrukcija pominje (ako je ima), a onda bi te podatke presretnuo 8087 čip.</li>
+<li>Teoretski govoreći, procesor i koprocesor su mogli da istovremeno izvršavaju instrukcije.</li>
+<li>Teoretski.</li>
+<li>U praksi bi se pobili oko magistrale i srušili mašinu do tačke da je bio potreban hardverski restart. Zbog toga većina kompajlera iz tog perioda ubacuje WAIT komande odmah posle FPU komandi.</li>
+<li>Ovo je divna ilustracija problema on-chip i koprocesorski akceleratora.</li>
+</ul>
+</section>
+<section id="evolucija-intel-8087" class="slide level2">
+<h2>Evolucija Intel 8087</h2>
+<ul>
+<li>8087 je unapređivan onako kako su unapređivani i procesori: 80187, 80287, 80387.</li>
+<li>80387 koji je uparen sa Intel 80386 procesorom (koji je na vrlo realan način direktan predak modernih procesora, AMD i Intel) je prvi Intel FPU koji je u potpunosti kompatibilan sa IEEE 754 standardom (revizija iz 1985).</li>
+<li>80486 serija procesora (i sve od tada do danas) integriše FPU na samom čipu.</li>
+</ul>
+</section>
+<section id="matematički-koprocesori-kao-akceleratori-na-magistralii" class="slide level2">
+<h2>Matematički koprocesori kao akceleratori na magistralii</h2>
+<ul>
+<li>U ranim danima ličnih računara, postojala je ogromna glad za dobrim performansama u proračunima sa pokretnim zarezom.</li>
+<li>Dosta ljudi je htelo računara da računa nešto, a većina proračuna koju ljudi žele uključuje decimalne zareze.</li>
+<li>Ovo je stvorilo značajno tržište za posebne uređaje za ubrzane proračune.</li>
+<li>Primer toga je Weitek familija izuzetno (za to vreme) brzih FP akceleratora (Intel 8087 ostvaruje ~50 kFLOPS-a, Weitek WTL 3167 je mogao da ostvari 5.6 MFLOPS-a samo par godina kasnije).</li>
+<li>Weitek uređaji nisu bili integrisani u procesor, no su bili dodatni uređaji.</li>
+</ul>
+</section>
+<section id="rani-dani-akceleratora-na-magistrali" class="slide level2">
+<h2>Rani dani akceleratora na magistrali</h2>
+<ul>
+<li>Lako je staviti akcelerator na magistralu: kako on radi?</li>
+<li>Rani akceleratori ove vrste su sami implementirali svoj I/O mapiran na memoriju.</li>
+<li>To znači da su se Weitek uređaji pretvarali da su dodatan modul memorije i procesor je sa njima komunicirao tako što je izvršavao potpuno obične komande za premeštanje memorijskog sadržaja.</li>
+<li>PC arhitektura i danas koristi memorijsko mapiranje ove vrste, ali retko tako ‘divlje’ kao što su rani Weitek uređaji koristili.</li>
+<li>Kasniji modeli su i emulirali 8087 seriju (kroz presretač na utičnici za koprocesor) i komunicirali na standardniji način kao što je, na primer, EISA VESA local bus tehnologija.</li>
+</ul>
+</section>
+<section id="moderni-magistralni-akceleratori-pre-gpu-revolucije" class="slide level2">
+<h2>Moderni magistralni akceleratori pre GPU revolucije</h2>
+<ul>
+<li>Pre nego što je GPU tehnologija zavladala kao dominantna u svetu akceleratora, postojale su posebne kartice koje su radile istu stvar specifično za HPC svrhe.</li>
+<li>Recimo, ClearSpeed Advance X620
+<ul>
+<li>Dva procesora</li>
+<li>PCI-X interfejs sa DMA transferom</li>
+<li>50 GFLOPS</li>
+<li>1GB ECC memorije</li>
+<li>43W TDP</li>
+</ul></li>
+</ul>
+</section>
+<section id="clearspeed-advance-x620" class="slide level2">
+<h2>ClearSpeed Advance X620</h2>
+<p><img data-src="img/2022-11-28-15-43-10.png" /></p>
+</section>
+<section id="arhitektura-x620" class="slide level2">
+<h2>Arhitektura X620</h2>
+<ul>
+<li>Svaki X620 je imao dva CSX600 procesora</li>
+<li>Svaki od tih procesora je imao jednu izvršnu jedinicu i određeni broj (zavisi od revizije) procesnih jedinica koje su grupisane u dve sekcije:</li>
+<li>Mono (obrađuje skalarne podatke kao blago glup procesor)</li>
+<li>Poly (Niz od 96 procesnih elemenata koji obrađuje nizove podataka uz tkzv. enable registre kao mehanizam da se određeni elementi koriste ili ne.</li>
+<li>Poly sekcija je operisala u klasičnom SIMD režimu.</li>
+</ul>
+</section>
+<section id="programiranje-sa-x620" class="slide level2">
+<h2>Programiranje sa X620</h2>
+<ul>
+<li>Sam po sebi X620 ne radi ništa.</li>
+<li>Mora se ručno aktivirati.</li>
+<li>Da bi se to olakšalo ClearSpeed je napisao ekstenziju programskog jezika C (Cn) koja je dodala ‘poly’ oznaku za memoriju koja je garantovala da će ta vrednost biti pristuna (i sinhronizovana) između memorije procesora i memorije kartice.</li>
+<li>ClearSpeed je još morao i da distribuira posebne biblioteke koje su implementirale čestu naučnu funkcionalnost, tj. BLAS, FFT, itd. na način koji je mogao da koristi ClearSpeed proizvode.</li>
+</ul>
+</section>
+<section id="mane-akceleratora-ove-vrste" class="slide level2">
+<h2>Mane akceleratora ove vrste</h2>
+<ul>
+<li>Strahovito skupi</li>
+<li>Možete programirati samo u jeziku prozivođača!</li>
+<li>Ograničeni ste na biblioteke proizvođača ili one koje sami napište da koriste hardver kako treba.</li>
+<li>Konstantna briga oko lokacije podataka u memoriji</li>
+<li>ClearSpeed hardver je danas načisto zaboravljen</li>
+<li>Zašto? GPU revolucija.</li>
+</ul>
+</section>
+<section id="gpu-revolucija" class="slide level2">
+<h2>GPU Revolucija</h2>
+<ul>
+<li>Super-računari su bitni i skupi i sve je to jako lepo ali i najskuplji super-računar na svetu, strahovito impresivni IBM Summit je koštao $325 000 000.</li>
+<li>To je dosta novca, ali drugi način da se to kaže jeste ‘onoliko novca koliko je zaradio Call of Duty Black Ops 4 za oko dva dana.’</li>
+<li>Igračka industrija je ogromna i kao rezultat:</li>
+<li>Može da baci enormne sume novca na istraživanje</li>
+<li>Ekonomski efekti skaliranja znače da će cena čuda tehnologije koje proizvede to istraživanje biti dramatično manja.</li>
+<li>Budući da jako puno ljudi koristi i hoće da koristi taj hardver softverska podrška će biti mnogo univerzalnija.</li>
+</ul>
+</section>
+<section id="šta-je-gpu-napravljen-da-radi" class="slide level2">
+<h2>Šta je GPU napravljen da radi?</h2>
+<ul>
+<li>Prvi GPU-ovi (tada poznati pod imenom ‘video kartice’) su bili jako drugačije sprave nego danas i nisu imale nikakvu HPC primenu.</li>
+<li>Glavne funkcije GPU-ova te vrste su bile da digitalni signal (sadržaj framebuffer-a) pretvori u signal koji se može prikazati na ekranu, u to doba gotovo uvek analogni signal.</li>
+<li>Dodatne funkcije GPU-ova ove vrste u ne PC arhitekturama su bile funkcije 2D ubrazanja: brz blt transfer, hardverski sprajtovi, hardverska paralaksa…</li>
+<li>Jako jako korisno ako pravite video igru, ali nije interesantno za nas</li>
+<li>GPU revolucija ima svoj koren u operacijama neophodnim za 3D grafiku.</li>
+</ul>
+</section>
+<section id="šta-3d-grafika-hoće" class="slide level2">
+<h2>Šta 3D grafika hoće?</h2>
+<ul>
+<li>Način na koji se tradicionalna 3D grafika radi jeste da se:
+<ul>
+<li>Napravi 3D reprezentacija onoga što treba da se vidi kao serija temena, i ivica među njih definišući nekakvu geometriju.</li>
+<li>Ta 3D reprezentacija se anotira sa podacima koji opisuju detalje toga kako ta geometrija reaguje na svetlost:
+<ul>
+<li>Normale</li>
+<li>Materijali</li>
+<li>Mapiranje teksture</li>
+</ul></li>
+<li>Zatim se sistemu dodaju podaci o izvorima svetlosti, pozicije kamere i sličnim globalnim detaljima.</li>
+<li>Onda počne proračun koji počne od ovoga a završi sa nizom vrednosti piksela, spremnim za (2D) prikaz.</li>
+</ul></li>
+</ul>
+</section>
+<section id="proračun-3d-grafike" class="slide level2">
+<h2>Proračun 3D grafike</h2>
+<ul>
+<li>Svako teme se procesuira tako da je transformisano kako je to odgovarajuće. Ovo se svodi na množenje matrica i vektora.</li>
+<li>Temena se grupišu u primitive u skladu sa specifikacijom.</li>
+<li>Geometrija scene se rasterizuje koristeći raycast metod, rezultat ovoga su fragmenti. Fragmenti su preteče piksela.</li>
+<li>Fragmenti scene se osvetljavaju i teksturiraju.</li>
+<li>Fragmenti se uzorkuju u piksele.</li>
+<li>2D pikseli se prikazuju.</li>
+</ul>
+</section>
+<section id="osobine-proračuna-3d-grafike" class="slide level2">
+<h2>Osobine proračuna 3D grafike</h2>
+<ul>
+<li>3D grafika stalno vrši kompleksne operacije pokretnog zareza nad velikim nizovima podataka.</li>
+<li>Drugim rečima, grafička kartica je odličan SPMD akcelerator.</li>
+<li>Ali, kako je opisana ovakva grafička kartica je beskorisna za nas.</li>
+</ul>
+</section>
+<section id="istorija-ranih-3d-akceleratorskih-kartica" class="slide level2">
+<h2>Istorija ranih 3D akceleratorskih kartica</h2>
+<ul>
+<li>Sve počinje od legendarnih SGI radnih stanica: IRIX i OpenGL i najranije forme 3D ubrzanja baziranog na Quad primitivu.</li>
+<li>Poseban hardver za arkadne mašine.</li>
+<li>Na PC to stiže kroz posebnu seriju Voodoo kartica kompanije 3Dfx. Ovo su isključivo akceleratori 3D proračuna i zahtevaju posebnu 2D karticu.</li>
+<li>Kasnije Voodoo Banshee, S3 ViRGE, ATI Rage i NVidia TNT kartice integrišu 2D i 3D funkcionalnost.</li>
+<li>Ove kartice su, u početku obavljale samo određene deliće 3D operacija, tipično korekciju perspektive, mapiranje, i filtriranje. Karakterističan ‘mutan’ izgled ove ere 3D ubrzanja proizvodi niska rezolucija tekstura i linearan režim filtriranja</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
