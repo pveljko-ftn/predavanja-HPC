@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>OpenMPI</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">OpenMPI</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Novembar, 2022</p>
+</section>
+
+<section>
+<section id="openmpi" class="title-slide slide level1">
+<h1>OpenMPI</h1>
+<p>Model prosleđivanja poruka</p>
+</section>
+<section id="ako-imamo-openmp" class="slide level2">
+<h2>Ako imamo  OpenMP… </h2>
+<ul>
+<li>…čemu ovo?</li>
+<li>OpenMPI je optimizovan za situacije gde je model deljene memorije jednostavno nije primenjljiv.</li>
+<li>MPI je skraćenica od Message Passing Interface i predstavlja metod kojim se rešava programiranje masivno paralelnih arhitektura.</li>
+<li>U jednom trenutku udarimo u limit na broj procesora koji možemo nagurati u jedno kućište: ako ništa drugo, svi ti procesori se bore oko iste memorije, a transfer stope memorije su prilično oštro ograničene.</li>
+<li>Postoje situacije gde ta ograničenja ne važe (i to će biti vrlo detaljno istraženo kada budemo pričali o OpenACC-u)ali u opštem slučaju podeljena memorija i vrlo pažljiva komunikacija su naša jedina opcija.</li>
+</ul>
+</section>
+<section id="istorija-i-poreklo" class="slide level2">
+<h2>Istorija i poreklo</h2>
+<ul>
+<li>MPI nije biblioteka nego specifikacija.</li>
+<li>Kolekcija standarda koja specificira način programiranja i protokol mrežne komunikacije.</li>
+<li>Entoni Hoar je principe  ‘message passing’  modela postavio 70-tih godina prošlog veka, a 1992 je tim predstavnika akademije i industrije je postavio MPI specifikaciju vođen stručnjacima kao što je Viljem D. Grop.</li>
+<li>MPI ima verzije  (MPI-1, MPI-2, MPI-3  itd.) koje mogu biti implementirane različitim skupovima alata i biblioteka.</li>
+<li>MPICH je referentna implementacija.</li>
+<li>OpenMPI je opšta implementacija.</li>
+<li>Mnogo specijalizovanih implementacija postoji.</li>
+</ul>
+</section>
+<section id="struktura" class="slide level2">
+<h2>Struktura</h2>
+<ul>
+<li>Kao i OpenMP, OpenMPI nije jezik.</li>
+<li>Odavno je primećeno da posebni jezici retko doživljavaju široku prihvaćenost.</li>
+<li>OpenMPI je:
+<ul>
+<li>Protokol (OSI nivo 5)</li>
+<li>Biblioteka koja proširuje postojeće jezike sa konstruktima za paralelizam</li>
+<li>Alati</li>
+</ul></li>
+</ul>
+</section>
+<section id="osnovna-implementacija" class="slide level2">
+<h2>Osnovna implementacija</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;mpi.h&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span><span class="op">**</span> argv<span class="op">){</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  MPI_Init<span class="op">(&amp;</span>argc<span class="op">,</span> <span class="op">&amp;</span>argv<span class="op">);</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  printf<span class="op">(</span><span class="st">&quot;Hello, World</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  MPI_Finalize<span class="op">();</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="osnovna-implementacija-1" class="slide level2">
+<h2>Osnovna implementacija</h2>
+<pre><code>$ mpicc hello.c -o hello
+$ mpirun -np 4 ./hello
+Hello, World
+Hello, World
+Hello, World
+Hello, World</code></pre>
+</section>
+<section id="osnovna-implementacija-2" class="slide level2">
+<h2>Osnovna implementacija</h2>
+<p><img data-src="img/2022-11-28-14-00-21.png" /></p>
+</section>
+<section id="komunikacija" class="slide level2">
+<h2>Komunikacija</h2>
+<ul>
+<li>Kao i većina ovakvih programa, ovo ne radi ništa korisno.</li>
+<li>Da bi OpenMPI bio koristan, programi koji se paralelno izvršavaju moraju da komuniciraju.</li>
+<li>Ovo i nije baš 100% tačno. Moguće je držati programe potpuno nezavisno u tkzv. ‘share nothing’ modelu koji rešava prilično širok dijapazon problema poznat kao ‘throughtput.’</li>
+<li>Rendering je dobar primer.</li>
+<li>Ali za ovo bi koristili SLURM i ništa drugo. OpenMPI je čist višak.</li>
+<li>Ne mogu komunicirati na način na koji to radi OpenMP, preko deljene memorije, zato što iako u našem primeru malopre sve četiri instance su na istom računaru (i istoj ps tabeli) OpenMPI je namenjen da radi na potencijalno udaljenim računarima.</li>
+</ul>
+</section>
+<section id="komunikator" class="slide level2">
+<h2>Komunikator</h2>
+<ul>
+<li>Komunikator u OpenMPI-u je kolekcija procesa tj. nezavisnih pokrenutih instanci našeg programa i može se porediti sa radio frekvencijom ili kanalom na <code>IRC/Discord</code> serveru.</li>
+<li>Proces može učestvovati u proizvoljnom broju komunikatora: oni su tu da bi se komunikacija lakše organizovala.</li>
+<li>Minimalan broj komunikatora je jedan: svaki MPI program apsolutno mora imati barem jedan komunikator koji ne moramo da stvaramo: <code>MPI_COMM_WORLD.</code></li>
+<li><code>MPI_COMM_WORLD</code> je globalni kanal komunikacije: svi procesi su deo njega.</li>
+</ul>
+</section>
+<section id="api-komunikatora" class="slide level2">
+<h2>API Komunikatora</h2>
+<ul>
+<li>MPI_Comm je tip identifikatora komunikatora</li>
+<li>Postoje komande koje služe za manipulaciju komunikatorom koje sve primaju kao parametar identifikator komunikatora</li>
+</ul>
+</section>
+<section id="veličina-komunikatora" class="slide level2">
+<h2>Veličina komunikatora</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>MPI_Init<span class="op">(&amp;</span>argc<span class="op">,</span> <span class="op">&amp;</span>argv<span class="op">);</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> size<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>MPI_Comm_Size<span class="op">(</span>MPI_COMM_WORLD<span class="op">,</span> <span class="op">&amp;</span>size<span class="op">);</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">&quot;%d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> size<span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>MPI_Finalize<span class="op">();</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span></code></pre></div>
+</section>
+<section id="red-procesa" class="slide level2">
+<h2>Red procesa</h2>
+<ul>
+<li>Red (rank) procesa je njegov identifikator unutar komunikatora.</li>
+<li>U pitanju je ceo broj nasumično dodeljen u okviru komunikatora u opsegu 0..size-1</li>
+<li>Dobavlja se uz pomoć <code>MPI_Comm_Rank</code> funkcije koja prima identifikator komunikatora i pokazivač na int gde valja smestiti vrednost.</li>
+</ul>
+</section>
+<section id="nedeterminizam-izvršavanja" class="slide level2">
+<h2>Nedeterminizam izvršavanja</h2>
+<p><img data-src="img/2022-11-28-14-44-59.png" /></p>
+</section>
+<section id="slanje-poruka-na-neku-adresu" class="slide level2">
+<h2>Slanje poruka na neku adresu</h2>
+<ul>
+<li><code>MPI_Send(void *message, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)</code></li>
+<li><code>message</code>—pokazivač na poruku generičkog tipa</li>
+<li><code>count</code>—koliko elemenata ima u poruci</li>
+<li><code>datatype</code>—Kog je tipa poruka</li>
+<li><code>dest</code>—red procesa kome se šalje</li>
+<li><code>tag</code>—celobrojna vrednost rezervisana za proizvoljnu upotrebu</li>
+<li><code>comm</code>—komunikator koji se koristi</li>
+</ul>
+</section>
+<section id="primanje-poruka" class="slide level2">
+<h2>Primanje poruka</h2>
+<ul>
+<li><code>MPI_Recv(void *message, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status *status)</code></li>
+<li><code>message</code>—pokazivač na poruku generičkog tipa gde smeštamo vrednost koju dobijemo</li>
+<li><code>count</code>—koliko elemenata ima u poruci</li>
+<li><code>datatype</code>—Kog je tipa poruka</li>
+<li><code>source</code>—red procesa od koga se prima</li>
+<li><code>tag</code>—celobrojna vrednost rezervisana za proizvoljnu upotrebu</li>
+<li><code>comm</code>—komunikator koji se koristi</li>
+<li><code>status</code>—podaci o poruci uključujući ko je stvarno šalje i šta je poslat tag</li>
+</ul>
+</section>
+<section id="korisnički-tipovi-podataka" class="slide level2">
+<h2>Korisnički tipovi podataka</h2>
+<ul>
+<li>Moguće je dodati i naš tip podataka baziran na struct-u</li>
+<li>Nažalost sintaksa je malo kompleksna</li>
+<li>Tip se prvo definiše a zatim upiše</li>
+</ul>
+</section>
+<section id="definisanje-tipa" class="slide level2">
+<h2>Definisanje tipa</h2>
+<pre><code>MPI_Type_create_struct(
+    int number_items,
+    const int *blocklength, 
+    const MPI_Aint *array_of_offsets,
+    const MPI_Datatype *array_of_types,
+    MPI_Datatype *new_datatype)</code></pre>
+</section>
+<section id="upisivanje-tipa" class="slide level2">
+<h2>Upisivanje tipa</h2>
+<pre><code>MPI_Type_commit(MPI_Datatype *new_datatype)</code></pre>
+</section>
+<section id="primer" class="slide level2">
+<h2>Primer</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;mpi.h&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span><span class="op">**</span> argv<span class="op">){</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> rank<span class="op">,</span> size<span class="op">;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  MPI_Init<span class="op">(&amp;</span>argc<span class="op">,</span> <span class="op">&amp;</span>argv<span class="op">);</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  MPI_Comm_Rank<span class="op">(</span>MPI_COMM_WORLD<span class="op">,</span> <span class="op">&amp;</span>rank<span class="op">);</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  MPI_Comm_Size<span class="op">(</span>MPI_COMM_WORLD<span class="op">,</span> <span class="op">&amp;</span>size<span class="op">);</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> message<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> dest<span class="op">,</span>src<span class="op">,</span>tag <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  MPI_Status status<span class="op">;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span><span class="op">(</span>rank <span class="op">!=</span> <span class="dv">0</span><span class="op">){</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    message<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> rank<span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    message<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> size<span class="op">;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    dest <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    MPI_Sent<span class="op">(</span>message<span class="op">,</span> <span class="dv">2</span><span class="op">,</span> MPI_INT<span class="op">,</span> dest<span class="op">,</span> tag<span class="op">,</span> MPI_COMM_WORLD<span class="op">);</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span><span class="cf">else</span><span class="op">{</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span><span class="op">(</span>src <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> src <span class="op">&lt;</span> size<span class="op">;</span> src<span class="op">++){</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      MPI_Recv<span class="op">(</span>message<span class="op">,</span> <span class="dv">2</span><span class="op">,</span> MPI_INT<span class="op">,</span> src<span class="op">,</span> MPI_ANY_TAG<span class="op">,</span> MPI_COMM_WORLD<span class="op">,</span> <span class="op">&amp;</span>status<span class="op">);</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      printf<span class="op">(</span><span class="st">&quot;Poruka proces %d od %d</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> message<span class="op">[</span><span class="dv">0</span><span class="op">],</span> message<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  MPI_Finalize<span class="op">();</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="primer-1" class="slide level2">
+<h2>Primer</h2>
+<p><img data-src="img/2022-11-28-14-55-30.png" /></p>
+</section>
+<section id="primer-2" class="slide level2">
+<h2>Primer</h2>
+<ul>
+<li>Ovo je klasična implementacija radnik-menadžer obrasca u MPI.</li>
+<li>Nema ničeg posebnog oko procesa sa redom 0, ali ga je lako naći.</li>
+<li>Primetite da je izlaz ovog procesa sada deterministički.</li>
+</ul>
+</section>
+<section id="barijerna-sinhronizacija" class="slide level2">
+<h2>Barijerna sinhronizacija</h2>
+<ul>
+<li>Neke komande nisu namenjene posebnom procesu: neke služe za adresiranje više procesa</li>
+<li>To su kolektivne komande (<code>collectives</code>)</li>
+<li>Primer toga je <code>MPI_Barrier(MPI_Comm communicator)</code></li>
+<li>Ovo je zaustavljanje izvršavanja dok svi procesi u komunikatoru nisu stigli na isto mesto.</li>
+<li>Ovo je 1:1 ekvivalentno sa <code>#pragma omp barrier</code></li>
+</ul>
+</section>
+<section id="kolektivna-komunikacija" class="slide level2">
+<h2>Kolektivna komunikacija</h2>
+<ul>
+<li>Kolektivna komunikacija opisuje situaciju gde imamo više procesa koji komuniciraju sa više procesa.</li>
+<li>Može se isprogramirati štagod da je to što želim, ali ovaj tip komunikacije pada uglavnom u četiri obrasca:
+<ul>
+<li>emitovanje  (broadcast) </li>
+<li>rasipanje  (scatter) </li>
+<li>skupljanje  (gather) </li>
+<li>sinhronizovano skupljanje  (allgather) </li>
+</ul></li>
+</ul>
+</section>
+<section id="broadcast" class="slide level2">
+<h2>Broadcast</h2>
+<ul>
+<li>Broadcast služi da podatak sa jednog procesa premesti na sve ostale ciljane procese.</li>
+<li>Može da koristi da osveži nekakvu tabelu međurezultata, ali je najkorisnije prilikom početka rada procesa.</li>
+<li>Divan primer broadcast-a se može videti ako razmišljamo o onoj fibonači implementaciji i njenom prvom koraku</li>
+</ul>
+</section>
+<section id="broadcast-1" class="slide level2">
+<h2>Broadcast</h2>
+<p><code>int MPI_Bcast(void* shared_data, int number, MPI_Datatype datatype, int source_process, MPI_Comm communicator)</code> Svi procesi pozivaju istu funkciju. Razlika je u tome što onaj proces čiji je red jednak <code>source_process</code> parametru čita iz <code>shared_data,</code> a ostali samo smeštaju ono što dobiju tu.</p>
+</section>
+<section id="scatter" class="slide level2">
+<h2>Scatter</h2>
+<ul>
+<li>Scatter, kao i broadcast, jeste slučaj slanja sa jednog na više procesa</li>
+<li>Razlika je u tome što proces koji šalje takođe podeli ono što šalje u onoliko (tipično ne-preklapajućih) podskupa koliko ima procesa kojima se šalje.</li>
+<li>Ako se razmisli, u onom fibonači primeru posle broadcast-a treba scatter koji podeli skup rednih brojeva fibonačijevog broja koji se računa između procesa</li>
+</ul>
+</section>
+<section id="scatter-1" class="slide level2">
+<h2>Scatter</h2>
+<p><code>MPI_Scatter(void *send_data, int send_number, MPI_Datatype datatype, void *put_data, int put_number, int source_rank, MPI_Comm communicator)</code> <code>send_data/number</code> je bafer za slanje (prazan i nebitan za sve osim za proces koji ima <code>source_rank</code> red) <code>put_data/number</code> je bafer za primanje koji svi koriste.</p>
+</section>
+<section id="gather" class="slide level2">
+<h2>Gather</h2>
+<ul>
+<li>Gather je obrnut proces od scatter (očigledno).</li>
+<li>Više procesa šalje jednom procesu delove nekog većeg skupa podataka koji se zatim spaja.</li>
+<li>Posle broadcast i scatter faze, naš fibonači algoritam bi imao gather da iz procesa izvadi podatke o sledećih m brojeva i skupi ih u niti koja upravlja podacima.</li>
+</ul>
+</section>
+<section id="gather-1" class="slide level2">
+<h2>Gather</h2>
+<p><code>MPI_Gather(void *send_data, int send_number, MPI_Datatype datatype, void *put_data, int put_number, int destination_rank, MPI_Comm communicator)</code> <code>send_data/number</code> je bafer za slanje (koji svi koriste) <code>put_data/number</code> je bafer za primanje (koji je prazan i nebitan za sve osim procesa sa redom koji je ravan <code>destination_rank</code>)</p>
+</section>
+<section id="allgather" class="slide level2">
+<h2>Allgather</h2>
+<ul>
+<li>Allgather je isto što i gather samo što ga odmah prati broadcast onoga što se gather-uje.</li>
+<li>Fibonači program bi, u stvari, imao <code>allgather</code> operaciju umesto gather operacije za sve blokove osim poslednjeg.</li>
+</ul>
+</section>
+<section id="allgather-1" class="slide level2">
+<h2>Allgather</h2>
+<p><code>MPI_Allgather(void *send_data, int send_number, MPI_Datatype datatype, void *put_data, int put_number, MPI_Comm communicator)</code> <code>send_data/number</code> je bafer za slanje (koji svi koriste) <code>put_data/number</code> je bafer za primanje (koji svi koriste)</p>
+<p>Naravno, mogli bi i da radimo <code>gather</code> praćen sa <code>broadcast</code> -om, ali nema razloga.</p>
+</section>
+<section id="redukcije" class="slide level2">
+<h2>Redukcije</h2>
+<ul>
+<li>Redukcije su olakšica koja omogućava kompleksnu komunikaciju neophodnu da se paralelizuje, npr. sumiranje niza i slične operacije.</li>
+<li>Apsolutno je ista namena kao ekvivalentne <code>OpenMP</code> konstrukcije.</li>
+<li>Veoma je slična sintaksi <code>gather</code> komande:</li>
+<li><code>int MPI_reduce(const void *send_data, void *put_data, int send_number, MPI_Datatype, MPI_OP operation, int destination_rank, MPI_Comm comm)</code></li>
+<li>Jedina razlika jeste operacija koja služi za kombinovanje koja može biti korisnički definisana ili jedna od osnovnih operacija</li>
+</ul>
+</section>
+<section id="redukcioni-operatori" class="slide level2">
+<h2>Redukcioni operatori</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Operacija</th>
+<th>Operator</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Maksimum</td>
+<td>MPI_MAX</td>
+</tr>
+<tr class="even">
+<td>Minimum</td>
+<td>MPI_MIN</td>
+</tr>
+<tr class="odd">
+<td>Suma</td>
+<td>MPI_SUM</td>
+</tr>
+<tr class="even">
+<td>Proizvod</td>
+<td>MPI_PROD</td>
+</tr>
+<tr class="odd">
+<td>Logičko I</td>
+<td>MPI_LAND</td>
+</tr>
+<tr class="even">
+<td>Bit I</td>
+<td>MPI_BAND</td>
+</tr>
+<tr class="odd">
+<td>Logičko ILI</td>
+<td>MPI_LOR</td>
+</tr>
+<tr class="even">
+<td>Bit ILI</td>
+<td>MPI_BOR</td>
+</tr>
+<tr class="odd">
+<td>Logičko XOR</td>
+<td>MPI_LXOR</td>
+</tr>
+<tr class="even">
+<td>Bit XOR</td>
+<td>MPI_BXOR</td>
+</tr>
+<tr class="odd">
+<td>Maksimalna vrednost i lokacija</td>
+<td>MPI_MAXLOC</td>
+</tr>
+<tr class="even">
+<td>Minimalna vrednost i lokacija</td>
+<td>MPI_MINLOC</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sinhronizovana-redukcija" class="slide level2">
+<h2>Sinhronizovana redukcija</h2>
+<ul>
+<li>Kao što je <code>Reduce</code> bazirano na <code>Gather,</code> <code>Allgather</code> proizvodi <code>Allreduce</code></li>
+<li><code>int MPI_Allreduce(const void *send_data, void *put_data, int send_number, MPI_Datatype datatype, MPI_OP operation, MPI_Comm comm)</code></li>
+</ul>
+</section>
+<section id="svisvi-komunikaciona-šema" class="slide level2">
+<h2>Svi/svi komunikaciona šema</h2>
+<ul>
+<li>To je šema komunikacije koja:
+<ul>
+<li>Aranžira sve procese tako da formiraju matricu gde su
+<ul>
+<li>Redovi procesi</li>
+<li>Kolone particije podataka kao što bi ih scatter komanda napravila</li>
+</ul></li>
+<li>Formira transfer podataka iz izlaznog u ulazni bafer tako da efektno transponira podatke</li>
+</ul></li>
+</ul>
+</section>
+<section id="obrazac-svisvi-komunikacione-šeme" class="slide level2">
+<h2>Obrazac svi/svi komunikacione šeme</h2>
+<p><img data-src="img/2022-11-28-15-07-18.png" /></p>
+</section>
+<section id="svisvi-komunikaciona-šema-1" class="slide level2">
+<h2>Svi/svi komunikaciona šema</h2>
+<pre><code>int MPI_Alltoall(void *send_data, int send_number, MPI_Datatype send_datatype, void *put_data, int put_number, MPI_Datatype put_datatype, MPI_Comm communicator)</code></pre>
+</section>
+<section id="neblokirajuća-usmerena-komunikacija" class="slide level2">
+<h2>Neblokirajuća usmerena komunikacija</h2>
+<ul>
+<li>Do sada, svo slanje podataka je blokirajuće</li>
+<li>Ako nema <code>Recv</code> za svako <code>Send</code> program stane.</li>
+<li>Takođe, imamo nužno sinhrono ponašanje, to može da uspori program: ako ne moramo da sinhronizujemo, ne treba.</li>
+<li>Radi isto kao ranije, ali vraća <code>MPI_Request</code> objekat</li>
+<li><code>int MPI_Isend(void *message, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *send_request)</code></li>
+<li><code>int MPI_Irecv(void *message, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *receive_request)</code></li>
+</ul>
+</section>
+<section id="mpi_request" class="slide level2">
+<h2><code>MPI_Request</code></h2>
+<ul>
+<li>Ovo je promenljiva koja pokazuje na potencijalno neispunjenu operaciju slanja/primanja</li>
+<li>Kada je imamo, možemo je koristiti da sačekamo da se operacija završi, sinhronizujući naš poziv kada zaželimo:</li>
+<li><code>int MPI_Wait(MPI_Request *req, MPI_Status *status)</code></li>
+<li>Ovo će vratiti status kada se operacija bude završila.</li>
+<li>Moguće je i asinhrono proveriti da li se operacija završila kroz:</li>
+<li><code>int MPI_Test(MPI_Request *req, int *flag, MPI_Status *status)</code></li>
+<li>Ovo se odmah završi i postavi flag na true ako je operacija gotova i status na vrednost statusa ako je flag true.</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
