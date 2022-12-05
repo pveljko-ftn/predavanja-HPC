@@ -296,6 +296,876 @@
 <li>Kasnije Voodoo Banshee, S3 ViRGE, ATI Rage i NVidia TNT kartice integrišu 2D i 3D funkcionalnost.</li>
 <li>Ove kartice su, u početku obavljale samo određene deliće 3D operacija, tipično korekciju perspektive, mapiranje, i filtriranje. Karakterističan ‘mutan’ izgled ove ere 3D ubrzanja proizvodi niska rezolucija tekstura i linearan režim filtriranja</li>
 </ul>
+</section>
+<section id="shader" class="slide level2">
+<h2>Shader?</h2>
+<ul>
+<li>Danas ta reč znači nešto drugo (više o tome kasnije) ali u eri o kojoj govorimo šejder (shader) je bila operacija koja je punila delove ekrana nekakvim proračunatim vrednostima boja, tj. senčila je deo ekrana.</li>
+<li>Rani shader-i su bili fiksni ali su mogli da se parametrizuju</li>
+<li>Kasnije, određena količina programiranja je bila, jedva, moguća.</li>
+<li>To je bilo vrlo skučeno programiranje, doduše, često bez kontrole toka i ograničenim brojem funkcija i bez sposobnosti da se upravlja resursima kartice.</li>
+<li>Razvoj programabilnog shader-a</li>
+<li>Vođeni željom programera video igara da mogu da implementiraju različite grafičke algoritme sa većom fleksibilnošću, moć shader-a je napredovala, uvodeći sve veću kontrolu.</li>
+<li>To je eventualno dovelo do pada fiksnog toka izvršavanja (fixed function pipeline) gde su opšti stadijumi renderovanja bili hardverski uslovljeni i njegove zamene sa dinamičnim tokom izvršavanja.</li>
+<li>Ovo je vrlo brzo posle toga prošireno sa unificiranim shader-ima gde se oni sada tretiraju mnogo više kao programi koji se izvršavaju nego parametrizacije fiksnih koraka.</li>
+<li>Ovaj razvoj dostiže svoj vrhunac kroz moderne Vulkan/DirectX 12 implementacije</li>
+</ul>
+</section>
+<section id="hpc-primena" class="slide level2">
+<h2>HPC primena</h2>
+<ul>
+<li>U ovom stadijumu, primena GPU-ova za HPC je mnogo lakša.</li>
+<li>GPU možemo da opskrbimo teksturom i modelima koji su u stvari naši podaci i onda ‘render’ je u stvari naš proračun.</li>
+<li>Srećom, ni ovo nije potrajalo, i moderni GPU-ovi imaju poseban režim izvršavanja namenjen proračunima.</li>
+<li>Arhitektura modernog GPU-a</li>
+<li>Brojke se odnose na Paskal seriju Nvidia kartica, ali same informacije bi trebale da važe u trenutku pisanja.</li>
+<li>Većina procesa je u samom čipu kartice</li>
+<li>Centralni čip (GPU) se sastoji od:</li>
+<li>Grafičkih klastera (GPC-ova) (Paskal: 6 komada)</li>
+<li>L2 keša (Paskal: 4MB)</li>
+<li>Kontrolera za memoriju (Paskal: 8 512-bitnih)</li>
+<li>PCI Express kontrolera</li>
+<li>GigaThread podsistem</li>
+</ul>
+</section>
+<section id="gpc" class="slide level2">
+<h2>GPC</h2>
+<ul>
+<li>Svaki GPC je potpun mini-GPU i radi sve što i GPU.</li>
+<li>GPC se deli u klastere teksturiranja koji se sastoje od glavne gradivne jedinice GPU-a: multiprocesore toka (streaming multiprocessors, SM)</li>
+<li>Svaki SM je procesorski element koji se sastoji od CUDA (Compute Unified Device Architecture) jezgara (Paskal: 64 jednostruke preciznosti i 32 dvostruke preciznosti) podeljenih u dva bloka od kojih svaki ima instrukcioni bafer, raspored niti, i 128KB registarske memorije. SM takođe ima 16 jedinica za rad sa memorijom i 16 jedinica za posebne funkcije aproksimacije.</li>
+</ul>
+</section>
+<section id="memorija" class="slide level2">
+<h2>Memorija</h2>
+<ul>
+<li>Ovde postoji oštra razlika između potrošačkih modela i modela napravljenih baš za HPC</li>
+<li>Potrošački modeli i dalje koriste istu DDR memoriju kao i glavna mašina, samo na visokoj brzini i povezanu kroz izuzetno široku magistralu.</li>
+<li>Uprkos tome, pristup memoriji je značajno usko grlo.</li>
+<li>HPC modeli koriste mnogo efikasniju HBM2 memoriju</li>
+<li>HBM2 koristi tehniku gde se GPU i kontroler memorije nalaze u istom fizičkom paketu na deljenom supstratu (silikonskom sistemu presretanja) koji omogućava vrlo brzu komunikaciju</li>
+<li>Sama memorija je u pločama na samom kontroleru, i povezana je ultramalim ultrabrzim vezama kroz silicijum samog kontrolera i drugih pločica memorije.</li>
+</ul>
+</section>
+<section id="hbm2" class="slide level2">
+<h2>HBM2</h2>
+<p><img data-src="img/2022-12-05-12-12-17.png" /></p>
+</section>
+<section id="pristup-memoriji" class="slide level2">
+<h2>Pristup memoriji</h2>
+<ul>
+<li>Moderni GPU-ovi podržavaju izuzetno kompleksan sistem pristupa memoriji koji koristi memorijske stranice da se postara da GPU kod može uniformno da pristupa svoj memoriji u računaru.</li>
+<li>Ovo je veliko olakšanje, ali naravno, pristup glavnoj memoriji ima ogromnu cenu.</li>
+<li>Tipično, problem se rešava tako što se memorija kopira u memorijski prostor kartice, no ovo stvara potencijalne probleme sa sinhronizacijom.</li>
+<li>Ovo je predmet intenzivnog istraživanja. ## Povezivanje</li>
+<li>Standardno povezivanje je preko PCI Express linka.</li>
+<li>PCI Express je brz (ali uvek može brže) plus problem nastaje:</li>
+<li>Šta kada hoću 4 kartice u jedan računar?</li>
+<li>Svaka kartica hoće 16 PCI Express linija za transport</li>
+<li>To je lepo, novi i9-9900K ima ukupno 16 PCI Express linija.</li>
+<li>Neki Xeon procesori imaju više, i Threadripper ima 32, ali, kao što se vidi, ukačiti dve kartice je teško</li>
+<li>Rešenje? NVLink</li>
+<li>NVLink je izuzetno visoko-performantni mehanizam za komunikaciju na male razdaljine.</li>
+</ul>
+</section>
+<section id="povezivanje" class="slide level2">
+<h2>Povezivanje</h2>
+<ul>
+<li>NVLink može da povezuje kartice (i tako bi tipično i stavili dve kartice u prosečan računar), a i karticu i procesor ako to procesor podržava (IBM pravi procesore koji ovo mogu i oni su instrumentalni u funkcionisanju Summit mašine).</li>
+<li>Različite topologije su moguće.</li>
+<li>PCIExpress ima specifične svoje prednosti ako se koristi uz NVlink kroz RDMA funkcionalnost.</li>
+<li>RDMA omogućava da sa GPU-om komunicira memorija ili, još bolje, mrežna kartica apsolutno bez rada procesora. Ovo dramatično olakšava dizajn masivno paralelnih hibridnih heterogenih arhitektura visokih performansi.</li>
+</ul>
+</section>
+<section id="kako-sve-ovo-programirati" class="slide level2">
+<h2>Kako sve ovo programirati?</h2>
+<ul>
+<li>NVidia ima CUDA API
+<ul>
+<li>Maksimum performansi</li>
+<li>0% portabilnosti</li>
+<li>Prilično ružna sintaksa koja zahteva poseban NVidia kompajler</li>
+<li>Odlični alati</li>
+</ul></li>
+<li>OpenCL
+<ul>
+<li>Poseban jezik</li>
+<li>Maksimalno univerzalan</li>
+</ul></li>
+<li>OpenACC
+<ul>
+<li>Proširenje C-a preko pragmi u OpenMP maniru</li>
+<li>Umereno univerzalan.</li>
+<li>I OpenACC i OpenCL žrtvuju nešto performansi za svoju brzinu.</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="openacc" class="title-slide slide level1">
+<h1>OpenACC</h1>
+<p>Uniformna tehnologija pristupa akceleratorskom hardveru</p>
+</section>
+<section id="koja-je-veza-između-cuda-i-ovoga" class="slide level2">
+<h2>Koja je veza između CUDA i ovoga?</h2>
+<ul>
+<li>CUDA je specifična Nvidia tehnologija.</li>
+<li>OpenACC je otvorena specifikacija koja je namenjena da glatko podrži širok dijapazon akceleratorskih uređaja.</li>
+<li>Šta karakteriše baš akceleratorski uređaj?
+<ul>
+<li>Posebna namena</li>
+<li>Posebna hijerarhija memorije</li>
+<li>Nečim ograničen transfer.</li>
+</ul></li>
+<li>OpenACC nam omogućava da pišemo optimizovan kod koji ovo uzima u obzir i sređuje transfer mesto nas.</li>
+<li>To znači da je promenljiva za nas jedan jedini objekat koji može biti u memoriji sistema i u memoriji akceleratorskog uređaja.</li>
+</ul>
+</section>
+<section id="opšta-struktura" class="slide level2">
+<h2>Opšta struktura</h2>
+<ul>
+<li>OpenACC deli dosta osobina u svom dizajnu sa OpenMP i OpenMPI tehnologijama.</li>
+<li>Sa oba deli to što pokušava da bude, u što je većoj meri moguće, standardni programski jezik (to jest, C)</li>
+<li>Sa OpenMP deli oslanjanje na pragme.<br />
+</li>
+<li>Kao i OpenMP, podrška mora da bude ubačena direktnu u kompajler.</li>
+<li>GCC 8 podržava OpenACC 2.5, GCC 7 OpenACC 2.0a</li>
+<li>GCC 12 podržava OpenACC 2.6</li>
+<li>Najnovija je 3.3</li>
+</ul>
+</section>
+<section id="nešto-termina" class="slide level2">
+<h2>Nešto termina</h2>
+<ul>
+<li>Domaćin (eng. host)</li>
+<li>Domaćin je računar na kome se izvršava kod i koji ima neki broj akceleratora</li>
+<li>Prebacivanje (eng. offloading)</li>
+<li>Prebacivanje je mehanizam kojim se posebno specificirani delovi koda prebacuju na akcelerator.</li>
+</ul>
+</section>
+<section id="paralelizmi-u-openacc-modelu" class="slide level2">
+<h2>Paralelizmi u OpenACC modelu</h2>
+<ul>
+<li>OpenACC prepoznaje tri nivoa paralelizma kod akceleratora:
+<ul>
+<li>Grub (coarse grain)</li>
+<li>Fin (fine grain), i</li>
+<li>Individualan</li>
+</ul></li>
+<li>Grub paralelizam deli poslove na više resursa za proračun.</li>
+<li>Fin paralelizam tipičnu distribuira poslove na individualne procesne elemente.</li>
+<li>Individualan paralelizam je u okviru jednog PE, i izlaže paralelizam SIMD/vektor tipa direktno.</li>
+<li>Ovi nivoi u ACC-u se predstavljaju gang, worker, i vector paralelizmima.</li>
+</ul>
+</section>
+<section id="gang-worker-vector" class="slide level2">
+<h2>Gang, Worker, Vector</h2>
+<ul>
+<li>Gang (tim) je najviši nivo paralelizma za OpenACC model.</li>
+<li>Svaki uređaj akcelerator izvršava neki broj gang-ova koji imaju jedan ili više radnika (worker-a) koji izvršavaju ili individualne ili vektorske instrukcije.</li>
+<li>Vektorski paralelizam mora biti vrlo uniforman: ista stvar za više podataka u klasičnom SIMD maniru.</li>
+<li>Worker paralelizam je malo opušteniji ali deli iste resurse budući da svaki gang je, hardverski, definisan kao nešto što deli iste procesne resurse.</li>
+<li>U NVidia svetu to znači da je Gang gotovo uvek vezan za jedan SM.</li>
+<li>Gang paralelizmi su nezavisni. ## Gang, Worker, Vector <img data-src="img/2022-12-05-12-22-16.png" /></li>
+</ul>
+</section>
+<section id="režimi-izvršavanja" class="slide level2">
+<h2>Režimi izvršavanja</h2>
+<ul>
+<li>Izvršavanje OpenACC koda uvek počinje u Gang-Redundant režimu (GR). To je režim u kome svaki gang ima jednog radnika koji izvršava isti kod. Drugim rečima, nema paralelizma.</li>
+<li>Kada se u OpenACC kodu stigne to paralelnog segmenta prelazi se u Gang-Partitioned režim (GP) u kome su iteracije jedne petlje (ili, čak, više petlji) distribuirane između gang-ova, ali svaki gang i dalje ima samo jednog radnika koji radi na individualnim elementima u, tkzv. Worker-Single i Vector-Single režimima.</li>
+<li>Na GP nivou u WS/VS režimu mi smo veoma kao OpenMP i niti.</li>
+<li>Ako se to zatraži, moguće je aktivirati Worker-Partitioned režim gde se posao deli između radnika, te je u okviru radnika moguće zatražiti Vector-Partitioned režim</li>
+</ul>
+</section>
+<section id="režimi-izvršavanja-1" class="slide level2">
+<h2>Režimi izvršavanja</h2>
+<ul>
+<li>Može se o ovome misliti kao o OpenMP-u u kome je ugnježdavanje paralelizma ne samo moguće nego neophodno i to na tri nivoa.</li>
+<li>OpenMP niti su sve stvorene jednake, te nema performantnog razloga da preferiramo 3x2x2 niti u odnosu na 12 niti.</li>
+<li>U OpenACC postoji hijerarhijska podela na hardverskom nivou, te ukupne niti se najbolje dele na gang/worker/vector po tome koliko su podaci nad kojima radi nit vezani jedni za druge.</li>
+<li>Spuštati stvari na akcelerator nema puno smisla osim ako podaci nisu barem malo povezani i stoga prigodni. Spuštati stvari na vektorski nivo nema smisla osim ako (predvidivo) u pitanju nisu vektori.</li>
+</ul>
+</section>
+<section id="openacc-hello-world" class="slide level2">
+<h2>OpenACC Hello World</h2>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;openacc.h&gt;
+
+int main(){
+  printf(&quot;ACC VERZIJA: %d\n&quot;, _OPENACC);
+  int count = acc_get_num_devices(acc_device_nvidia);
+  printf(&quot;NVIDIA GPU-ova: %d\n&quot;, count);
+  int n = acc_get_device_num(acc_device_nvidia);
+  printf(&quot;Podrazumevani GPU: %d\n&quot;, n);
+  n = acc_get_device_num(acc_device_host);
+  printf(&quot;Podrazumevani CPU: %d\n&quot;, n);
+  return 0;
+}</code></pre>
+</section>
+<section id="kompajliranje-openacc-koda" class="slide level2">
+<h2>Kompajliranje OpenACC koda</h2>
+<p><code>[user@host ~]$ gcc hello.c -fopenacc -o hello</code></p>
+</section>
+<section id="openacc-sistemske-promenljive" class="slide level2">
+<h2>OpenACC sistemske promenljive</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Promenljiva</th>
+<th>Namena</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ACC_DEVICE_TYPE</td>
+<td>Tip uređaja koji se koristi za pokretanje koda. Može NVIDIA, RADEON, i HOST</td>
+</tr>
+<tr class="even">
+<td>ACC_DEVICE_NUM</td>
+<td>ID fizičkog akceleratorskog uređaja koji se koristi</td>
+</tr>
+<tr class="odd">
+<td>ACC_PROFLIB</td>
+<td>Biblioteka za profiliranje</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="openacc-direktive" class="slide level2">
+<h2>OpenACC direktive</h2>
+<ul>
+<li>Rade neverovatno slično kao u OpenMP-u.</li>
+<li>Sve počinju sa #pragma acc</li>
+<li>Zatim ide direktiva te onda klauzule koje parametrizuju direktivu.</li>
+</ul>
+</section>
+<section id="konstrukt-paralelizma" class="slide level2">
+<h2>Konstrukt paralelizma</h2>
+<ul>
+<li><code>#pragma acc parallel</code></li>
+<li>Ovo se odnosi na blok koda i znači da se on izvršava u paraleli</li>
+<li>Podrazumevano je da se izvršava u GR (ne-baš-paralelnom) modu osim ako ne dodamo klauzule koje to spreče.</li>
+<li>Svaki paralelni blok se završava sa implicitnom sinhronizacijom.</li>
+<li>Paralelni blokovi <strong>ne smeju da imaju grananje.</strong></li>
+</ul>
+</section>
+<section id="klauzule-acc-parallel-direktive" class="slide level2">
+<h2>Klauzule #acc parallel direktive</h2>
+<ul>
+<li><code>async[(integer)]</code>
+<ul>
+<li>Uklanja implicitnu barijeru na kraju i omogućava da procesor-domaćin radi stvari konkurentno sa kodom na GPU-u. Može da u zagradi ima brojku. Ta brojka je identifikator reda izvršavanja (activity queue) koji obrađuje stavke ovog bloka. Ta brojka se kasnije može koristiti kao parametar ‘wait’ klauzule da bi se omogućila sinhronizacija.</li>
+</ul></li>
+<li><code>wait [(integer-list)]</code>
+<ul>
+<li>Blokira izvršavanje dok se navedeni redovi izvršavanja (kao brojevi u listi parametara) nisu kompletirali. Ako se ne navedu brojevi, čeka se da se sav asinhroni posao ne završi.</li>
+</ul></li>
+</ul>
+</section>
+<section id="klauzule-acc-parallel-direktive-1" class="slide level2">
+<h2>Klauzule #acc parallel direktive</h2>
+<ul>
+<li><code>num_gangs(integer)</code>
+<ul>
+<li>Traži (ali ne dobija garantovano) koliko gang-ova će se koristiti za podelu posla.</li>
+</ul></li>
+<li><code>num_workers(integer)</code>
+<ul>
+<li>Kao gore, ali za radnike. Odnosi se samo na WP mod, naravno.</li>
+</ul></li>
+<li><code>vector_length(integer)</code>
+<ul>
+<li>Kao gore, ali traži određeni broj vektorskih procesnih linija, u VP režimu. Na NVidia uređajima valja birati umnožak 32.</li>
+</ul></li>
+</ul>
+</section>
+<section id="kernels-konstrukt" class="slide level2">
+<h2>Kernels konstrukt</h2>
+<ul>
+<li><code>#pragma acc kernels</code></li>
+<li>Odnosi se na blok, kao i parallel</li>
+<li>Ponašanje određuju klauzule</li>
+<li>Radi kao parallel (i prima iste klauzule) sa jednom ogromnom razlikom.</li>
+<li>Tamo gde je parallel zahtevao ručno podešavanje, kernels konstrukt analizira kod i sam distribuira posao.</li>
+<li>Drugim rečima ovo je magična ‘make my code fast’ direktiva koja zna da prepozna kada imamo, npr. tri ugnježdena for loop-a, da to podeli na gang/worker/vector nivou.</li>
+</ul>
+</section>
+<section id="upravljanje-podacima" class="slide level2">
+<h2>Upravljanje podacima</h2>
+<ul>
+<li>Najvažnije usko grlo u programiranju akceleratora jeste u tome što je memorija akceleratora odvojena od memorije računara domaćina</li>
+<li>Sva komunikacija između ove dve memorije prolazi kroz magistralu koja je već preopterećena, skoro po definiciji.</li>
+<li>Ovo nije garantovano ponašanje: AMD ima uređaje za ubraznje proračuna koji dele memoriju sa glavnim procesorom, te je overhead minimalan.</li>
+<li>Ali GPU-ovi su napravljeni tako kako jesu zbog potreba igara, i stoga, kada jednom učitate teksture i šejdere u radnu memoriju kartice, proračuni idu gotovo bez komunikacije sa ostatkom sveta.</li>
+</ul>
+</section>
+<section id="upravljanje-podacima-1" class="slide level2">
+<h2>Upravljanje podacima</h2>
+<ul>
+<li>Automatizam je, u teoriji, moguć.</li>
+<li>U praksi? C/C++ je toliko kompleksan da je vrlo teško da statičkom analizom dođemo do zaključka koji deo memorije se kako koristi.</li>
+<li>Podrazumevano, OpenACC greši na stranu tačnog izvršavanja na račun brzine i kopira sve:
+<ul>
+<li>Sve strukture podataka se kopiraju sa domaćina na karticu</li>
+<li>Radi se proračun</li>
+<li>Kopiraju se svi podaci nazad.</li>
+</ul></li>
+<li>Automatsko kopiranje ove vrste samo radi bezbolno i implicitno ako se radi sa statički dimenzionisanim nizovima. Dinamički alocirana memorija se kopira rukom.</li>
+</ul>
+</section>
+<section id="ručno-upravljanje-memorijom" class="slide level2">
+<h2>Ručno upravljanje memorijom</h2>
+<ul>
+<li>Moguće je upravljati memorijom direktno kroz klauzule za upravljanje memorijom koje idu posle većine direktiva (parallel i kernel, recimo).</li>
+<li>Metod rada sa memorijom se bazira na brojanju referenci: svaka struktura memorije ili postoji u memoriji kartice ili ne. Ako postoji, broji se broj blokova u programu koji traži pristup toj strukturi kroz broj referenci.</li>
+<li>Čim se završi blok koji je koristio neku strukturu, broj referenci se smanji za jedan i ako stigne na 0, podaci se kopiraju nazad u glavnu memoriju.</li>
+</ul>
+</section>
+<section id="ručno-upravljanje-memorijomklauzule" class="slide level2">
+<h2>Ručno upravljanje memorijom—klauzule</h2>
+<ul>
+<li>copy(variable-list)
+<ul>
+<li>Copy klauzula specificira koji podaci trebaju datom paralelnom regionu. Promenljive koje nisu kopirane se kopiraju, a promenljive koje jesu se anotiraju sa povećanim brojem reference.</li>
+</ul></li>
+<li>copyin(variable-list)
+<ul>
+<li>Kao copy, ali se podaci kada broj referenci stigne do 0 ne kopiraju nazad, no se samo dealociraju.</li>
+</ul></li>
+<li>copyout(variable-list)
+<ul>
+<li>Kao copy, ali se ništa ne prenosi u memoriju. Broj referenci se povećava, i ako je 0 memorija se alocira ali se ništa ne prenosi na samu karticu. Kada broj referenci dostigne 0, podaci se kopiraju nazad.</li>
+</ul></li>
+</ul>
+</section>
+<section id="ručno-upravljanje-memorijomklauzule-1" class="slide level2">
+<h2>Ručno upravljanje memorijom—klauzule</h2>
+<ul>
+<li>create(variable-list)</li>
+<li>Kao copy, ali niti prenosi podatke na karticu, niti ih vraća nazad.</li>
+<li>Esencijalno alocira pomoćnu memoriju na kartici.</li>
+</ul>
+</section>
+<section id="specifikacija-promenljivih" class="slide level2">
+<h2>Specifikacija promenljivih</h2>
+<ul>
+<li>variable-list se sastoji od promenljivih razdvojenih zarezima</li>
+<li>Promenljiva se sastoji od obaveznog identifikatora i opcionog dimenzionisanja</li>
+<li>Identifikator je ime promenljive</li>
+<li>Dimenzionisanje se sastoji od specifikacije delova strukture (multidimenizionalnog niza) koji se kopiraju i navodi se za svaku dimenziju kao specifikacija raspona</li>
+<li>Raspon se piše u uglastim zagradama i sastoji se od početnog indeksa i dužine razdvojene dvotačkom.</li>
+<li>Početna vrednost se može preskočiti (te je onda 0)</li>
+<li>Krajnja vrednost se može preskočiti na statički dimenzionisanim nizovima (te je onda ravna dužini niza).</li>
+</ul>
+</section>
+<section id="specifikacija-promenljivihprimeri" class="slide level2">
+<h2>Specifikacija promenljivih—primeri</h2>
+<ul>
+<li><code>a[5:t]</code>
+<ul>
+<li>Niz a počevši od 6-tog elementa sa ukupno t elemenata, tj. <code>a[5], a[6], …, a[5+t-1]</code></li>
+</ul></li>
+<li><code>mat[:N][16:32]</code>
+<ul>
+<li>Region matrice mat koji obuhvata prvih N redova i sekcije kolona od po 32 elementa koje počinju sa 17-im elementom svakog reda.</li>
+</ul></li>
+</ul>
+</section>
+<section id="definisanje-n-dimenzionalnih-nizova-u-cc-na-openacc-kompatibilan-način" class="slide level2">
+<h2>Definisanje n-dimenzionalnih nizova u C/C++ na OpenACC-kompatibilan način</h2>
+<ol type="1">
+<li>Statički dimenzionisani nizovi</li>
+</ol>
+<ul>
+<li>Ograničenje: ako radimo sa ovim, naše specifikacije onoga što se prenosi mora da definiše kontinualni region memorije.</li>
+</ul>
+<ol start="2" type="1">
+<li>Pokazivači na statički dimenzionisane nizove</li>
+<li>Statički alocirani nizovi pokazivača</li>
+<li>Pokazivači na nizove pokazivača</li>
+<li>Mešane alokacije</li>
+</ol>
+</section>
+<section id="openacc-i-petlje-loop-pragma" class="slide level2">
+<h2>OpenACC i petlje: loop pragma</h2>
+<ul>
+<li><code>#pragma acc loop</code></li>
+<li>Ide uvek ispred for petlje</li>
+<li>Mora biti ili kombinovana sa ili unutar parallel/kernel direktive</li>
+<li>Kernel direktiva ih pravi sama, ali možemo da mi ubacimo naše da kažemo sistemu tačno šta hoćemo.</li>
+<li>Kao i obično, klauzule određuju ponašanje ove pragme</li>
+</ul>
+</section>
+<section id="klauzule-loop-pragme" class="slide level2">
+<h2>Klauzule loop pragme</h2>
+<ul>
+<li><code>collapse(integer)</code>
+<ul>
+<li>Na koliko ugnježdenih for petlji se odnosi ova direktiva. Podrazumevano je 1.</li>
+</ul></li>
+<li><code>gang[(static:integer|*)]</code>
+<ul>
+<li>Aktivira paralelno izvršavanje po gang-ovima</li>
+<li>Statički parametar nam omogućava da podesimo chunking kao i u OpenMP-u</li>
+<li><ul>
+<li>znači da chunking ostavljamo implementaciji</li>
+</ul></li>
+</ul></li>
+<li><code>worker</code>
+<ul>
+<li>Aktivira paralelizam po worker-ima, tj. WP-mod</li>
+</ul></li>
+</ul>
+</section>
+<section id="klauzule-loop-pragme-1" class="slide level2">
+<h2>Klauzule loop pragme</h2>
+<ul>
+<li><code>vector</code>
+<ul>
+<li>Aktivira VP mod</li>
+</ul></li>
+<li><code>auto</code>
+<ul>
+<li>Dobijemo šta inače radi kernel podrazumevano: statičku analizu koda i automatsku paralelizaciju.</li>
+</ul></li>
+<li><code>independent</code>
+<ul>
+<li>Garantujemo kompajleru da je svaka iteracija naše petlje potpuno nezavisna od svake druge, te da se kod može paralelizovati mnogo više.</li>
+</ul></li>
+</ul>
+</section>
+<section id="klauzule-loop-pragme-2" class="slide level2">
+<h2>Klauzule loop pragme</h2>
+<ul>
+<li><code>reduction(operator:variable[,variable…])</code>
+<ul>
+<li>Kao i u svim okruženjima do sada, radimo sa redukcijom.</li>
+<li>Operator može biti +, *, max, min, /, |, &amp;&amp;, i ||.</li>
+<li>Promenljive koje se navode kao učesnici ne smeju a budu elementi niza ili strukture. To jest, samo obični skalari.</li>
+</ul></li>
+</ul>
+</section>
+<section id="openacc-i-doseg-promenljivih" class="slide level2">
+<h2>OpenACC i doseg promenljivih</h2>
+<ul>
+<li>OpenACC jako vodi računa o dosegu: jako je bitno gde se promenljive deklarišu</li>
+<li>Na primer, sve promenljive u petlji su privatne za niti koja izvršava datu iteraciju petlje.</li>
+<li>Promenljive u bloku koji je markiran za VP su privatne za vektorsku liniju izvršavanja.</li>
+<li>Promenljive u bloku koji je markiran za WP su privatne za svakog radnika, ali deljene kroz vektorske linije izvršavanja.</li>
+<li>Možemo da iznudimo ovo ponašanje kroz ’private’ klauzulu.</li>
+</ul>
+</section>
+<section id="eksplicitna-sinhronizacija-u-openacc" class="slide level2">
+<h2>Eksplicitna sinhronizacija u OpenACC</h2>
+<ul>
+<li>Valja je izbeći.</li>
+<li>Ali ponekad mora.</li>
+<li>E, pa, kada mora onda je proces ovakav:</li>
+<li><code>#pragma acc atomic</code></li>
+<li>Definiše statement koji je atomski, to jest, ne može se prekinuti.</li>
+<li>Tip atomskog izvršavanja se definiše klauzulom</li>
+</ul>
+</section>
+<section id="atomske-klauzule" class="slide level2">
+<h2>Atomske klauzule</h2>
+<ul>
+<li><code>read</code>
+<ul>
+<li>Garantovan atomski pristup promenljivama sa desne strane operatora dodele.</li>
+</ul></li>
+<li><code>write</code>
+<ul>
+<li>Garantovan atomski pristup promenljivama sa leve strane operatora dodele.</li>
+</ul></li>
+<li><code>update</code>
+<ul>
+<li>Garantovano i čitanje i pisanje, ali samo u fiksnim formama koje koriste read-modify-write sekvencu kao što je prefix i postfix inkrement i dekrement kao i svi operatori forme op=</li>
+</ul></li>
+<li><code>capture</code>
+<ul>
+<li>Poseban slučaj kada hoćemo da zaštitimo update-tip operacije sa desne strane znaka jednako, a sa leve vrednost koja hvata vrednost modifikovane promenljive ili pre ili posle modifikacije tj. <code>a = i++;</code></li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="cuda" class="title-slide slide level1">
+<h1>CUDA</h1>
+<p>Brz pregled</p>
+</section>
+<section id="šta-je-u-stvari-cuda" class="slide level2">
+<h2>Šta je u stvari CUDA?</h2>
+<ul>
+<li>CUDA je model programiranja i platforma za paralelno računastvo na akceleratorskim arhitekturama.</li>
+<li>U praksi taj model programiranja je integrisan u skup alata koje proizvodi Nvidia što uključuje osnovnu biblioteku, plus reimplementaciju nekakvih standardnih biblioteka za HPC u CUDA obliku.</li>
+<li>cuBLAS</li>
+<li>cuSPARSE</li>
+<li>cuFFT</li>
+<li>Tu su takođe i originalne biblioteke posebne namene kao što je, npr. cuDNN i TensorRT koji su tako ključni za rad u veštačkoj inteligenciji.</li>
+</ul>
+</section>
+<section id="gde-radi-cuda" class="slide level2">
+<h2>Gde radi CUDA?</h2>
+<ul>
+<li>Na Nvidia karticama</li>
+<li>Tačna lista je ovde:</li>
+<li>https://developer.nvidia.com/cuda-gpus</li>
+</ul>
+</section>
+<section id="osnovne-apstrakcije-cuda-okruženja" class="slide level2">
+<h2>Osnovne apstrakcije CUDA okruženja</h2>
+<ul>
+<li>CUDA pokušava da omogući da se programira u kompleksnom okruženju akceleratorske tehnologije tako što inkorporira u sebe tri glavne apstrakcije:
+<ul>
+<li>Hijerarhija grupa niti</li>
+<li>Hijerarhija deljenih memorija</li>
+<li>Barijerna sinhronizacija</li>
+</ul></li>
+</ul>
+</section>
+<section id="hijerarhije" class="slide level2">
+<h2>Hijerarhije</h2>
+<ul>
+<li>Ključna ideja jeste da se problem koji se rešava podeli tako da se identifikuju</li>
+<li>Grubi paralelizmi zadatka i podataka koji predstavljaju stvari koje CUDA runtime može da podeli na koliko god procesnih elemenata (SM-ova) ima na raspolaganju.</li>
+<li>Sitni paralelizam podataka i niti koje se odnose na zadatke koje se moraju rešiti unutar SM-a kooperativno.</li>
+</ul>
+</section>
+<section id="sm" class="slide level2">
+<h2>SM?</h2>
+<ul>
+<li>SM je Streaming Multiprocessor, osnovna gradivna jedinica CUDA-sposobnog uređaja.</li>
+<li>Specifikacije SM-a koga koristimo su jako bitne i variraju između verzije.</li>
+<li>Termin za verziju je u CUDA svetu ’compute capacity’ i mi ovde posmatramo 8.6 arhitekturu.</li>
+<li>Neophodno je, prilikom napredne optimizacije, kod prilagoditi koliko god je to moguće okruženju u kome se izvršava, tako da u zavisnosti od kartice koju koristite morate gledati drugu specifikaciju.</li>
+</ul>
+</section>
+<section id="sve-su-dostupne-u-zvaničnom-vodiču-za-programiranje-cuda-arhitekture." class="slide level2">
+<h2>Sve su dostupne u zvaničnom vodiču za programiranje CUDA arhitekture.</h2>
+<ul>
+<li>Compute Capability 8.6 SM specifikacija</li>
+<li>128 FP32 jezgra za proračune</li>
+<li>64 FP64 jezgra za proračune</li>
+<li>64 INT32 jezgra za proračune</li>
+<li>4 jezgra tenzorskog tipa (treća generacija) pomešane preciznosti</li>
+<li>16 posebna jezgra za proračun transcedentalnih funkcija jednostruke preciznosti</li>
+<li>4 raspoređivača spleta (warp, više o tome kasnije)</li>
+<li>Keš za konstantnu memoriju</li>
+<li>128kb unificirane keš memorije iz koje se alocira deljena memorija i L1 keš. Legalne vrednosti deljene memorije su 0,8,16,32,64,ili 100 KB.</li>
+</ul>
+</section>
+<section id="float-i-double" class="slide level2">
+<h2>Float i double</h2>
+<ul>
+<li>Verovatno vam je već rečeno da na bilo kom modernom CPU-u, upotreba double je jednako dobra kao i upotreba float-a: čak je i na nekim mestima brža pošto se float vrednost samo proširuje da bi stala u FPU registre koji su sami po sebi double.</li>
+<li>Ovo nije slučaj u GPU programiranju.</li>
+<li>Float proračuni su tačno dvaput ’jefintiji’ nego double proračuni, i dosta internih struktura (npr. modularizacija deljene memorije o čemu više kasnije) su napravljeni sa idejom da se prenose float vrednosti.</li>
+<li>Kao rezultat, gde god da ima smisla koristiti float, on se treba koristiti budući da se dupla preciznost sada ’plaća.’</li>
+</ul>
+</section>
+<section id="kernel" class="slide level2">
+<h2>Kernel</h2>
+<ul>
+<li>Hijerarhija se eksponira kroz različite konstrukte u jeziku koji se koristi</li>
+<li>Mi ovde koristimo C++ koji je ’maternji’ za CUDA okruženje</li>
+<li>U njemu među najosnovnijim konstruktima se nalazi paralelna funkcija odn. ’kernel.’</li>
+<li>Ako proglasimo da je neka funkcija kernel ono što želimo da kažemo kroz to CUDA okruženje jeste da želimo da možemo da datu funkciju pozovemo na više niti paralelno.</li>
+<li>Specifikacija na koliko niti se radi se određuje prilikom poziva, a svaka instanca funkcije tokom izvršavanja zna koja je nit odgovorno kroz ugrađenu promenljivu threadIdx</li>
+</ul>
+</section>
+<section id="izvori" class="slide level2">
+<h2>Izvori</h2>
+<ul>
+<li>Kod u ovom primeru je adaptiran iz zvanične NVidia dokumentacije: <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html">https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html</a></li>
+</ul>
+</section>
+<section id="kernel-1" class="slide level2">
+<h2>Kernel</h2>
+<p><img data-src="img/2022-12-05-12-53-02.png" /></p>
+</section>
+<section id="threadidx" class="slide level2">
+<h2><code>threadIdx</code></h2>
+<ul>
+<li>threadIdx je promenljiva koja će biti dostupna u telu kernel-a i identifikuje aktuelnu nit.</li>
+<li>U CUDA okruženju to je trokomponentni vektor sa X, Y, i Z vrednostima da bi olakšao deljenje stvari koje se lakše mapiraju na 2D ili 3D ćelije, na primer.</li>
+<li>Ovde prilikom invokacije specificiramo 1, N što znači da želimo 1D varijantu gde je samo .x element bitan, i to hoćemo jedan blok niti, koji je 1D i ima samo jednu dimenziju, N.<br />
+</li>
+<li>Za višedimenzionalniju vrednost treba nam da threadsPerBlock bude ne jedan broj nego nešto sa više dimenzija: koristi se ugrađeni CUDA tip ’dim3’</li>
+</ul>
+</section>
+<section id="threadidx-1" class="slide level2">
+<h2><code>threadIdx</code></h2>
+<p><img data-src="img/2022-12-05-13-03-28.png" /></p>
+</section>
+<section id="threadidx-2" class="slide level2">
+<h2><code>threadIdx</code></h2>
+<ul>
+<li>Ovde imamo jedan blok koji se sastoji od blokova sa NxN elemenata.</li>
+<li>Valja voditi računa da se ovo razlikuje od 1D niza sa N2 elemenata.</li>
+<li>Generalno je dobra ideja koristiti onoliko-dimenzionalne blokove koliko su podaci nad kojima se operiše</li>
+</ul>
+</section>
+<section id="veza-između-threadidx-i-identifikatora-niti" class="slide level2">
+<h2>Veza između <code>threadIdx</code> i identifikatora niti</h2>
+<ul>
+<li>Za 1D blok Dx
+<ul>
+<li>ID(x) = x</li>
+</ul></li>
+<li>Za 2D blok Dx * Dy
+<ul>
+<li>ID(x,y) = x + y*Dy</li>
+</ul></li>
+<li>Za 3D blok Dx * Dy * Dz
+<ul>
+<li>ID(x,y,z) = x + y<em>Dx + z</em>Dx*Dy</li>
+</ul></li>
+</ul>
+</section>
+<section id="limiti-identifikatora-niti" class="slide level2">
+<h2>Limiti identifikatora niti</h2>
+<ul>
+<li>Na modernim GPU uređajima, ograničenje je 1024 niti po bloku.</li>
+<li>Sa ovim se bori tako što se prave dodatni blokovi</li>
+<li>Ti dodatni blokovi, baš kao i niti unutar bloka, mogu da budu 1D, 2D, ili 3D na sličan način kao i niti unutar bloka</li>
+<li>Nema tvrde granice koliko može biti blokova, ali je pravilo da između blokova nema komunikacije, i da se blokovi izvršavaju u makojem redosledu: potpuno pod kontrolom runtime-a</li>
+<li>Takođe, svaki blok mora biti sasvim jednak.</li>
+<li>Dimenzije blokova određuje prvi parametar prilikom izvršavanja i to može biti dim3 ili int i funkcioniše apsolutno identično kao i u slučaju dimenzionisanja niti.</li>
+</ul>
+</section>
+<section id="blockidx-i-blockdim" class="slide level2">
+<h2><code>blockIdx</code> i <code>blockDim</code></h2>
+<ul>
+<li>Dimenzije bloka su dostupne iz unutrašnjosti thread-a kroz dve promenljive, obe od kojih su trokomponentni vektori tipa dim3.</li>
+<li>blockIdx nam kaže u kom smo bloku, baš kao što je to govorio threadIdx za to u kojoj smo niti unutar bloka</li>
+<li>blockDim nam kaže kolike su dimenzije aktuelnog bloka po sve tri ose.</li>
+<li>Na raspolaganju je i gridDim ugrađena promenljiva koja nam kaže koliko ima ukupno blokova i kako su raspoređeni (struktura za raspoređivanje blokova se u CUDA okruženju zove ’grid’)</li>
+</ul>
+</section>
+<section id="indeksi-unutar-cuda-okruženja-2d-slučaj" class="slide level2">
+<h2>Indeksi unutar CUDA okruženja (2D slučaj)</h2>
+<p><img data-src="img/2022-12-05-13-10-42.png" /></p>
+</section>
+<section id="primena-blokova" class="slide level2">
+<h2>Primena blokova</h2>
+<p><img data-src="img/2022-12-05-13-10-57.png" /></p>
+</section>
+<section id="splet-niti" class="slide level2">
+<h2>Splet niti</h2>
+<ul>
+<li>Na hardverskom nivou se još pojavljuje i koncept spleta (eng. Warp)</li>
+<li>Ovo nije apstrakcija namenjena programeru, koliko je podela koju iznuđuje hardver.</li>
+<li>Splet niti je grupa od 32 niti (tu grupaciju određuje hardver/runtime) koje su takve da izvršavaju istu instrukciju u istom trenutku.</li>
+<li>Ovo je deo tkzv. SIMT modela (single instruction, multiple threads).</li>
+<li>Valja primetiti da niti mogu imati grananja.</li>
+<li>U tom slučaju, splet raspoređivač će da izvrši svaku granu samo što će niti za koje data nit ne važi da isključi.</li>
+<li>Ovo znači da nam je od velike koristi ako su niti u 32-nitnim blokovima takve da imaju što manje grananja.</li>
+</ul>
+</section>
+<section id="saradnja-unutar-bloka" class="slide level2">
+<h2>Saradnja unutar bloka</h2>
+<ul>
+<li>Unutar jednog bloka, niti mogu da sarađuju.</li>
+<li>Sarađivanje unutar bloka između niti se bazira na dva koncepta: deljena memorija i sinhronizacija izvršavanja.</li>
+<li>Sinhronizacija izvršavanja se na primitivnom nivou može obavljati kroz ugrađenu funkciju __syncthreads() koja, kada se pozove, postane sinhronizaciona barijera: sve niti u jednom bloku stanu dok sve ne dostignu tu barijeru.</li>
+<li>Postoji i sofisticiraniji model za situacije gde je potrebna granularnija sinhronizacija kroz nešto što se zove ’API za grupe kooperacije’ odn. ’Cooperative Groups API’</li>
+<li>Deljena memorija se samo može razumeti kroz njeno mesto u hijerarhiji memorije.</li>
+</ul>
+</section>
+<section id="memorijska-hijerarhija" class="slide level2">
+<h2>Memorijska hijerarhija</h2>
+<ul>
+<li>U klasičnom modelu programiranja, sva memorija se tretira isto.</li>
+<li>U praksi, mi znamo da neke stvari idu u različite keš memorije, ali se ovo generalno govoreći ne podešava rukom.</li>
+<li>U CUDA svetu, memorijom se mora upravljati mnogo pažljivije</li>
+<li>Prva podela je između memorije host računara, tj. Radne memorije računara na kome se CUDA program izvršava i memorije GPU-a (tehnički termin je ’device’ memorija)</li>
+<li>Unutar memorije GPU-a postoji kompleksna hijerarhija memorije bazirana na tome kome memorija ’pripada,’ kako joj se pristupa i pod kojim uslovima, i da li je perzistentna.</li>
+</ul>
+</section>
+<section id="memorijska-hijerarhija-1" class="slide level2">
+<h2>Memorijska hijerarhija</h2>
+<ul>
+<li>Hardverski govoreći, memorija GPU-a se deli na on-chip i off-chip memoriju.</li>
+<li>Off-chip memorija je memorija samog GPU uređaja i pristup njoj je komparativno spor i ima visoko kašnjenje.</li>
+<li>On-chip memorija je deo samog silikona grafičkog procesora, ima je malo, i jako je brza. Ta memorija je slična kešu, ali se može njom upravljati i potpuno direktno.</li>
+</ul>
+</section>
+<section id="memorijska-hijerarhija-2" class="slide level2">
+<h2>Memorijska hijerarhija</h2>
+<ul>
+<li>Logički, memorija kojoj se pristupa u CUDA modelu je
+<ul>
+<li>Thread memorija koja je isključiva za nit i fizički je deo on-chip memorije.</li>
+<li>Deljena (shared) memorija koja je isključiva za blok niti i pristup se može obaviti jako brzo.</li>
+<li>Globalna memorija je dostupna svima, perzistentna je, ali je off-chip i spora.</li>
+<li>Lokalna memorija je dostupna samo jednoj niti, ali je to samo apstrakcija nad globalnom memorijom, te je jednako spora.</li>
+<li>Konstatna memorija se nalazi off-chip ali ima za sebe specifičan keš.</li>
+<li>Memorija tekstura/površine je off-chip ali ima specifičan keš i specifično pravilo keširanja i učitavanja koje je optimizovano za operacije nad teksturama. ## Strategije brzog pristupa</li>
+</ul></li>
+<li>Fundamentalna ’tajna’ dobrog CUDA programiranja je dobra ideja o tome gde su podaci koji nam trebaju u bilo kom trenutku.</li>
+<li>Naš cilj:
+<ul>
+<li>Minimizirati broj transfera između host i device memorije što je više moguće: to je prvo usko grlo.</li>
+<li>Minimizirati broj pristupa off-chip memoriji.</li>
+</ul></li>
+<li>Tipičan obrazac ponašanja je ’staging’ pristup u kome se operacije dele u faze u kojoj svaka ima neku oblast memorije koja je zanima.
+<ul>
+<li>Ovo se radi posebno za blokove memorije i posebno za transfer host-device, mada ako je to moguće, ovaj drugi transfer se onda uradi samo jednom, na početku.</li>
+</ul></li>
+</ul>
+</section>
+<section id="staging-za-deljenu-memoriju" class="slide level2">
+<h2>Staging za deljenu memoriju</h2>
+<ul>
+<li>Tipično ponašanje jeste da:
+<ul>
+<li>Svaki blok učita u deljenu memoriju onaj deo iz globalne memorije koji je potreban za datu fazu.</li>
+<li>Tipično svaki element kopira po jedna nit u paraleli.</li>
+<li>Onda se unutar kernela aktivira barijerna sinhronizacija da bi bili time sigurni da je svaka nit završila svoje kopiranje, jer onda (zbog deljene memorije) svi mogu da pristupaju svim prekopiranim materijalima.</li>
+</ul></li>
+<li>Ovako se dramatično umanjuje cena kašnjenja po pristupu globalnoj memoriji, budući da se svakoj neophodnoj lokaciji pristupi jednom (prilikom kopiranja u deljenu memoriju) umesto svako put kada je potrebnom nekoj niti.</li>
+</ul>
+</section>
+<section id="napredne-strategije-optimiziacije-pristupa-deljenoj-memoriji" class="slide level2">
+<h2>Napredne strategije optimiziacije pristupa deljenoj memoriji</h2>
+<ul>
+<li>Deljena memorija ima specijalizovan način pristupa koji dramatično povećava protok ka memoriji pod vrlo specifičnim uslovima.</li>
+<li>Deljena memorija je podeljena u module (bank) koji su tako hardverski organizovani da sukcesivne 32-bitne reči odgovaraju sukcesivnim modulima, svaki od kojih ima protok od 32 bita po ciklusu sata.</li>
+<li>Ovo znači da ako bi od 32 niti svaka zatražila po 32-bitnu vrednost jednu za drugom, ovo bi se učitalo u jednom ciklusu budući da bi svaka nit pričala sa drugim modulom.</li>
+<li>Ako neke niti traže istu 32-bitnu reč, onda je takođe brzina očuvana.</li>
+<li>Problem nastane ako bude konflikta modula (eng. Bank conflict)</li>
+</ul>
+</section>
+<section id="napredne-strategije-optimiziacije-pristupa-deljenoj-memoriji-1" class="slide level2">
+<h2>Napredne strategije optimiziacije pristupa deljenoj memoriji</h2>
+<ul>
+<li>Konflikt modula nastaje kada dve niti zatraže u isto vreme reči koje se mapiraju na isti modul: ti pristupi se onda moraju serijalizovati.</li>
+<li>Ovo smanjuje povećanje u protoku koje inače nudi ovaj mehanizam podele memorije.</li>
+<li>Kao rezultat jako je bitno poravnati podatke u deljenoj memoriji tako da se ovi konflikti minimizuju.</li>
+<li>Ponekad ovo prirodno sledi ako su podaci ravnomerno distribuirani, ali postoje situacije gde memoriju treba reorganizovati da se održi konstantan stride između pristupa.</li>
+</ul>
+</section>
+<section id="efikasan-pristup-globalnoj-memorji" class="slide level2">
+<h2>Efikasan pristup globalnoj memorji</h2>
+<ul>
+<li>Globalna memorija (kada joj se mora pristupati) ima svoja ograničenja: svaki pristup toj memorji mora biti obavljen preko memorijskih transakcija koje su takve da se prenosi 32, 64, ili 128 bajta istovremeno.</li>
+<li>Memorijske transakcije moraju imati tkzv. prirodno poravnanje.</li>
+<li>To znači da njihova bazna adresa mora biti umnožak odgovarajuće veličine (32, 64, ili 128 bajta).</li>
+<li>Kada splet niti treba da pristupi memoriji, svi ti pristupi se kombinuju (tehnički termin je coalesce) u ove transakcije.</li>
+<li>Stoga efikasan pristup globalnoj memoriji pokušava da tako rasporedi pristupe globalnoj memorji da se mogu kombinovati u što manje transakcija</li>
+</ul>
+</section>
+<section id="linearan-memorijski-model" class="slide level2">
+<h2>Linearan memorijski model</h2>
+<ul>
+<li>Budući koliko je ovo sve zahtevno, neophodno je olakšati pristup memoriji koliko god je to moguće.</li>
+<li>Kao rezultat, novije verzije GPU-ova podržavaju linearan sistem pristupa memorji gde se apsolutno sva memorija dostupna i na host-u i na device-u tretira kao jedan, unificiran, džinovski memorijski prostor.</li>
+<li>To znači da pokazivači rade bez obzira gde su (tj. njihov sadržaj sam po sebi je dovoljan da nam kaže o kojoj memoriji je reč)</li>
+<li>Ova funkcionalnost je samo dostupna kroz CUDA runtime i odgovarajuće alate</li>
+</ul>
+</section>
+<section id="cuda-alati" class="slide level2">
+<h2>CUDA alati</h2>
+<ul>
+<li>Sva ova apstrakcija samo može da se stavi u praksu kroz programiranje koristeći odgovarajuće ekstenzije na neki programski jezik.</li>
+<li>CUDA se trudi da C++ modifikuje što je to manje moguće</li>
+<li>Uprkos tome, ima izmena i kao rezultat kod se mora kompajlirati posebnim kompajlerom koji izrađuje Nvidia, nvcc.</li>
+<li>Ovaj kompajler je odgovoran i za kod koji se izvršava na CPU-u, i tu uglavnom vodi računa o tome kako će se ekstenzije koda (kao što je recimo sintaksa za pozivanje kernela) pretvoriti u odgovarajuće pozive CUDA runtime-a.</li>
+<li>Što se GPU koda tiče, tu je nvcc više odgovoran i kompajlira C++ kod u posebnu binarnu formu, PTX koju kasnije drajver može da JIT-uje u formu specijalizovanu za dati specifični GPU.</li>
+</ul>
+</section>
+<section id="praktičan-primer-rukovanja-sa-memorijom" class="slide level2">
+<h2>Praktičan primer rukovanja sa memorijom</h2>
+<p><img data-src="img/2022-12-05-13-28-55.png" /></p>
+</section>
+<section id="praktičan-primer-rukovanja-sa-memorijom-1" class="slide level2">
+<h2>Praktičan primer rukovanja sa memorijom</h2>
+<p><img data-src="img/2022-12-05-13-29-02.png" /></p>
+</section>
+<section id="praktičan-primer-rukovanja-sa-memorijom-2" class="slide level2">
+<h2>Praktičan primer rukovanja sa memorijom</h2>
+<p><img data-src="img/2022-12-05-13-29-35.png" /></p>
+</section>
+<section id="alokacija-memorije-za-višedimenzionalne-nizove" class="slide level2">
+<h2>Alokacija memorije za višedimenzionalne nizove</h2>
+<ul>
+<li>Memorija se mora alocirati za rad sa 2D i 3D nizovima na poseban način koji vodi računa da su podaci poravnani za pristup.</li>
+<li>To poravnanje može da bude prilično komplikovano ali, srećom, CUDA pruža alate koji to čine relativno bezbolnim.</li>
+<li>cudaMallocPitch je za 2D nizove i ima adekvatnu cudaMemcpy2D fukciju.</li>
+<li>cudaMalloc3D je za 3D nizove i ima adekvatnu cudaMemcpy3D funkciju</li>
+</ul>
+</section>
+<section id="poravnan-2d-niz-primer" class="slide level2">
+<h2>Poravnan 2D niz primer</h2>
+<p><img data-src="img/2022-12-05-13-29-58.png" /></p>
+</section>
+<section id="pitch" class="slide level2">
+<h2>Pitch?</h2>
+<ul>
+<li>Ovde su ubačeni dodatni podaci u svaki red, tako da pokazivač na početak reda mora da ’preskoči’ onoliko bajtova koliko je tekući red puta puta pitch (fizička širina reda), a ne puta width (logička širina).</li>
+<li>Umesto da pitch računamo mi, alokaciona funkcija to izračuna umesto nas i da nam ga kao izlazni parametar.</li>
+<li>Da bi radilo sa bilo kakvim tipovima koje želimo, veličinu reda ova funkcija očekuje u bajtovima.</li>
+</ul>
+</section>
+<section id="poravnan-3d-niz-primer" class="slide level2">
+<h2>Poravnan 3D niz primer</h2>
+<p><img data-src="img/2022-12-05-13-30-37.png" /> ## Poravnan 3D niz primer <img data-src="img/2022-12-05-13-30-44.png" /></p>
+</section>
+<section id="primer-primene-deljene-memorije" class="slide level2">
+<h2>Primer primene deljene memorije</h2>
+<ul>
+<li>Sledi primer (preuzet kao i većina koda ovde iz zvanične dokumentacije) primene deljene memorije radi optimiziacije pristupa.</li>
+<li>Prvi deo primera je implementacija algoritma množenja matrice na GPU-u koji koristi ’naivan’ pristup memoriji.</li>
+<li>Drugi deo primera je isti algoritam, ali sa primenom deljene memorije da se algoritam ubrza.</li>
+</ul>
+</section>
+<section id="naivan-pristup-memoriji" class="slide level2">
+<h2>Naivan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-31-54.png" /></p>
+</section>
+<section id="naivan-pristup-memoriji-1" class="slide level2">
+<h2>Naivan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-32-00.png" /></p>
+</section>
+<section id="naivan-pristup-memoriji-2" class="slide level2">
+<h2>Naivan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-32-12.png" /></p>
+</section>
+<section id="šta-je-ovde-problem" class="slide level2">
+<h2>Šta je ovde problem?</h2>
+<ul>
+<li>Svaka nit pristupi svim vrednostima matrice koje su joj potrebne.</li>
+<li>Tu prirodno dolazi do replikacije pristupa, ali po nepredvidivom rasporedu što znači da konsolidacija pristupa ne radi ni približno dobro kako bi trebala.</li>
+<li>Kao rezultat metod koji može da se koristi jeste da se adaptira nešto slično Kanonovom algoritmu gde se bloku da pod-matrica matrica C za proračun i de se proračun podeli u faze (kojih ima onoliko kolika je jedna dimenzija gird-a) u kojoj se u toj fazi dobave pod-matrice matrice A i B koje su neophodne za tu fazu.</li>
+<li>Te matrice se dobave jednom i smeste se u deljenu memoriju gde ih sve niti bloka koriste. Ubrzanje je dramatično.</li>
+</ul>
+</section>
+<section id="optimizovan-pristup-memoriji" class="slide level2">
+<h2>Optimizovan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-32-30.png" /></p>
+</section>
+<section id="optimizovan-pristup-memoriji-1" class="slide level2">
+<h2>Optimizovan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-32-51.png" /></p>
+</section>
+<section id="optimizovan-pristup-memoriji-2" class="slide level2">
+<h2>Optimizovan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-32-57.png" /></p>
+</section>
+<section id="optimizovan-pristup-memoriji-3" class="slide level2">
+<h2>Optimizovan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-33-03.png" /></p>
+</section>
+<section id="optimizovan-pristup-memoriji-4" class="slide level2">
+<h2>Optimizovan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-33-08.png" /></p>
+</section>
+<section id="optimizovan-pristup-memoriji-5" class="slide level2">
+<h2>Optimizovan pristup memoriji</h2>
+<p><img data-src="img/2022-12-05-13-33-15.png" /></p>
 </section></section>
     </div>
   </div>
