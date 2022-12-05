@@ -349,7 +349,7 @@
 </section>
 <section id="hbm2" class="slide level2">
 <h2>HBM2</h2>
-<p><img data-src="img/2022-12-05-12-12-17.png" /></p>
+<p><img data-src="img/2022-12-05-22-17-21.png" /></p>
 </section>
 <section id="pristup-memoriji" class="slide level2">
 <h2>Pristup memoriji</h2>
@@ -357,7 +357,12 @@
 <li>Moderni GPU-ovi podržavaju izuzetno kompleksan sistem pristupa memoriji koji koristi memorijske stranice da se postara da GPU kod može uniformno da pristupa svoj memoriji u računaru.</li>
 <li>Ovo je veliko olakšanje, ali naravno, pristup glavnoj memoriji ima ogromnu cenu.</li>
 <li>Tipično, problem se rešava tako što se memorija kopira u memorijski prostor kartice, no ovo stvara potencijalne probleme sa sinhronizacijom.</li>
-<li>Ovo je predmet intenzivnog istraživanja. ## Povezivanje</li>
+<li>Ovo je predmet intenzivnog istraživanja.</li>
+</ul>
+</section>
+<section id="povezivanje" class="slide level2">
+<h2>Povezivanje</h2>
+<ul>
 <li>Standardno povezivanje je preko PCI Express linka.</li>
 <li>PCI Express je brz (ali uvek može brže) plus problem nastaje:</li>
 <li>Šta kada hoću 4 kartice u jedan računar?</li>
@@ -368,7 +373,7 @@
 <li>NVLink je izuzetno visoko-performantni mehanizam za komunikaciju na male razdaljine.</li>
 </ul>
 </section>
-<section id="povezivanje" class="slide level2">
+<section id="povezivanje-1" class="slide level2">
 <h2>Povezivanje</h2>
 <ul>
 <li>NVLink može da povezuje kartice (i tako bi tipično i stavili dve kartice u prosečan računar), a i karticu i procesor ako to procesor podržava (IBM pravi procesore koji ovo mogu i oni su instrumentalni u funkcionisanju Summit mašine).</li>
@@ -465,8 +470,12 @@
 <li>Vektorski paralelizam mora biti vrlo uniforman: ista stvar za više podataka u klasičnom SIMD maniru.</li>
 <li>Worker paralelizam je malo opušteniji ali deli iste resurse budući da svaki gang je, hardverski, definisan kao nešto što deli iste procesne resurse.</li>
 <li>U NVidia svetu to znači da je Gang gotovo uvek vezan za jedan SM.</li>
-<li>Gang paralelizmi su nezavisni. ## Gang, Worker, Vector <img data-src="img/2022-12-05-12-22-16.png" /></li>
+<li>Gang paralelizmi su nezavisni.</li>
 </ul>
+</section>
+<section id="gang-worker-vector-1" class="slide level2">
+<h2>Gang, Worker, Vector</h2>
+<p><img data-src="img/2022-12-05-12-22-16.png" /></p>
 </section>
 <section id="režimi-izvršavanja" class="slide level2">
 <h2>Režimi izvršavanja</h2>
@@ -678,12 +687,7 @@ int main(){
 <section id="definisanje-n-dimenzionalnih-nizova-u-cc-na-openacc-kompatibilan-način" class="slide level2">
 <h2>Definisanje n-dimenzionalnih nizova u C/C++ na OpenACC-kompatibilan način</h2>
 <ol type="1">
-<li>Statički dimenzionisani nizovi</li>
-</ol>
-<ul>
-<li>Ograničenje: ako radimo sa ovim, naše specifikacije onoga što se prenosi mora da definiše kontinualni region memorije.</li>
-</ul>
-<ol start="2" type="1">
+<li>Statički dimenzionisani nizovi (Ograničenje: ako radimo sa ovim, naše specifikacije onoga što se prenosi mora da definiše kontinualni region memorije.)</li>
 <li>Pokazivači na statički dimenzionisane nizove</li>
 <li>Statički alocirani nizovi pokazivača</li>
 <li>Pokazivači na nizove pokazivača</li>
