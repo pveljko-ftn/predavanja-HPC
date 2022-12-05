@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Domen Problema</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Domen Problema</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Novembar, 2022</p>
+</section>
+
+<section id="domen-problema" class="title-slide slide level1">
+<h1>Domen Problema</h1>
+<p>Čemu HPC?</p>
+</section>
+
+<section>
+<section id="zašto-koristimo-hpc" class="title-slide slide level1">
+<h1>Zašto koristimo HPC?</h1>
+<p>Tipični problemi hpc-a</p>
+</section>
+<section id="hpc-kao-priznanje-neuspeha" class="slide level2">
+<h2>HPC kao priznanje neuspeha</h2>
+<ul>
+<li>Na jedan veoma stvaran način, HPC je znak da smo se predali.</li>
+<li>Reformulacija problema nije radila.</li>
+<li>Lukavi algoritmi nisu radili.</li>
+<li>Sve što nam je ostalo jeste da napadnemo problem sa mnogo više resursa nego što je to normalno dostupno.</li>
+<li>HPC je, tako, zadnja linija odbrane kada se rešava nekakav problem.</li>
+</ul>
+</section>
+<section id="hpc-i-ekonomija" class="slide level2">
+<h2>HPC i ekonomija</h2>
+<ul>
+<li>HPC je takođe ograničen neočekivanim ekonomskim faktorima.</li>
+<li>Vi možete lični računar namestiti da radi šta god želite: ako hoćete da uposlite 100% CPU-a generišući svetove kroz Dwarf Fortress niko se neće buniti. U najgorem slušaju trošite malo dodatne struje.</li>
+<li>HPC klasteri i super-računari su drugačiji: ozbiljne instalacije imaju troškove izvršavanja koji znače da se svaki minut mora naplaćivati.</li>
+<li>Stoga HPC se uglavnom koristi ili za projekte koje su interesantni vladama ili velikim kompanijama.</li>
+</ul>
+</section>
+<section id="neke-popularne-primene" class="slide level2">
+<h2>Neke popularne primene</h2>
+<ul>
+<li>Kriptanaliza</li>
+<li>Naučna simulacija</li>
+<li>Simulacija fluida</li>
+<li>Simulacija plazme</li>
+<li>Simulacija klime</li>
+<li>Seizmološki modeli</li>
+<li>Statistička analiza ogromnih skupova podataka</li>
+<li>Problemi mašinskog učenja</li>
+</ul>
+</section>
+<section id="ograničenje-kursa" class="slide level2">
+<h2>Ograničenje kursa</h2>
+<ul>
+<li>Ovde mi prelazimo ove primene samo ovlaš zato što, fundamentalno, svrha za koju se HPC primenjuje nije odgovornost HPC inženjera. To je odgovornost domenskog eksperta. HPC se bavi time da su resursi za proračun dostupni.</li>
+<li>Kao deo ovog kursa od vas će se tražiti da napišete seminarski rad o nekoj primeni zato što je zgodno da znate, makar okvirno, kako izgleda pravi problem ne bi li bili sposobniji da projektujete rešenja koja taj problem i njemu slične rešavaju.</li>
+</ul>
+</section>
+<section id="kriptanaliza" class="slide level2">
+<h2>Kriptanaliza</h2>
+<ul>
+<li>Prvobitna primena računara (te i, po definicji, HPC-a).</li>
+<li>Cela svrha kriptografije jeste da ne ostavi nikakav brz način da se do podataka dođe bez nekog ključnog elementa (ključa, tipično).</li>
+<li>Kriptanaliza, idealno, razbije algoritam za enkripciju tako da to ne važi.</li>
+<li>Danas su kriptografi mnogo veštiji nego nekada i potpuno razbijeni algoritmi su retki. Alternativa jeste da se postigne parcijalno oslabljivanje gde se količina nagađanja i proračuna smanji donekle tako da (možda?) dođe u domet najbržih super-računara.</li>
+<li>Možete biti sigurni da negde u podrumima NSA zuje računari koji se bave baš ovim poslom.</li>
+</ul>
+</section>
+<section id="kriptanalizamogući-problem" class="slide level2">
+<h2>Kriptanaliza—mogući problem</h2>
+<ul>
+<li>Istražiti algoritam tipa opšteg sita polja brojeva (general number field sieve—GNFS) i koristiti ga za faktorisanje poluprostih brojeva.</li>
+<li>Poluprost (semiprime) je broj sa dva ne-trivijalna prosta faktora, npr. 2701 koji je 37 * 73.</li>
+<li>Ovo se onda lako može koristiti za razbijanje RSA enkripcije, tj. za ekstrakciju privatnog ključa iz javnog ključa.</li>
+<li>GNFS referentna implementacija je: https://sourceforge.net/projects/msieve/</li>
+</ul>
+</section>
+<section id="naučna-simulacija" class="slide level2">
+<h2>Naučna simulacija</h2>
+<ul>
+<li>Posmatrano sa veoma visokog nivoa apstrakcije, naučne simulacije su tipično (mada ne nužno) simulacije nekakvog fizičkog sistema koji je takav da je nemoguće dobiti rešenje zatvorene forme no je neophodno raditi aproksimaciju i diskretizaciju.</li>
+<li>Recimo u komputacionoj dinamici fluida prostor se deli na komade (ćelije) i specijalizovana verzija Navier-Stokes jednačina se rešava za svaki taj komad u svakom kvantu vremena formirajući rezultat.</li>
+</ul>
+</section>
+<section id="primer-naučne-simulacijeproblem-n-tela" class="slide level2">
+<h2>Primer naučne simulacije—Problem n tela</h2>
+<ul>
+<li>Problem n-tela je jedan od najpoznatijih i definitivno najstarijih problema u matematičkoj fizici.</li>
+<li>Imaju razne pod-formulacije koje sve objedinjuje sistem od n tela koji interaguju pod nekakvom silom no mi se ovde fokusiramo na vrlo jednostavnu, Njutnovsku verziju:</li>
+<li>Ako imamo n tela sa masama m0…n i pozicijama r0….n koje variraju u odnosu na vreme t, kako će ta tela da se ponašaju pod efektom gravitacije.</li>
+<li>(Dalji deo predavanja delimično baziran na materijalima Dr Rejmoda J. Spiterija za njegov kurs Parallel Programming for Scientific Computing držan 2014 u Univerzitetu Saskačevana, a koji su bazirani na materijalima sa Berklija.) https://www.cs.usask.ca/~spiteri/CMPT851/notes/nBody.pdf</li>
+</ul>
+</section>
+<section id="formulacija-problema-ulazi" class="slide level2">
+<h2>Formulacija problema — ulazi</h2>
+<ul>
+<li>U sistem ulaze:
+<ul>
+<li>Početne pozicije svih tela</li>
+<li>Početne brzine svih tela</li>
+<li>Mase svih tela</li>
+<li>Vremenski parametri koji uključuju:
+<ul>
+<li>Koliko traje simulacija</li>
+<li>Pod kojim koracima želimo izlaz</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="formulacija-problemaizlazli" class="slide level2">
+<h2>Formulacija problema—izlazli</h2>
+<ul>
+<li>Iz sistema izlazi:
+<ul>
+<li>Pozicija svakog tela za vremenske korake</li>
+<li>Brzina svakog tela za vremenske korake</li>
+</ul></li>
+</ul>
+</section>
+<section id="formulacija-problemapretpostavke" class="slide level2">
+<h2>Formulacija problema—pretpostavke</h2>
+<ul>
+<li>Važe Njutnovi zakoni kretanja i gravitacije</li>
+<li>Svi objekti su tačkaste mase</li>
+<li>Svi objekti se mogu preklapati, tj. sudare modeliramo kao dva objekta na istom mestu.</li>
+</ul>
+</section>
+<section id="notacija" class="slide level2">
+<h2>Notacija</h2>
+<ul>
+<li>Neka je <span class="math inline">\(n\)</span> broj tela (čestica)</li>
+<li>Neka su mase <span class="math inline">\(m_i\)</span> sa <span class="math inline">\(i\)</span> od <span class="math inline">\(0\)</span> do <span class="math inline">\(n-1\)</span>.</li>
+<li>Neka su pozicije <span class="math inline">\(\vec{r_i}(t)\)</span> sa <span class="math inline">\(i\)</span> od <span class="math inline">\(0\)</span> do <span class="math inline">\(n-1\)</span>, vektori.</li>
+</ul>
+</section>
+<section id="fizika" class="slide level2">
+<h2>Fizika</h2>
+<p>Onda je sila kojom čestica <span class="math inline">\(j\)</span> deluje na česticu <span class="math inline">\(i\)</span> iznosi: <span class="math display">\[
+\vec{f_{i,j}}(t) = -\frac{Gm_im_j}{{\lVert \vec{r_i}(t) - \vec{r_j}(t) \rVert}^3}(\vec{r_i}(t) - \vec{r_j}(t))
+\]</span> Gde je: <span class="math display">\[
+G = 6.673 \times 10^{-11} m/(kg \cdot s^2)
+\]</span></p>
+</section>
+<section id="fizika-1" class="slide level2">
+<h2>Fizika</h2>
+<p>Ukupna sila na česticu će onda biti <span class="math display">\[
+\vec{F_i}(t) = \sum^{n-1}_{\substack{j=0 \\ i \ne i}}\vec{f_{ij}}(t)
+\]</span></p>
+</section>
+<section id="fizika-2" class="slide level2">
+<h2>Fizika</h2>
+<p>Što možemo da proširimo u: <span class="math display">\[
+\vec{f_{i,j}}(t) =  \sum^{n-1}_{\substack{j=0 \\ i \ne i}} -\frac{Gm_im_j}{{\lVert \vec{r_i}(t) - \vec{r_j}(t) \rVert}^3}(\vec{r_i}(t) - \vec{r_j}(t))
+\]</span></p>
+</section>
+<section id="fizika-3" class="slide level2">
+<h2>Fizika</h2>
+<p>A ovo se pojednostavljuje u: <span class="math display">\[
+\vec{f_{i,j}}(t) =  -\Gm_i\sum^{n-1}_{\substack{j=0 \\ i \ne i}} \frac{m_j}{{\lVert \vec{r_i}(t) - \vec{r_j}(t) \rVert}^3}(\vec{r_i}(t) - \vec{r_j}(t))
+\]</span></p>
+</section>
+<section id="fizika-4" class="slide level2">
+<h2>Fizika</h2>
+<p>Koristeći Njutnov drugi zakon u vektorskoj formulaciji imamo onda: <span class="math display">\[
+\vec{F_i}(t) = m_i\ddot{\vec{r_i}(t)}, i = 0, 1, ... n - 1
+\]</span></p>
+</section>
+<section id="fizika-5" class="slide level2">
+<h2>Fizika</h2>
+<p>Ovo nas na kraju dovede do sistema prostih diferencijalnih jednačina drugog reda oblika: <span class="math display">\[
+\ddot{\vec{r_i}(t)} = -\G\sum^{n-1}_{\substack{j=0 \\ i \ne i}} \frac{m_j}{{\lVert \vec{r_i}(t) - \vec{r_j}(t) \rVert}^3}(\vec{r_i}(t) - \vec{r_j}(t))
+\]</span></p>
+</section>
+<section id="neke-olakšice" class="slide level2">
+<h2>Neke olakšice</h2>
+<ul>
+<li>Da bi nam život bio lakši, u ovoj ‘igračka’ implementaciji radimo sa sledećim ograničenjima:
+<ul>
+<li>Prostor je 2D i nije particionisan.</li>
+<li>Jednačinu integralimo koristeći maksimalno jednostavnu Ojlerovu numeričku metodu koja gleda unapred.</li>
+<li>Vremenski korak koji koristimo je konstantan.</li>
+</ul></li>
+<li>Ova ograničenja čine ovo vrlo lošim algoritmom za n-tela, ali vrlo ilustrativnim.</li>
+<li>Moguć zadatak: Istraživanje metoda za povećanje preciznosti i brzine modela n tela što uključuje hijerarhijsko particionisanje prostora, dinamičko zaokruživanje na nulu, i adaptivni korak vremena.</li>
+</ul>
+</section>
+<section id="ojlerova-metoda" class="slide level2">
+<h2>Ojlerova metoda?</h2>
+<ul>
+<li>Prva i komično najprostija metoda za numeričku integraciju diferencijalnih jednačina.</li>
+<li>Poznata je i kao najprostija Runge-Kuta metoda.</li>
+<li>Esencijalno, aproksimiramo nepoznatu krivu datu kroz njen izvod tako što je podelimo na male deliće (koraci) u kojima se pretvaramo da je kriva linearna.</li>
+</ul>
+</section>
+<section id="ojlerova-metoda-1" class="slide level2">
+<h2>Ojlerova metoda?</h2>
+<p><img data-src="img/2022-12-05-15-29-59.png" /></p>
+</section>
+<section id="ojlerova-metoda-2" class="slide level2">
+<h2>Ojlerova metoda?</h2>
+<ul>
+<li>Ovo nije osobito dobar način da se integrali diferencijalna jednačina.</li>
+<li>Može li bolje?
+<ul>
+<li>Nego šta.</li>
+<li>Ali to je više posao za specijalistički kod, o kome više kasnije. ## Gruba struktura algoritma <img data-src="img/2022-12-05-15-30-43.png" /></li>
+</ul></li>
+</ul>
+</section>
+<section id="gruba-struktura-proračuna-fit" class="slide level2">
+<h2>Gruba struktura proračuna Fi(t)</h2>
+<p><img data-src="img/2022-12-05-15-30-55.png" /></p>
+</section>
+<section id="malo-ubrzanje" class="slide level2">
+<h2>Malo ubrzanje</h2>
+<ul>
+<li>Postoji fundamentalna simetrija u problemu kojom možemo da da prepolovimo broj proračuna</li>
+<li>Njutnov treći zakon znači da <span class="math inline">\(\vec{f_{i,j}}(t) = -\vec{f_{j,i}}(t)\)</span></li>
+<li>Ako znamo jednu, znamo i drugu, samo treba obrnuti znak.</li>
+<li>Kako da to uradimo lako?</li>
+<li>Najbolje je posmatrati matricu sile</li>
+</ul>
+</section>
+<section id="matrica-sile" class="slide level2">
+<h2>Matrica sile</h2>
+<span class="math display">\[\begin{bmatrix}
+0 &amp; f_{0,1} &amp; f_{0,2} &amp; \cdots &amp; f_{0,n-1}\\ 
+-f_{0,1} &amp; 0 &amp; f_{1,2} &amp; \cdots &amp; f_{1,n-1} \\ 
+\vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+-f_{0,n-1} &amp; -f_{1,n-1} &amp; -f_{2,n-1} &amp; \cdots &amp; 0
+\end{bmatrix}\]</span>
+</section>
+<section id="matrica-sile-1" class="slide level2">
+<h2>Matrica sile</h2>
+<ul>
+<li>Sad sve što treba da uradimo jeste da pravimo petlju samo nad gornjim/donjim trouglom matrice</li>
+</ul>
+</section>
+<section id="redukovani-algoritam" class="slide level2">
+<h2>Redukovani algoritam</h2>
+<p><img data-src="img/2022-12-05-15-36-11.png" /></p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
