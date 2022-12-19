@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Biblioteke</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Biblioteke</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Decembar, 2022</p>
+</section>
+
+<section id="zašto" class="slide level2">
+<h2>Zašto?</h2>
+<ul>
+<li>Zašto koristimo biblioteke inače? Neko ko se samo bavi metodama za, npr. linearnu algebru može da ih implementira mnogo bolje od nas kojima je ta linearna algebra (potencijalno) samo jedna od deset stvari koje nam trebaju.</li>
+<li>Ovo je, u stvari, naročito dobar primer za upotrebu biblioteka zato što vrlo često mi imamo jasnu podelu između našeg algoritma i raznih matematičkih operacija i algoritama koji nam trebaju da ga implementiramo. Integracija, uz tako jasnu podelu, je mnogo lakša.</li>
+<li>Često ovo ide do tačke da se koristi poseban jezika (Python, često) ali mi nećemo nužno ići tako daleko.</li>
+</ul>
+</section>
+<section id="izbor-iz-oblasti-primene" class="slide level2">
+<h2>Izbor iz oblasti primene</h2>
+<ul>
+<li>Linearna algebra</li>
+<li>Parcijalne diferencijalne jednačine</li>
+<li>Grafovi</li>
+<li>Paralelizovani I/O</li>
+<li>Dekompozicija meš struktura</li>
+<li>Vizuelizacija</li>
+</ul>
+</section>
+<section id="struktura-predavanja" class="slide level2">
+<h2>Struktura predavanja</h2>
+<ul>
+<li>Prelazimo prvo najizraženiji deo HPC-a: linearnu algebru.</li>
+<li>U okviru HPC-a BLAS i Lapack se analiziraju u malo više detalja kao demonstracija kako izgledaju biblioteke tog tipa.</li>
+<li>Za ostale oblasti primene, samo se informativno prelaze koje biblioteke postoje i, konsekventno, odakle treba početi.</li>
+</ul>
+</section>
+<section>
+<section id="linearna-algebra" class="title-slide slide level1">
+<h1>Linearna algebra</h1>
+<ul>
+<li>BLAS</li>
+<li>Basic Linear Algebra Subprograms</li>
+<li>BLAS je jedna od najdrevnijih biblioteka koje se još koriste.</li>
+<li>Nastala je kao deo rada u JPL ogranku NASA.</li>
+<li>BLAS je serijski i sastoji se od implementacija bazičnih formi vektorsko/matričnih operacija na način koji je jako optimizovan za različite platforme.</li>
+</ul>
+</section>
+<section id="nivoi" class="slide level2">
+<h2>Nivoi</h2>
+<ul>
+<li>Sve BLAS operacije se mogu podeliti na 3 nivoa po svojoj prirodi:</li>
+<li>Vektor-vektor</li>
+<li>Matrica-vektor</li>
+<li>Matrica-matrica</li>
+<li>Ranije verzije su podržavale samo niže nivoe zbog ograničenja računara iz tog doba.</li>
+</ul>
+</section>
+<section id="implementacija" class="slide level2">
+<h2>Implementacija</h2>
+<ul>
+<li>BLAS je napisan u programskom jeziku Fortran 77.</li>
+<li>Postoji varijanta prilagođena za upotrebu u programskom jeziku C koja se zove CBLAS</li>
+<li>Nju koristimo (danas, nju skoro svi koriste, kad koriste BLAS) te ako negde piše ‘BLAS’ gotovo se sigurno misli na CBLAS biblioteku.</li>
+</ul>
+</section>
+<section id="struktura-naziva-rutina" class="slide level2">
+<h2>Struktura naziva rutina</h2>
+<ul>
+<li>Funkcije u BLAS-u imaju imena standardizovanog oblika koje, preko afiksa, određuju:
+<ul>
+<li>Preciznost</li>
+<li>Tip matrice koji se koristi, ako ga ima.</li>
+<li>Tip operacije.</li>
+</ul></li>
+<li>U skladu sa c konvencijom, postoji i prefiks biblioteke, cblas_</li>
+</ul>
+</section>
+<section id="preciznost-u-blas-u" class="slide level2">
+<h2>Preciznost u BLAS-u</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Prefiks</th>
+<th>Opis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>s</td>
+<td>Float</td>
+</tr>
+<tr class="even">
+<td>d</td>
+<td>Double</td>
+</tr>
+<tr class="odd">
+<td>c</td>
+<td>Complex</td>
+</tr>
+<tr class="even">
+<td>z</td>
+<td>D.Complex</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tip-matrice-u-blas-u" class="slide level2">
+<h2>Tip matrice u BLAS-u</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Prefiks</th>
+<th>Opis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ge</td>
+<td>Opšta matrica; nema ograničenja</td>
+</tr>
+<tr class="even">
+<td>sy</td>
+<td>Simetrična matrica za koju važi <span class="math inline">\(A = A^{T}\)</span></td>
+</tr>
+<tr class="odd">
+<td>he</td>
+<td>Hermitijanska matrica; matica u kojoj važi da su parovi u transponovanju jedni drugima kompleksni konjugati</td>
+</tr>
+<tr class="even">
+<td>tre</td>
+<td>Trougaona matrica</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tip-čuvanja-matrice-u-blas-u" class="slide level2">
+<h2>Tip čuvanja matrice u BLAS-u</h2>
+<ul>
+<li>Matrice se podrazumevano čuvaju u ‘dense’ formatu, odnosno, jednostavno se pamte sve vrednosti matrice. Redom.</li>
+<li>Ali, može se drugo slovo tipa matrice zameniti sa ili b ili p da odredi da je matrica drugog tipa.</li>
+</ul>
+</section>
+<section id="tip-čuvanja-matrice-u-blas-u-1" class="slide level2">
+<h2>Tip čuvanja matrice u BLAS-u</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Prefiks</th>
+<th>Opis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>b</td>
+<td>Trakasta (banded) matrica. Matrica u kojoj je većina vrednosti 0, ali one koje nisu su u dijagonalama (trakama).</td>
+</tr>
+<tr class="even">
+<td>p</td>
+<td>Nabijena (packed) matrica. Ako je matrica takva da se od jednog trougla može rekonstruisati cela matrica (simetrična, Hermitijanska, ili trouglasta) može se čuvati samo taj jedan trougao pročitan po kolonama u jednom velikom nizu.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="blas-nivo-1-operacije-bez-skalarnog-proizvoda" class="slide level2">
+<h2>BLAS, nivo 1, operacije bez skalarnog proizvoda</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+<th>Nivoi preciznosti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>swap</code></td>
+<td>Menja mesta vektorima</td>
+<td>s,d,c,z</td>
+</tr>
+<tr class="even">
+<td><code>scal</code></td>
+<td>Skalira vektor za konstantu</td>
+<td>s,d,c,z,cs,zd</td>
+</tr>
+<tr class="odd">
+<td><code>copy</code></td>
+<td>Kopira vektor</td>
+<td>s,d,c,z</td>
+</tr>
+<tr class="even">
+<td><code>axpy</code></td>
+<td>Izvršava</td>
+<td>s,d,c,z</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="blas-nivo-1-operacije-sa-skalarnim-proizvodom" class="slide level2">
+<h2>BLAS, nivo 1, operacije sa skalarnim proizvodom</h2>
+<table>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 78%" />
+<col style="width: 15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+<th>Nivoi preciznosti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dot</code></td>
+<td>Skalarni proizvod</td>
+<td>s,d,ds</td>
+</tr>
+<tr class="even">
+<td><code>dotc</code></td>
+<td>Skalarni proizvod konjugovane vrednosti kompleksne vrednosti i neke druge kompleksne vrednosti</td>
+<td>c,z</td>
+</tr>
+<tr class="odd">
+<td><code>dotu</code></td>
+<td>Kompleksni skalarni proizvod</td>
+<td>c,z</td>
+</tr>
+<tr class="even">
+<td><code>sdsdot</code></td>
+<td>Skalarni proizvod plus skalar</td>
+<td>sds</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="blas-nivo-1-operacije-norme" class="slide level2">
+<h2>BLAS, nivo 1, operacije norme</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+<th>Nivoi preciznosti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>nrm2</code></td>
+<td>Proračun 2-norme</td>
+<td>s,d,sc,dz</td>
+</tr>
+<tr class="even">
+<td><code>asum</code></td>
+<td>Proračun 1-norme</td>
+<td>s,d,sc,dz</td>
+</tr>
+<tr class="odd">
+<td><code>i_amax</code></td>
+<td>Proračun ∞-norme</td>
+<td>s,d,c,z</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="blas-nivo-1-operacije-rotacije" class="slide level2">
+<h2>BLAS, nivo 1, operacije rotacije</h2>
+<table>
+<colgroup>
+<col style="width: 3%" />
+<col style="width: 84%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+<th>Nivoi preciznosti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>rotg</code></td>
+<td>Uz date skalare a i b, sračunaće c i s takve da: Ovo se zovu paramteri Givensove rotacije</td>
+<td>s,d</td>
+</tr>
+<tr class="even">
+<td><code>rot</code></td>
+<td>Primenjuje Givens rotaciju, drugim rečima, ako joj se daju dva vektora kao ulaz, svaki element vektora se transformiše na sledeći način:</td>
+<td>s,d</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="blas-nivo-1-operacije-rotacije-1" class="slide level2">
+<h2>BLAS, nivo 1, operacije rotacije</h2>
+<table>
+<colgroup>
+<col style="width: 3%" />
+<col style="width: 86%" />
+<col style="width: 9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+<th>Nivoi preciznosti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>rotmg</code></td>
+<td>Proračuna modifikovanu Givensovu rotacionu matricu. Ako su dati skalirajući faktori d1 i d2 i koordinate (x1, y1) ulaznog vektora sračunati 2x2 matricu H takvu da:</td>
+<td>s,d</td>
+</tr>
+<tr class="even">
+<td><code>rotm</code></td>
+<td>Za vektore x i y proračuna:</td>
+<td>s,d</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="blas-nivo-2-i-3-operacije" class="slide level2">
+<h2>BLAS, nivo 2 i 3, operacije</h2>
+<table>
+<colgroup>
+<col style="width: 5%" />
+<col style="width: 94%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mv</code></td>
+<td>Prozivod matrice i vektora.</td>
+</tr>
+<tr class="even">
+<td><code>sv</code></td>
+<td>Rešava matricu (trouglastu), tj. sistem linearnih jednačina koji ona predstavlja.</td>
+</tr>
+<tr class="odd">
+<td><code>mm</code></td>
+<td>Proizvod dve matrice uz učešće skalara.</td>
+</tr>
+<tr class="even">
+<td><code>rk</code></td>
+<td>Računa opštu jednačinu:</td>
+</tr>
+<tr class="odd">
+<td><code>r2k</code></td>
+<td>Računa opštu jednačinu:</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="primer-prost" class="slide level2">
+<h2>Primer, prost</h2>
+<ul>
+<li>Setite se, jako davno, kada smo radili benchmarking HPC sistema.</li>
+<li>Pominjao sam da postoji jako često korišćen DGEMM korak benchmark-a.</li>
+<li>D-double preciznost</li>
+<li>GE-opšta matrica</li>
+<li>MM-množenje</li>
+<li>Funkcija bi bila cblas_dgemm</li>
+</ul>
+</section>
+<section id="cblas_dgemm" class="slide level2">
+<h2><code>cblas_dgemm</code></h2>
+<p><img data-src="img/2022-12-19-15-25-12.png" /></p>
+</section>
+<section id="cblas_dgemm-1" class="slide level2">
+<h2><code>cblas_dgemm</code></h2>
+<p><img data-src="img/2022-12-19-15-25-25.png" /></p>
+</section>
+<section id="upotreba" class="slide level2">
+<h2>Upotreba</h2>
+<p><img data-src="img/2022-12-19-15-25-36.png" /></p>
+</section>
+<section id="upotreba-1" class="slide level2">
+<h2>Upotreba</h2>
+<p><img data-src="img/2022-12-19-15-25-50.png" /></p>
+</section>
+<section id="upotreba-2" class="slide level2">
+<h2>Upotreba</h2>
+<p><img data-src="img/2022-12-19-15-26-00.png" /></p>
+</section>
+<section id="blas-primena" class="slide level2">
+<h2>BLAS primena</h2>
+<ul>
+<li>BLAS se intenzivno koristi u pozadini velikog broja paketa baziranih na linearnoj algebri.</li>
+<li>Direktno se i ne koristi puno, ne više.</li>
+<li>Korisno je savladati kako radi zato što se koncepti iz BLAS sveta pojavljuju na dosta mesta.</li>
+</ul>
+</section>
+<section id="lapack" class="slide level2">
+<h2>Lapack</h2>
+<ul>
+<li>Linear Algebra PACKage.</li>
+<li>Naslanja se na BLAS i zamenjuje stari Linpack.</li>
+<li>Lapack je implementiran u Fortran-u.</li>
+<li>Verzija za C (koja je deo Lapack projekta) je Lapacke.</li>
+<li>Sve rutine počinju sa LAPACKE_ prefiksom koji prati kod koji se sastoji od:
+<ul>
+<li>Tipa podataka (kao u BLAS)</li>
+<li>Tipa matrice (kao u BLAS uz par dodatnih)</li>
+<li>Operacije</li>
+</ul></li>
+</ul>
+</section>
+<section id="lapack-operacije" class="slide level2">
+<h2>LAPACK operacije</h2>
+<table>
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 87%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SV</td>
+<td>Rešava sisteme linearnih jednačina.</td>
+</tr>
+<tr class="even">
+<td>LS, LSY, LSS, LSD</td>
+<td>Rešava problem najmanjih kvadrata, minimizuje x u formuli ravnoj drugoj normi razlike između vektora b i matrice A puta vektor x.</td>
+</tr>
+<tr class="odd">
+<td>LSE</td>
+<td>Kao gore, ali sa ograničenjem da Bx jednako d.</td>
+</tr>
+<tr class="even">
+<td>GLM</td>
+<td>Rešenje problema opšteg linearnog modela, tj. minimiziranje x bazirano na drugoj normi vektora y sa ograničenjem</td>
+</tr>
+<tr class="odd">
+<td>EV, EVD,EVR</td>
+<td>Računanje sopstvene vrednosti i sopstvenih vektora simetrične matrice A</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="lapack-operacije-1" class="slide level2">
+<h2>LAPACK operacije</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ime</th>
+<th>Opis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ES</td>
+<td>Traši sopstvene vrednosti i vektore za nesimetrične matrice A</td>
+</tr>
+<tr class="even">
+<td>SVD, SDD</td>
+<td>Dekompozicija matrice.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="primer-lapack-funkcije" class="slide level2">
+<h2>Primer LAPACK funkcije</h2>
+<p><img data-src="img/2022-12-19-15-28-12.png" /></p>
+</section>
+<section id="primer-lapack-funkcije-1" class="slide level2">
+<h2>Primer LAPACK funkcije</h2>
+<p><img data-src="img/2022-12-19-15-28-19.png" /></p>
+</section>
+<section id="upotreba-3" class="slide level2">
+<h2>Upotreba</h2>
+<p><img data-src="img/2022-12-19-15-28-29.png" /></p>
+</section>
+<section id="upotreba-4" class="slide level2">
+<h2>Upotreba</h2>
+<p><img data-src="img/2022-12-19-15-28-39.png" /></p>
+</section>
+<section id="skalabilnost-blaslapack" class="slide level2">
+<h2>Skalabilnost BLAS/LAPACK</h2>
+<ul>
+<li>Podrazumevano, sve rutine u BLAS/LAPACK su serijske.</li>
+<li>Rešenje? Postoje HPC-optimizivovane verzije koje rade iste stvari, ali imaju MPI sposobnosti:
+<ul>
+<li>ScaLapack</li>
+<li>PBLAS</li>
+</ul></li>
+</ul>
+</section>
+<section id="alternative" class="slide level2">
+<h2>Alternative</h2>
+<ul>
+<li>GNU Scientific Library (GSL)
+<ul>
+<li>Izuzetno široka biblioteka.</li>
+<li>Ima ponešto za svaku temu.</li>
+<li>Za nas je najzanimljivije što ima BLAS interfejs koji čini bazične operacije sa matricama nešto manje mučnim.<br />
+</li>
+</ul></li>
+<li>SuperLU
+<ul>
+<li>Supernodal LU</li>
+<li>Fokusira se na rešavanje ogromih sistema jednačina.</li>
+<li>Ima izuzetnu podršku za ubrzanje kroz OpenMP, MPI, i čak GPU ubrzanje</li>
+</ul></li>
+</ul>
+</section>
+<section id="alternative-1" class="slide level2">
+<h2>Alternative</h2>
+<ul>
+<li>PETSc
+<ul>
+<li>Portable extensible toolkit for scientific computation</li>
+<li>Uglavnom namenjen za rešavanje diferencijalnih jednačina, ali kao deo posla rešavanja sistema parcijalnih diferencijalnih jednačina ima odlične sisteme za rešavanje običnih linearnih jednačina.</li>
+<li>Poseduje HPC podršku direktno u samoj biblioteci.</li>
+<li>Koristi MPI</li>
+<li>Intenzivno se koristi u HPC krugovima</li>
+</ul></li>
+<li>SLEPc
+<ul>
+<li>Scalable Library for Eigenvalue Problem Computations</li>
+<li>Proširenje PETSc koje računa i probleme sopstvenih vrednosti i vektora</li>
+</ul></li>
+</ul>
+</section>
+<section id="alternative-2" class="slide level2">
+<h2>Alternative</h2>
+<ul>
+<li>ELPA
+<ul>
+<li>Eigenvalue Solvers for Petaflop-Applications</li>
+<li>Još jedan način da se na HPC-optimizovan način računaju sopstvene vrednosti i vektori.</li>
+<li>Ova varijanta je naročito popularna u kvantnoj hemiji i nauci materijala zbog svoje sposobnosti da brzo računa sopstvene vektore Hermitijanskih matrica.</li>
+</ul></li>
+<li>HYPRE
+<ul>
+<li>Kombinuje se sa PETSc i proširuje njene sposobnosti da rešava sisteme linearnih jednačina.</li>
+<li>Koristi MPI # Ostale primene</li>
+</ul></li>
+</ul>
+</section>
+<section id="parcijalne-diferencijalne-jednačine" class="slide level2">
+<h2>Parcijalne diferencijalne jednačine</h2>
+<ul>
+<li>PETSc
+<ul>
+<li>Već je pomenut.</li>
+<li>Specijalizovan je za baš diferencijalne jednačine.</li>
+<li>Podržava i rešavanje nelinearnih jednačina.</li>
+</ul></li>
+<li>Trilinos projekat
+<ul>
+<li>Veliki sistem za brze naučne proračune napravljen da radi na velikom broju HPC arhitektura.</li>
+</ul></li>
+</ul>
+</section>
+<section id="grafovi" class="slide level2">
+<h2>Grafovi</h2>
+<ul>
+<li>PBGL
+<ul>
+<li>Parallel Boost Graph Library</li>
+<li>Bazira se na Boost-ovoj biblioteci za grafove ali je proširuje da radi u HPC okruženju.</li>
+<li>Radi dobro sa arhitekturama distribuirane memorije.</li>
+</ul></li>
+<li>Combinatorial BLAS
+<ul>
+<li>Oslanja se na i formiran je po ugledu na BLAS</li>
+<li>Takođe cilja na arhitekture sa distribuiranom memorijom</li>
+</ul></li>
+<li>Giraph</li>
+</ul>
+</section>
+<section id="io" class="slide level2">
+<h2>I/O</h2>
+<ul>
+<li>NetCDF
+<ul>
+<li>Format razvijen za geologiju, geografiju, i geofiziku.</li>
+<li>Karakteriše ga odlična podrška za arhiviranje.</li>
+</ul></li>
+<li>HDF5
+<ul>
+<li>Sa ovim, kako čujem, imate dosta iskustva.</li>
+</ul></li>
+<li>Silo
+<ul>
+<li>Biblioteka višeg nivoa koja se oslanja na HDF5 da olakša unos iz ispisivanje podataka u distribuiranim aplikacijama.</li>
+</ul></li>
+</ul>
+</section>
+<section id="dekompozicija-meš-struktura" class="slide level2">
+<h2>Dekompozicija meš struktura</h2>
+<ul>
+<li>METIS
+<ul>
+<li>Tretira meš kao graf odn. hipergraf i dekomponuje na osnovu toga.</li>
+<li>Serijalna je, ali ima HPC-optimizovanu verziju: ParMETIS koja koristi MPI</li>
+</ul></li>
+<li>Trilinos
+<ul>
+<li>Trilinos podržava i ovu funkcionlnost.</li>
+</ul></li>
+</ul>
+</section>
+<section id="vizuelizacija" class="slide level2">
+<h2>Vizuelizacija</h2>
+<ul>
+<li>O ovome, celo predavanje, ali najbitnija biblioteka u ovoj oblasti jeste VTK: Visualization Toolkit.</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
