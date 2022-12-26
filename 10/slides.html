@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Paralelni Algoritmi</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Paralelni Algoritmi</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Decembar, 2022</p>
+</section>
+
+<section id="objedinjenje" class="slide level2">
+<h2>Objedinjenje</h2>
+<ul>
+<li>Broj problema je manje-više neograničen.</li>
+<li>Rešenja, sa druge strane, često imaju zajedničke osobine.</li>
+<li>Ove zajedničke osobine mogu da se iskoriste da formiraju grupe rešenja.</li>
+<li>Ovo je odlična olakšica, pošto moramo da razumemo samo ograničen broj stvari da bi rešili veliki broj problema.</li>
+</ul>
+</section>
+<section id="digresijauopštavanje" class="slide level2">
+<h2>Digresija—uopštavanje</h2>
+<ul>
+<li>Ovo je namenjeno da važi samo za HPC i naučne proračune, ali, istinski, važi za skoro sve.</li>
+<li>Naročito zanimljivo jeste koliko dobro važi za matematiku.</li>
+<li>Biti spolja i gledajući unutra, ponekad se čini da je matematika forma čarobnjaštva gde ljudi inicirane u njene unutarnje misterije jednostavno znaju šta da urade kroz neobjašnjive gnostičke metode.</li>
+<li>Ovo, naravno, nije tačno: proces je gotovo uvek pokazivanje homomorfizma između nečega što znamo i nečega što proučavamo i portovanje znanja iz prvog u drugi.</li>
+<li>Zanimljiv sajt koji pokušava da ilustruje univerzalne alate za ovako što je <a href="http://www.tricki.org/tricki/map%5D">http://www.tricki.org/tricki/map</a></li>
+<li>Dobra knjiga na ovu temu je Concrete Mathematics</li>
+</ul>
+</section>
+<section id="klase-numeričkih-metoda" class="slide level2">
+<h2>Klase numeričkih metoda</h2>
+<ul>
+<li>HPC je gotovo uvek namenjen raznim numeričkim metodama.</li>
+<li>Numeričke metode su, jednostavno rečeno, mehanizmi za rešavanje matematičkih problema kroz mehaničke metode.</li>
+<li>Možda se naleteli na termin kroz ‘numeričku analizu’ što je rešavanje analitičkih problema kroz mehaničke metode, ali štošta-drugo je podložno istom procesu. Čak i stvari za koje ne bi pomislili da imaju tu ranjivost.</li>
+<li>Numeričke metode koje se često primenjuju u HPC sistemima se mogu podeliti u sedam klasa poznatih kao ‘sedam patuljaka’</li>
+</ul>
+</section>
+<section id="sedam-patuljaka" class="slide level2">
+<h2>Sedam patuljaka</h2>
+<ul>
+<li>Gusta linearna algebra</li>
+<li>Retka linearna algebra</li>
+<li>Spektralni metodi</li>
+<li>Metodi N tela</li>
+<li>Struktuirane mreže</li>
+<li>Nestruktuirane mreže</li>
+<li>Monte Karlo metode</li>
+</ul>
+</section>
+<section id="proširenje" class="slide level2">
+<h2>Proširenje</h2>
+<ul>
+<li>Ovo su, kada je podela napravljena, zaista bile glavne stvari zbog kojih se traćilo HPC vreme, no vreme je donelo i par novih oblasti koje su bitne.</li>
+</ul>
+</section>
+<section id="četiri-džina-gnoma" class="slide level2">
+<h2>Četiri… džina? Gnoma?</h2>
+<ul>
+<li>Prolazak kroz grafove.</li>
+<li>Konačne mašine stanja.</li>
+<li>Kombinatorička logika.</li>
+<li>Statističke tehnike mašinskog učenja.</li>
+</ul>
+</section>
+<section id="klase-problema-i-klase-rešenja" class="slide level2">
+<h2>Klase problema i klase rešenja</h2>
+<ul>
+<li>Dok klase problema donekle nameću prirodu rešenja, klase rešenja određuju prirodu rešenja</li>
+<li>Klase problema su tipovi izazova sa kojima se susrećete</li>
+<li>Klase rešenja su više kao alatke koje imate da te izazove nadmašite.</li>
+</ul>
+</section>
+<section id="primeri-generičkih-klasa-paralelnih-algoritama" class="slide level2">
+<h2>Primeri generičkih klasa paralelnih algoritama</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Klasa</th>
+<th>Primer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fork/join</td>
+<td>Paralelni for</td>
+</tr>
+<tr class="even">
+<td>Zavadi pa vladaj</td>
+<td>FFT, paralelno sortiranje</td>
+</tr>
+<tr class="odd">
+<td>Halo zamena</td>
+<td>Sistemi konačnih elemenata/razlika</td>
+</tr>
+<tr class="even">
+<td>Permutacije</td>
+<td>Kanonov algoritam</td>
+</tr>
+<tr class="odd">
+<td>Sramotno paralelna</td>
+<td>Monte Karlo</td>
+</tr>
+<tr class="even">
+<td>Menadžer/radnik</td>
+<td>Aktivno meš rafiniranje</td>
+</tr>
+<tr class="odd">
+<td>Zadaci protoka podataka</td>
+<td>Pretraga po širini</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="terminološka-beleška" class="slide level2">
+<h2>Terminološka beleška</h2>
+<ul>
+<li>Zavadi pa vladaj je nezgodan termin, gledano jezički</li>
+<li>Prevod je engleskog termina ‘divide &amp; conquer’ što je pak prevod Latinske izreke <strong>divide et impera</strong> što je pak njihov prevod izreke pripisane Filipu II Makedonskom <em>διαίρει καὶ βασίλευε.</em></li>
+<li>Bukvalan prevod je ‘podeli i vladaj.’ Prevod koji najviše hvata suštinu je ‘zavadi pa vladaj’ budući da se odnosilo na strategiju eksploatacije podela i nesloge za očuvanje vladavine.</li>
+<li>Engleski prevod je netačan, ali je <em>mnogo</em> bolji kao opis stvarne tehnike u algoritmima.</li>
+</ul>
+</section>
+<section id="forkjoin" class="slide level2">
+<h2>Fork/join</h2>
+<p><img data-src="img/2022-12-26-12-53-43.png" /></p>
+</section>
+<section id="forkjoin-1" class="slide level2">
+<h2>Fork/join</h2>
+<ul>
+<li>Ovo je najjednostavniji generički algoritam za paralelizaciju.</li>
+<li>Vi ste ga koristili, konzervativno, barem hiljadu puta.</li>
+<li>Lepa stvar jeste u tome što radi za veliki broj problema.</li>
+<li>Fork znači da jedinstvenu nit izvršavanja cepamo na više niti, a join znači da posle faze paralelnog izvršavanja:
+<ul>
+<li>Re-sinhronizujemo ono što se izvršava.</li>
+<li>Akumuliramo rezultate.</li>
+<li>Vraćamo se na jednostruko izvršavanje.</li>
+</ul></li>
+<li>Fork/join nije samo OpenMP stvar, nešto vrlo slično je moguće na svakoj arhitekturi, a naročito prirodno na bilo čemu sa deljenom memorijom.</li>
+</ul>
+</section>
+<section id="zavadi-pa-vladaj" class="slide level2">
+<h2>Zavadi pa vladaj</h2>
+<ul>
+<li>Ideja zavadi-pa-vladaj algoritama jeste da se nekakav problem:
+<ul>
+<li>Podeli na manje delove</li>
+<li>Rekurzivno se nastavi deljenje</li>
+<li>Deljenje na manje delove ide sve dok se ne dostigne ‘atomski’ nivo operacije koji:
+<ul>
+<li>Ne može dalje da se deli</li>
+<li>Komputaciono je trivijalan.</li>
+</ul></li>
+</ul></li>
+<li>Zavadi-pa-vladaj imaju smisla i u serijskoj implementaciji, ali zaista zablistaju u paralelnom slučaju, naročito u situaciji deljene memorije.</li>
+<li>Sistemi distribuirane memorije stvaraju problem u tome što kašnjenje u komunikaciji može da “pojede” prednosti koje zavadi-pa-vladaj donosi.</li>
+</ul>
+</section>
+<section id="quicksort" class="slide level2">
+<h2>Quicksort</h2>
+<ul>
+<li>Najklasičniji primer zavadi-pa-vladaj algoritma je, naravno, quicksort algoritam za sortiranje.</li>
+<li>Quicksort je najbrži algoritam za sortiranje u opštem slučaju.
+<ul>
+<li>Moguće je dokazati da nema bržeg ključ-baziranog algoritma za sortiranje.</li>
+<li>To i dalje ostavlja sisteme za sortiranje koji nisu bazirani na ključu.</li>
+<li>Takođe, Quicksort je danas manje primenjen nego nekada zbog pragmatike upotrebe sortiranja u stvarnom kodu i frekvencije patoloških ulaza.</li>
+</ul></li>
+<li>Uprkos tome, i dalje se koristi (npr. .NET koristi QS podrazumevano, i zanimljiv je kao test paralelizacije)</li>
+</ul>
+</section>
+<section id="quicksort-1" class="slide level2">
+<h2>Quicksort</h2>
+<ul>
+<li>Trebalo bi da ovo znate ali…</li>
+<li>Za neki niz odabrati nasumično element koji će biti stožer (pivot), te onda napraviti dva pod-niza, elementi veći od stožera i elementi manji od stožera.</li>
+<li>Ovaj proces izvršiti rekurzivno na rezultujućim pod-nizovima, sve dok se ne dobiju nizovi sa samo jednim elementom.</li>
+<li>Pročitati sortirani niz sa leva na desno</li>
+</ul>
+</section>
+<section id="quicksort-2" class="slide level2">
+<h2>Quicksort</h2>
+<p><img data-src="img/2022-12-26-12-55-55.png" /></p>
+</section>
+<section id="quicksort-3" class="slide level2">
+<h2>Quicksort</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> qsort<span class="op">&lt;</span>T<span class="op">:</span> <span class="bu">Eq</span> <span class="op">+</span> <span class="bu">PartialEq</span> <span class="op">+</span> <span class="bu">Clone</span> <span class="op">+</span> <span class="bu">PartialOrd</span><span class="op">&gt;</span>(arr<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;</span>) <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> len <span class="op">=</span> arr<span class="op">.</span>len()<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    quicksort(arr<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> len <span class="op">-</span> <span class="dv">1</span><span class="op">,</span> <span class="op">&amp;|</span>a<span class="op">,</span> b<span class="op">|</span> a <span class="op">&lt;</span> b)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="quicksort-4" class="slide level2">
+<h2>Quicksort</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> quicksort<span class="op">&lt;</span>T<span class="op">:</span> <span class="bu">Eq</span> <span class="op">+</span> <span class="bu">PartialEq</span> <span class="op">+</span> <span class="bu">Clone</span> <span class="op">+</span> <span class="bu">PartialOrd</span><span class="op">,</span> F<span class="op">:</span> <span class="bu">Fn</span>(<span class="op">&amp;</span>T<span class="op">,</span> <span class="op">&amp;</span>T) <span class="op">-&gt;</span> <span class="dt">bool</span><span class="op">&gt;</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    arr<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    lo<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    hi<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    comparator<span class="op">:</span> <span class="op">&amp;</span>F<span class="op">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>) <span class="op">{</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> lo <span class="op">&lt;=</span> hi <span class="op">{</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> p <span class="op">=</span> part(arr<span class="op">,</span> lo<span class="op">,</span> hi<span class="op">,</span> comparator)<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">if</span> p <span class="op">==</span> <span class="dv">0</span> <span class="op">{</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            <span class="kw">return</span><span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        quicksort(arr<span class="op">,</span> lo<span class="op">,</span> p <span class="op">-</span> <span class="dv">1</span><span class="op">,</span> comparator)<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        quicksort(arr<span class="op">,</span> p <span class="op">+</span> <span class="dv">1</span><span class="op">,</span> hi<span class="op">,</span> comparator)<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="quicksort-5" class="slide level2">
+<h2>Quicksort</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> part<span class="op">&lt;</span>T<span class="op">:</span> <span class="bu">Clone</span><span class="op">,</span> F<span class="op">:</span> <span class="bu">Fn</span>(<span class="op">&amp;</span>T<span class="op">,</span> <span class="op">&amp;</span>T) <span class="op">-&gt;</span> <span class="dt">bool</span><span class="op">&gt;</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    arr<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    lo<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    hi<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    comparator<span class="op">:</span> <span class="op">&amp;</span>F<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">usize</span> <span class="op">{</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> pivot <span class="op">=</span> <span class="kw">match</span> arr<span class="op">.</span>get(hi) <span class="op">{</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="cn">Some</span>(v) <span class="op">=&gt;</span> v<span class="op">.</span>clone()<span class="op">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        _ <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="pp">panic!</span>(<span class="st">&quot;Indeks {:?} nije u nizu. Kako?&quot;</span><span class="op">,</span> hi)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> i <span class="op">=</span> lo<span class="op">;</span></span></code></pre></div>
+</section>
+<section id="quicksort-6" class="slide level2">
+<h2>Quicksort</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">for</span> j <span class="kw">in</span> lo<span class="op">..</span>hi <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">match</span> <span class="op">&amp;</span>arr<span class="op">.</span>get(j) <span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="cn">Some</span>(v) <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                <span class="kw">if</span> comparator(v<span class="op">,</span> <span class="op">&amp;</span>pivot) <span class="op">{</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                    arr<span class="op">.</span>swap(i<span class="op">,</span> j)<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                    i <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            _ <span class="op">=&gt;</span> <span class="op">{</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="pp">panic!</span>(<span class="st">&quot;Indeks {:?} nije u nizu u get_pivot petlji.&quot;</span><span class="op">,</span> j)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    arr<span class="op">.</span>swap(i<span class="op">,</span> hi)<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    i</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="quicksort-7" class="slide level2">
+<h2>Quicksort</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> niz <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">3</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">4</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="dv">9</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">6</span>]<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">qsort::</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span>(<span class="op">&amp;</span><span class="kw">mut</span> niz)<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">println!</span>(<span class="st">&quot;{:?}&quot;</span><span class="op">,</span> niz)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</section>
+<section id="paralelizacija-quicksort-algoritma" class="slide level2">
+<h2>Paralelizacija Quicksort algoritma</h2>
+<ul>
+<li>Momenat kada počne rekurzija, mi možemo da algoritam paralelizujemo.</li>
+<li>Ako pogledate videćete da do samog kraja, svaka rekurzivna komponenta se izvršava u potpunoj paraleli.</li>
+<li>Nema izazova, pokrenemo rekurzivne komponente u paraleli i gotovi smo.</li>
+<li>Problem je u distribuiranim arhitekturama gde to što je neophodno da se podaci prebacuju sa mesta na mesto dramatično smanjuje efikasnost.</li>
+<li>Rešenje? Quicksort modifikacija bazirana na uzorkovanju.</li>
+</ul>
+</section>
+<section id="quicksort-sa-uzorkovanjem" class="slide level2">
+<h2>Quicksort sa uzorkovanjem</h2>
+<ul>
+<li>Za niz od <span class="math inline">\(N\)</span> elemenata i <span class="math inline">\(P\)</span> procesa se niz podeli na <span class="math inline">\(P\)</span> jednakih segmenata veličine <span class="math inline">\(\frac{N}{P}\)</span>. Svaki proces dobije jedan taj segment.</li>
+<li>Svaki proces lokalno QuickSort-uje svoj segment.</li>
+<li>Rezultujuće sortirane nizove mi uzorkujemo tj. uzimamo vrednosti iz njih na način baziran na globalnoj veličini <span class="math inline">\(N\)</span> i broju procesa <span class="math inline">\(P\)</span> tako što ozimamo uzorke na svakoj <span class="math inline">\(Q\)</span>-toj lokaciji počevši od 0 gde je <span class="math inline">\(Q = \frac{N}{P^2}\)</span></li>
+<li>To znači da su indeksi koje uzorkujemo oblika: <span class="math inline">\(0, \frac{N}{P^2},\frac{2 \cdot N}{P^2}, ... \frac{(P-1) \cdot N}{P^2}\)</span></li>
+</ul>
+</section>
+<section id="quicksort-sa-uzorkovanjem-1" class="slide level2">
+<h2>Quicksort sa uzorkovanjem</h2>
+<ul>
+<li>Sada kada imamo odabrane uzorke po svim procesima, oni se skupljaju u korenski proces i sortiraju sa sekvencijalnim QuickSort-om.</li>
+<li>Iz sortiranog skupa uzoraka se bira P-1 stožerskih vrednosti koristeći isti sistem uzorkovanja koji se koristio da se skup uzoraka napravi.</li>
+<li>Sve stožerske vrednosti se pošalju svakom procesu.</li>
+<li>Svaki proces podeli svoj deo globalnog niza u P segmenata koristeći P-1 sožerskih vrednosti.</li>
+<li>Nad rezultujućim podacima se primeni MPI All-to-all operacija čiji je rezultat da svaki od P procesa dobije sve primere jednog od P segmenata.</li>
+<li>Pristigle komponente segmenata se lokalno spoje i serijski QuickSort-uju.</li>
+<li>Sortirani nizovi se spoje u redosledu P-vrednosti. Algoritam je gotov.</li>
+</ul>
+</section>
+<section id="quicksort-sa-uzorkovanjem-2" class="slide level2">
+<h2>Quicksort sa uzorkovanjem</h2>
+<ul>
+<li>Primetite da često quick sort-ujemo serijski, lokalno.</li>
+<li>Ovo je šansa da još ubrzamo ovaj algoritam kroz hibridni pristup gde MPI koristimo da implementiramo ceo algoritam, a OpenMP da bi maksimalno ubrzali lokalne QuickSort-ove koji se prirodno paralelizuju na arhitekturama sa deljenom memorijom.</li>
+</ul>
+</section>
+<section id="menadžer-radnik" class="slide level2">
+<h2>Menadžer-radnik</h2>
+<ul>
+<li>Ovo je opšti obrazac paralelnog programiranja gde ima jedna nit odn. proces sa posebnim zaduženjima započinjanja procesa i kontrole, i određeni broj uslužnih niti odn. procesa koji rade sav posao.</li>
+<li>Ovo je prirodno u interaktivnim aplikacijama gde, očigledno, zaista postoji posebna nit: GUI nit.</li>
+<li>Menadžer-radnik rešenja su naročito dobro prilagođena problemima gde ne znamo unapred šta će se u svakom koraku algoritma desiti, no to dinamički evoluira tokom rada.</li>
+</ul>
+</section>
+<section id="deljena-magistrala-poruka" class="slide level2">
+<h2>Deljena magistrala poruka</h2>
+<ul>
+<li>Softverski šablon kojim se implementira menadžer-radnik jeste da postoji deljena magistrala podataka (message bus) koji niti/procesi dele na koji, tipično, piše korenska nit/proces, a koji osluškuju uslužne niti/procesi.</li>
+<li>Ako ste radili moderne tehnike distribuiranih serverskih sistema možda ste naleteli na jednu implementaciju ovoga: Kafka.</li>
+<li>U lokalu se nešto slično koristi: svaki GUI sistem je napravljen na sličan način, naročito u Windows-u gde se zaista sve radi preko poruka.</li>
+</ul>
+</section>
+<section id="sramotno-paralelni-algoritmi" class="slide level2">
+<h2>Sramotno paralelni algoritmi</h2>
+<ul>
+<li>Zašto sramotno?</li>
+<li>Pa, ideja je, da je toliko lako paralelizovati ove algoritme da vas je, kao HPC inženjera, praktično sramota.</li>
+<li>Renderovanje je klasičan primer.</li>
+<li>Još, možda, impresivniji primer je skoro bilo koji Monte Karlo algoritam.</li>
+<li>Monte Karlo algoritmi su takvi da, efektivno, pogađaju nanovo i nanovo i nanovo i nanovo proizvodeći rezultat koji, istina, nije tačan, ali je svakom iteracijom pogađanja sve tačniji, tj. koriste nasumično uzorkovanje da se asimptotski približavaju tačnom odgovoru.</li>
+<li>Ono što čini većinu Monte Karlo metoda sramotno paralelnim jeste to što iteracija 3039 nema ništa zajedničko sa iteracijom 2929. Mogu se izvršiti u bilo kom redosledu i ne komuniciraju.</li>
+<li><strong>Fantastično.</strong></li>
+</ul>
+</section>
+<section id="primer-monte-karlo-algoritmaračunanje-broja-π" class="slide level2">
+<h2>Primer Monte Karlo algoritma—računanje broja π</h2>
+<ul>
+<li>Napravimo jedinični kvadrat 1x1.</li>
+<li>U tom kvadratu upišemo jedinični krug.</li>
+<li>Nasumično generišemo vrednosti unutar jediničnog kvadrata.</li>
+<li>Brojimo dve vrednosti: koliko smo tačaka generisali i koliko od tih tačaka je u krugu.</li>
+<li>Odnos između broja tačaka u krugu i broja tačaka ukupno će asimptotski prilaziti π/4.</li>
+</ul>
+</section>
+<section id="kako-paralelizovati-ovaj-algoritam" class="slide level2">
+<h2>Kako paralelizovati ovaj algoritam?</h2>
+<ul>
+<li>Lako!</li>
+<li>Sve što treba jeste da radimo ovu operaciju paralelno koliko god hoćemo i da na kraju toga skupimo sve brojeve kroz redukciju.</li>
+<li>Gotovo.</li>
+<li>Sramota vas je, zar ne?</li>
+</ul>
+</section>
+<section id="halo-komunikacija" class="slide level2">
+<h2>Halo komunikacija</h2>
+<ul>
+<li>Često imamo veoma paralelan slučaj gde svi procesni elementi rade istu stvar nad različitim podacima skoro bez komunikacije.</li>
+<li>Skoro?</li>
+<li>Pa ako svaki procesni element ima svoj prostorno kompaktan domen gde radi svoju stvar jedini problem su granice tih prostorno kompaktnih domena.</li>
+<li>Budući da particija podataka odgovara particiji prostora, komunikacija je relevantna samo na tim slojevima između.</li>
+<li>Taj sloj se zove ‘Halo’ odn. ‘Oreol’ i ima osobinu dubine, tj. može biti dubok 1, 2, 3, itd. tačaka.</li>
+</ul>
+</section>
+<section id="primeri-halo-komunikacije" class="slide level2">
+<h2>Primeri halo komunikacije</h2>
+<ul>
+<li>Traženje ivica nad velikom slikom (dubina od 0 do 7)</li>
+<li>Rešavanje parcijalnih diferencijalnih jednačina za advekciju.</li>
+<li>Množenje retkih matrica.</li>
+</ul>
+</section>
+<section id="advekcija" class="slide level2">
+<h2>Advekcija</h2>
+<ul>
+<li>Advekcija je opšti slučaj da se nekakvo skalarno polje <span class="math inline">\(f(x, t)\)</span> širi ka smeru uvećane vrednosti skalarne vrednosti <span class="math inline">\(x\)</span>, brzinom <span class="math inline">\(v\)</span> kroz vreme.</li>
+<li><em>Šta?</em></li>
+<li>Mislite, na primer, provođenje toplote.</li>
+<li>Matematički, ovo je problem da za neku graničnu vrednost, rešimo parcijalnu diferencijalnu jednačinu: <span class="math inline">\(\frac{\partial f}{\partial t} = -v\frac{\partial f}{\partial x}\)</span></li>
+</ul>
+</section>
+<section id="advekcija-1" class="slide level2">
+<h2>Advekcija</h2>
+<ul>
+<li>Numerički, možemo da rešimo pređašnju jednačinu kroz metod konačnih razlika.</li>
+<li>Prvo, diskretizujemo i vreme i prostor, vreme u korake simulacije dt, a prostor u uniformni meš.</li>
+<li>Onda se situacija svodi na rešavanje jednačine</li>
+</ul>
+</section>
+<section id="advekcija-2" class="slide level2">
+<h2>Advekcija</h2>
+<p><span class="math display">\[
+\frac{f_i^{n+1} - f_i^{n}}{dt} = -v\frac{f_{i+1}^n - f_i^{n}}{dx}
+\]</span></p>
+</section>
+<section id="diskretizacija-i-parametri" class="slide level2">
+<h2>Diskretizacija i parametri</h2>
+<ul>
+<li>U pređašnjem dx i dt su samo veličine koraka diskretizacije, a v je parametar simulacije, tako da možemo da uzmemo da te vrednosti imamo.</li>
+<li>Takođe, ako imamo početne vrednosti (što je neophodno za rešavanje diferencijalnih jednačina bilo koje vrednosti, budući da bez početnih vrednosti diferencijalne jednačine u stvari definišu porodice funkcija, a ne specifične funkcije) jasno je da za momenat n+1 sve što nam treba proističe iz momenta n, tj. poznato je.</li>
+</ul>
+</section>
+<section id="konačni-oblik-jednačine" class="slide level2">
+<h2>Konačni oblik jednačine</h2>
+<p><span class="math display">\[
+f_i^{n+1} = f_i^{n} -v\frac{dt}{dx}\frac{f_{i+1}^n - f_i^{n}}{dx}
+\]</span></p>
+</section>
+<section id="komunikacija-između-procesa" class="slide level2">
+<h2>Komunikacija između procesa</h2>
+<ul>
+<li>U slučaju advekcije komunikacija je trivijalna: samo nam treba pređašnje stanje elementa odmah ‘desno’ od nas i ništa više. To znači da je transmisija podataka relativno jednostavna.</li>
+<li>Halo je ovde dubok samo 1 i nesimetričan je.</li>
+</ul>
+</section>
+<section id="permutacija" class="slide level2">
+<h2>Permutacija</h2>
+<ul>
+<li>Sistem permutacije jeste specijalizovana forma paralelizma na nivou podataka koji je karakterističan i za halo komunikaciju</li>
+<li>Razlika jeste u tome što jednostavna halo komunikacija nije dovoljna, no je potrebno komunicirati kompleksnije na takav način da su prave informacije na pravom mestu u pravom trenutku.</li>
+<li>Ovo može biti poprilično izazovno zato što zahteva da se, efektivno, radi na konstantno pomerajućem modelu memorije.</li>
+<li>Primer je Kanonov algoritam za distribuirano množenje gustih matrica.</li>
+</ul>
+</section>
+<section id="kanonov-algoritam" class="slide level2">
+<h2>Kanonov algoritam</h2>
+<ul>
+<li>Treba da pomnožimo dve matrice i smestimo rezultat u treću.</li>
+<li>Prvo, podelimo matrice na ravnomerne blokove koje odgovaraju jedne drugima, tj. i C i A i B imaju isti broj blokova.</li>
+<li>Onda te blokove podelimo između niti/procesa. ## Kanonov algoritam <img data-src="img/2022-12-26-14-44-59.png" /></li>
+</ul>
+</section>
+<section id="kanonov-algoritam-1" class="slide level2">
+<h2>Kanonov algoritam</h2>
+<p><img data-src="img/2022-12-26-14-45-12.png" /></p>
+</section>
+<section id="problem" class="slide level2">
+<h2>Problem</h2>
+<ul>
+<li>Ovde je teškoća u tome što u procesu odgovornom za C11, recimo, imamo samo A11 i B11. Ništa drugo. Možemo da pomnožimo pod-matrice A11 i B11, nema problema, ali šta onda?</li>
+<li>Naravno, mogli bi da držimo celu matricu svuda, ali onda sve što imamo jeste model deljene memorije što je lepo ali…</li>
+</ul>
+</section>
+<section id="rešenje" class="slide level2">
+<h2>Rešenje</h2>
+<ul>
+<li>Rešenje je komunikacija korak-po-korak.</li>
+<li>Ako opet pogledamo na onu jednačinu…</li>
+</ul>
+</section>
+<section id="rešenje-1" class="slide level2">
+<h2>Rešenje</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Proračun</th>
+<th>Korak</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(A_{10}B_{01}\)</span></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A_{11}B_{11}\)</span></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(A_{12}B_{21}\)</span></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(A_{13}B_{31}\)</span></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="rešenje-2" class="slide level2">
+<h2>Rešenje</h2>
+<ul>
+<li>Podelili smo ono što treba da se uradi na korake (imamo i još jedan korak na kraju toga: redukciju, ali to nije problem) i valja primetiti da možemo da tačno vidimo na onoj slici podele kad nam treba koji komad podataka.</li>
+</ul>
+</section>
+<section id="sekvenca-zavisnosti-od-podataka" class="slide level2">
+<h2>Sekvenca zavisnosti od podataka</h2>
+<p><img data-src="img/2022-12-26-14-49-43.png" /></p>
+</section>
+<section id="generalizacija" class="slide level2">
+<h2>Generalizacija</h2>
+<ul>
+<li>Prirodno, ovo isto bi mogli da napravimo za bilo koju ćeliju C</li>
+<li>Obrazac je apsolutno isti.</li>
+<li>Ostaje da vidimo šta tačno razlikuje šta nam treba u koraku N+1 u odnosu na korak N</li>
+<li>Odgovor: Treba nam šta je u A u ćeliji odmah desno, a u B u ćeliji odmah dole.</li>
+<li>Uz wraparound kao da je matrica projektovana na površinu torusa, naravno.</li>
+<li>I to nam treba za svaki korak u svakom procesu.</li>
+<li>Drugim rečima, uvek nam treba ista količina podataka, samo koji su to podaci se menja.</li>
+<li>Način na koji se to menja je predvidiv.</li>
+</ul>
+</section>
+<section id="kanonov-algoritam-2" class="slide level2">
+<h2>Kanonov algoritam</h2>
+<ul>
+<li>Kanonov algoritam je da, dakle, podelimo matricu kao što smo pričali, a onda za svaki korak (koji zavisi od broja blokova na koje delimo matrice) izvršimo mroženje, a onda šiftujemo matricu A ulevo, a matricu B nagore.</li>
+<li>Onda samo ponovimo stvar.</li>
+<li>Drugim rečima, permutacijom ukupnog skupa vrednosti mi činimo algoritam vrlo jednostavnim budući da uvek radi isto, samo sa drugim podacima.</li>
+<li>Dodatan bonus: C matrica se ne pomera, što znači da će na kraju svaki proces imati isti blok kao na početku, samo sa skupljenim vrednostima u sebi koje samo treba gather-ovati.</li>
+</ul>
+</section>
+<section id="kanonov-algoritam-3" class="slide level2">
+<h2>Kanonov algoritam</h2>
+<p><img data-src="img/2022-12-26-14-50-32.png" /></p>
+</section>
+<section id="kanonov-algoritam-4" class="slide level2">
+<h2>Kanonov algoritam</h2>
+<p><img data-src="img/2022-12-26-14-50-44.png" /></p>
+</section>
+<section id="model-toka-zadataka" class="slide level2">
+<h2>Model toka zadataka</h2>
+<ul>
+<li>Task dataflow (model toka zadatka) je, na neki način, maksimalno generički model paralelizacije.</li>
+<li>Postave se podaci i veze između podataka, i onda se rezultujući graf particioniše između procesa uz očekivanu sinhronizovanu komunikaciju tamo gde linija particije između procesa seče ivice grafa.</li>
+<li>Ovaj pristup se često koristi kada je potrebno raditi mašinsku paralelizaciju
+<ul>
+<li>Breakthrough wanted: Imati softverske alate koji paralelizuju umesto nas bi bilo zgodno.</li>
+</ul></li>
+<li>Takođe se još više koristi za grafove usled prirodnog homomorfizma između njega i domena problema.</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
