@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Vizuelizacija</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Vizuelizacija</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Januar, 2023</p>
+</section>
+
+<section>
+<section id="o-vizuelizaciji" class="title-slide slide level1">
+<h1>O vizuelizaciji</h1>
+<p>Proizvodnja uvida</p>
+</section>
+<section id="čemu" class="slide level2">
+<h2>Čemu?</h2>
+<ul>
+<li>Vizuelizacija, usko definisana, je korišćenje slika da prikažemo kvantitativne podatke.</li>
+<li>No, mogli bi da posmatramo i širu definiciju vizuelizacije, gde je to tehnologija koja služi da se ljudskom umu olakša uvid u podatke koji su ili previše obimni, ili previše kompleksni za lako razumevanje.</li>
+</ul>
+</section>
+<section id="proces-vizuelizacije-u-najopštijem-smislu" class="slide level2">
+<h2>Proces vizuelizacije u najopštijem smislu</h2>
+<ol type="1">
+<li>Generisanje sirovih podataka</li>
+<li>Obrada podataka u neki novi oblik</li>
+<li>Prikazivanje podataka korisniku</li>
+</ol>
+</section>
+<section id="opšta-definicija" class="slide level2">
+<h2>Opšta definicija</h2>
+<ul>
+<li>Ova definicija je veoma široka, relativno ne-standardna, ali odgovara našim potrebama i prirodna je.</li>
+<li>Ako je prirodna, zašto to zovemo vizuelizacija?
+<ul>
+<li>Istorijski razlozi.</li>
+<li>Najviše informacija mi apsorbujemo kroz oči. Imamo vrlo oštar vid i kao rezultat, kada pokušavamo da u ljudski um ubacimo što više podataka, prirodno je da to odaberemo kao medijum.</li>
+</ul></li>
+<li>Valja napomenuti da po ovoj definiciji, ‘vizuelizacija’ obuhvata čak i stvari kao što su deskriptivni statistički pokazatelji.</li>
+</ul>
+</section>
+<section id="osobine-vizuelizacija-u-najširem-smislu." class="slide level2">
+<h2>Osobine vizuelizacija u najširem smislu.</h2>
+<ul>
+<li><strong>Gubitak.</strong> Proces vizuelizacije uvek gubi neke podatke, to jest, mi dobijamo poboljšan uvid na račun smanjene oštrine podataka. Nikada nećete imati oštriji prikaz od ogromne tabele.<br />
+</li>
+<li><strong>Kompresija.</strong> Proces vizuelizacije često komprimuje višestruke dimenzije varijacije u originalnom skupu podataka u jednu dimenziju finalne vizuelizacije.</li>
+<li><strong>Transfer.</strong> Komprimovani podaci smanjene oštrine se, da bi vizualizacija mogla da radi, tipično prebacuju iz jednog domena prikaza u drugi, klasično iz numeričkog u vizuelni.</li>
+<li><strong>Pristrasnost.</strong> Nema tako čega kao neutralne vizuelizacije. Svaka vizuelizacija je rezultat mnogobrojnih izbora: izbora tehnike, parametara tehnike, podataka koji se prikazuju, šta se žrtvuje, i tako dalje. To znači da svesno ili nesvesno utičemo na uvid koji korisnik može pokupiti iz vizuelizacije.</li>
+</ul>
+</section>
+<section id="formalizacija-klasičnih-vizuelizacija" class="slide level2">
+<h2>Formalizacija klasičnih vizuelizacija</h2>
+<ul>
+<li>Pozivajući se na rad Karpendejla iz 2003, moguće je sve vizuelizacije u klasičnom smislu (to jest, mapiranja na mirne slike) konceptualizovati kao mapiranje dimenzija skupa podatka na vizuelne promenljive.</li>
+<li>Vizuelne promenljive su korisna apstrakcija koja opisuje kako, psihološki gledano, mi apsorbujemo vizuelne informacije.</li>
+</ul>
+</section>
+<section id="vizuelne-promenljive" class="slide level2">
+<h2>Vizuelne promenljive</h2>
+<p><img data-src="img/2023-01-08-14-38-42.png" /></p>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<ul>
+<li>Postoji nesrećna tendencija da se izabere tehnika i da se onda ta tehnika nahrani ogromnim skupom podataka i rezultujuća slika šta god da je pokaže korisniku.</li>
+<li>Još gore, postoje manipulativne vizuelizacije koje su način da se slikom efektno laže.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-1" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-09-19.png" /></p>
+</section>
+<section id="pravila-hci-nas-neće-ostaviti-na-miru" class="slide level2">
+<h2>Pravila HCI nas neće ostaviti na miru</h2>
+<ul>
+<li>Ljudski um jednostavno ne može da istovremeno poredi više od negde između 5 i 11 stvari.</li>
+<li>To što smo prikazali korisniku 100 stvari ne znači da korisnik vidi 100 stvari.</li>
+<li>Još crnje, jako je loša ideja koristiti vizuelizacije bazirane na podeli celine (čuvena “pita”) ako nije odmah jasno šta je celina.</li>
+<li>Ovde, recimo, prikazujemo uvid u… šta?</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-2" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-09-54.png" /></p>
+</section>
+<section id="to-što-ga-microsoft-podržava" class="slide level2">
+<h2>To što ga Microsoft podržava…</h2>
+<ul>
+<li>…ne znači da treba da ga koristimo.</li>
+<li>3D pie chart je spektakularno loša ideja.</li>
+<li>Prvo, zašto koristiti sekcije kruga (što teže procenjujemo), a ne sekcije štangle (što lakše procenjujemo?).</li>
+<li>Mnogo bitnije, zašto onda da zahtevamo od korisnika da ceni veličine objekata u tri dimenzije u <em>perspektivi?</em></li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizacijustil-američke-politike" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju—Stil američke politike</h2>
+<p><img data-src="img/2023-01-08-14-10-46.png" /></p>
+</section>
+<section id="kako-ono-beše" class="slide level2">
+<h2>Kako ono beše…</h2>
+<ul>
+<li>…rade procenti?</li>
+<li>Postoje dve mogućnosti da objasne prethodni… kreativni crtež:</li>
+<li>U pitanju je bila anketa sa više mogućih odgovora koja nije adekvatno obrađena pred vizuelizaciju.</li>
+<li>Bavljenje američkom političkom scenom je korozivno za ljudski um.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-3" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-28-12.png" /></p>
+</section>
+<section id="ima-sedam-vizuelnih-promenljivih" class="slide level2">
+<h2>Ima sedam vizuelnih promenljivih…</h2>
+<ul>
+<li>…to ne znači da sve treba i da se koriste.</li>
+<li>Prvo, ovo prenatrpa previše stvari na isti dijagram—iako je moguće uraditi vrlo zanimljive stvari sa multidimenzionalnom vizuelizacijom, ona mora biti pažljiva.</li>
+<li>Ovo nije pažljivo.</li>
+<li>Naročito nezgodno jeste što se koriste veličine sfera da predstave neku dimenziju. Što je to problem?</li>
+<li>Da li poredimo prečnike sfera, površine sfera, površine 2D projekcija sfera, ili zapremine sfera?</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-4" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-28-40.png" /></p>
+</section>
+<section id="osnovna-nekompetentnost" class="slide level2">
+<h2>Osnovna nekompetentnost</h2>
+<ul>
+<li>Ovde je slučaj vrlo česte greške koju ja volim da zovem “Excel sindrom.”</li>
+<li>Da, ja mogu da selektujem manje-više šta god hoću u Excel-u i pritisnem dugme koje generiše bilo koji grafikon.</li>
+<li>To ne znači da treba da to radim.</li>
+<li>U ovom slučaju izabran je način prikaza koji zahteva da obe ose imaju smisleno uređenje ne bi li se prikazala linearna-u-delovima veza između dve nezavisno varirajuće promenljive.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-5" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-29-11.png" /></p>
+</section>
+<section id="problem-sa-3d" class="slide level2">
+<h2>Problem sa 3D</h2>
+<ul>
+<li>Jako je privlačno raditi vizuelizaciju u 3D-u</li>
+<li>Izgleda bolje, impresivnije.</li>
+<li>Daje nam celu jednu ekstra dimenziju da se sa njom igramo.</li>
+<li>Problem? Mi ne koristimo volumetrijske prikaze.</li>
+<li>Korisnik neće videti tri dimenzije, videće 2 koje su rezultat projekcije.</li>
+<li>Drugim rečima, uveli ste kompresiju na mala vrata, i to na način koji ne možete da koristite.</li>
+</ul>
+</section>
+<section id="kada-koristiti-3d" class="slide level2">
+<h2>Kada koristiti 3D?</h2>
+<ul>
+<li>Napredan prikaz (VR?)</li>
+<li>Kada prikazujemo nešto što je stvarno u 3D</li>
+<li>Kada, minimalno, omogućavamo kvalitetnu interaktivnost.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-6" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-30-05.png" /></p>
+</section>
+<section id="laži-proklete-laži-i" class="slide level2">
+<h2>Laži, proklete laži, i…</h2>
+<ul>
+<li>…vizuelizacije.</li>
+<li>Pravilo koje može da vam pomogne u životu: Ako vam neko prikaže vizuelizaciju gde ose nisu jasno obeležene <em>laže vas.</em></li>
+<li>Čak i da su obeležili da je 0 y-ose u stvari… rekao bih negde oko 5.5 miliona ili tako nešto, to je i dalje pokušaj prevare da učini razliku proporcijalno većom.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-7" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-30-50.png" /></p>
+</section>
+<section id="ovo-se-dešava" class="slide level2">
+<h2>Ovo se dešava…</h2>
+<ul>
+<li>…kada date dizajneru da se bavi vizuelizacijom.</li>
+<li>Procenti su procenti… nečega? Ne znamo čega.</li>
+<li>Prikazani su delovima oblika potpuno ne-uniformnog oblika. Da skinemo procente, ko bi mogao da proceni vrednosti?</li>
+<li>Oblik (dominanta vizuelni element!) ne nosi apsolutno nikakve podatke. Što je to figura čoveka? Što da ne!</li>
+<li>Koji uvid možete da dobijete iz ovoga?</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-8" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-31-22.png" /></p>
+</section>
+<section id="šta-mapa-znači" class="slide level2">
+<h2>Šta mapa znači?</h2>
+<ul>
+<li>NIŠTA!</li>
+<li>Imamo grafikon koji je svakome jasan koji je ovde predstavlja potpuno drugačiju stvar.</li>
+<li>Ovo je ekvivalent toga da, kada neko nešto broji, da konstantno uzvikujete nasumične brojeve u nadi da ćete da ih zbunite.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-9" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-31-52.png" /></p>
+</section>
+<section id="ok-ali-ovde-mapa-nešto-znači-da" class="slide level2">
+<h2>Ok, ali ovde mapa nešto znači? Da?</h2>
+<ul>
+<li>Ovo je neverovatno čest problem: ako napravite vizuelizaciju distribucije nekog socijalnog fenomena geografski ono što 99% vremena proizvedete je apsolutno isti grafikon, tj. grafikon gustine naseljenosti.</li>
+<li>Podaci moraju da se prvo transformišu da prikazuju ono što bi nekoga, u stvari, zanimalo, a to je da li ima više šta god da je to što merimo u odnosu na stanovništvo.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-10" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-32-32.png" /></p>
+</section>
+<section id="uh" class="slide level2">
+<h2>…uh…</h2>
+<ul>
+<li>Biću iskren, ne znam ni šta je ovo.</li>
+<li>Ali je objavljeno u NYT-u.</li>
+</ul>
+</section>
+<section id="kako-napraviti-lošu-vizuelizaciju-11" class="slide level2">
+<h2>Kako napraviti lošu vizuelizaciju?</h2>
+<p><img data-src="img/2023-01-08-14-32-53.png" /></p>
+</section>
+<section id="graphs-do-not-work-that-way" class="slide level2">
+<h2>GRAPHS DO NOT WORK THAT WAY</h2>
+<ul>
+<li>Prvo, ako pogledate metodologiju, naslov ne odgovara sadržaju.</li>
+<li>Drugo sugeriše linearni odnos između dve stvari koje ne mogu da budu u linearnom odnosu a i nisu.</li>
+<li>Šta za ime sveta je osa ‘jezik?’</li>
+<li>Treće jedina osa sa brojevima na sebi je kalibrisana na opseg 4.96%-22.26%. Vrlo korisno.</li>
+</ul>
+</section>
+<section id="šta-čini-dobru-vizuelizaciju" class="slide level2">
+<h2>Šta čini dobru vizuelizaciju?</h2>
+<ul>
+<li>Uvid.</li>
+<li>Fundamentalno, ono što čini vizuelizacije korisnim jeste da iz njih ekstrahujemo uvid u nekakve podatke koji, inače, ne bi mogli da dobijemo lako.</li>
+<li>Sve ostalo je sekundarno.</li>
+</ul>
+</section>
+<section id="primer-uvida" class="slide level2">
+<h2>Primer uvida</h2>
+<p><img data-src="img/2023-01-08-14-33-39.png" /></p>
+</section>
+<section id="zašto-ovaj-primer" class="slide level2">
+<h2>Zašto ovaj primer?</h2>
+<ul>
+<li>Zato što je ružan.</li>
+<li>Uprkos tome što je prilično ružan, uz samo malo zurenja, sada je apsolutno jasno šta se dešava u podacima koje prikazujemo.</li>
+<li>To je važna lekcija: vizuelizacije mogu da budu lepe, čak prelepe, ali to je samo bonus.</li>
+<li>Ono što je <em>bitno</em> jeste da nose informacije efektno.</li>
+</ul>
+</section>
+<section id="ako-je-prioritet-izgled-pre-svega-drugog" class="slide level2">
+<h2>Ako je prioritet izgled pre svega drugog?</h2>
+<p><img data-src="img/2023-01-08-14-34-06.png" /></p>
+</section>
+<section id="alati-za-vizuelizaciju" class="slide level2">
+<h2>Alati za vizuelizaciju</h2>
+<ul>
+<li>Sve je moguće, naravno, uraditi tako što učitate, npr. OpenGL i crtate šta želite da crtate.</li>
+<li>No, postoje alati koji mogu da pomognu.</li>
+<li>Za klasične vizuelizacije ja predlažem ggplot2 koji postoji za programski jezik R.</li>
+<li>Za opštu HPC vizuelizaciju, preporučujem VTK.</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
