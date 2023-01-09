@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Veljko Petrović">
+  <title>Kvantno Računarstvo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Kvantno Računarstvo</h1>
+  <p class="author">Veljko Petrović</p>
+  <p class="date">Januar, 2023</p>
+</section>
+
+<section>
+<section id="kvantno-računarstvo" class="title-slide slide level1">
+<h1>Kvantno Računarstvo</h1>
+<p>Novi tip računarstva</p>
+</section>
+<section id="motivacija" class="slide level2">
+<h2>Motivacija</h2>
+<ul>
+<li>Svaki moderan računar se oslanja na kvantne efekte.</li>
+<li>Ovo nije to: kvantno računarstvo se oslanja direktno na kvantne bite: kubite koji nemaju jednu vrednost nego su u superpoziciji vrednosti.</li>
+<li>Ovo omogućava takvim računarima da izvršava algoritme koje klasični računari ne mogu.</li>
+<li>Tačnije rečeno: algoritmi su izvršivi na klasičnim računarima ali ono što na kvantnom računaru može u polinomijalnom vremenu, na klasičnom računaru može u eksponencijalnom vremenu.</li>
+<li>Ovo ima ogromne posledice na praktičnost rešavanja određenih algoritama.</li>
+</ul>
+</section>
+<section id="izvori" class="slide level2">
+<h2>Izvori</h2>
+<ul>
+<li>Ovo je jednostavan uvod u oblast kome je cilj da vas zainteresuje za dalje istraživanje.</li>
+<li>Prezentacija je bazirana donekle na radu prof. Skota Aronsona, naročito na njegovom blogu (Shtetl Optimized) i u knjizi Quantum Computing since Democritus.</li>
+</ul>
+</section>
+<section id="izvinjenje" class="slide level2">
+<h2>Izvinjenje</h2>
+<ul>
+<li>Nisam imao vremena da se konsultujem sa nekim ko predaje ovo na PMFu.</li>
+<li>Šta znam o kvantnoj mehanici sam naučio na engleskom jeziku, ne srpskom.</li>
+<li>Rezultat je to što je sasvim moguće da je terminologija loše prevedena. U slučaju zbunjenosti, notacija je univerzalna, termini ne.</li>
+<li>Takođe: na par mesta sam jako pojednostavljivao stvari budući da je ovo jedno predavanje, a ne trideset.</li>
+<li>Konačno, ja <em>nisam ekspert</em> u ovoj oblasti računarstva. Ovo predavanje je informativno, opciono, i ima namenu da vas zainteresuje, ništa više od toga.</li>
+</ul>
+</section></section>
+<section>
+<section id="kvantna-mehanika" class="title-slide slide level1">
+<h1>Kvantna mehanika</h1>
+<p>Veoma brz uvod</p>
+</section>
+<section id="pristup" class="slide level2">
+<h2>Pristup</h2>
+<ul>
+<li>Ovde se nećemo baviti kvantnom mehanikom kakva se obično radi.</li>
+<li>Ovo je zato što nas, fundamentalno, ne zanimaju iste stvari kao fizičare</li>
+<li>Ne želimo da računamo zračenje ili bilo šta slično. Zanimaju nas kvantna stanja ne i kojim fizičkim fenomenima odgovaraju.</li>
+<li>Baš kao što kada razmišljamo o klasičnim računarima nas zanima 0 i 1 i prelaz između njih. Nigde nas ne zanima da li su električni ili optički ili mehanički. Fundamentalno nema razlike u tome kako ih programiramo.</li>
+</ul>
+</section>
+<section id="kvantna-mehanika-kao-progresija" class="slide level2">
+<h2>Kvantna mehanika kao progresija</h2>
+<ul>
+<li><strong>Deterministički</strong> sistemi koji koriste <strong>logičke vrednosti</strong> vode u…</li>
+<li><strong>Probabilističke</strong> sisteme koji koriste <strong>verovatnoće</strong> koji vode u…</li>
+<li><strong>Kvantne</strong> sisteme koje koriste <strong>amplitude.</strong></li>
+</ul>
+</section>
+<section id="šta-je-amplituda" class="slide level2">
+<h2>Šta je amplituda?</h2>
+<ul>
+<li>Fundamentalno ono što karakteriše amplitude (za razliku od verovatnoća) jeste da mogu biti negativne, pozitivne, ili kompleksne.</li>
+<li>Ovo je jako teško zamisliti: mogli bi da zamislimo šta znači biti 50% na jednoj i 50% na drugoj poziciji. Ali šta znači biti -70.71% na jednoj i 70.71% na drugoj?</li>
+<li>Ova teškoća vizualizacije je jedan od glavnih razloga zašto kvantna mehanika izaziva glavobolje i danas.</li>
+<li>Uprkos tome matematički aparat koji se koristi nije tako strašan.
+<ul>
+<li>Ne, ozbiljno.</li>
+</ul></li>
+</ul>
+</section>
+<section id="hajde-da-počnemo-od-verovatnoće" class="slide level2">
+<h2>Hajde da počnemo od verovatnoće</h2>
+<ul>
+<li>Zamislimo vektor mogućih događaja <span class="math inline">\(\Omega = (p_1, p_2, ..., p_N)\)</span></li>
+<li>U klasičnoj verovatnoći uspostavljenoj aksiomatskim sistemom Kolmogorova važi da:</li>
+<li><span class="math inline">\(\sum \Omega = \sum_{i=1}^{N}p_i = 1\)</span></li>
+<li>Ima smisla, zar ne? Verovatnoća da će se <em>nešto</em> desiti je ravno 1.</li>
+</ul>
+</section>
+<section id="norme" class="slide level2">
+<h2>Norme</h2>
+<ul>
+<li>Ovo ograničenje se može formulisati i tako što se kaže da, u verovatnoći, 1-norma skupa događaja mora biti 1.</li>
+<li>1-norma je način računanja magnitude vektora tako što se sumiraju apsolutne vrednosti svih dimenzija</li>
+<li>Ovo se još zove i Menhetn Razdaljina.</li>
+<li>Šta se desi ako koristimo, recimo, 2-normu?</li>
+</ul>
+</section>
+<section id="norma" class="slide level2">
+<h2>2-norma?</h2>
+<ul>
+<li>Znate je, ali verovatnije kao Pitagorinu Razdaljinu ili Euklidovu Razdaljinu ili jednostavno magnitudu vektora</li>
+<li><span class="math inline">\(\left \| \Omega \right \|_2 = \sqrt{\sum_{i=1}^{N}p_i^2}\)</span></li>
+<li>Ako onda umesto uslova <span class="math inline">\(\left \| \Omega \right \|_1 = 1\)</span> važi <span class="math inline">\(\left \| \Omega \right \|_2 = 1\)</span></li>
+<li>Umesto verovatnoće onda imamo kvantnu mehaniku.</li>
+<li>Manje-više.</li>
+</ul>
+</section>
+<section id="bit-u-kvantnoj-mehanici" class="slide level2">
+<h2>Bit u kvantnoj mehanici</h2>
+<ul>
+<li>Deterministički bit je ili 1 ili 0.</li>
+<li>Ako zamislimo probabilistički bit, on je ili 0 ili 1 sa verovatnoćom <span class="math inline">\(p\)</span> i <span class="math inline">\(1-p\)</span>.</li>
+<li>A kvantni bit? Kvantni bit ima dve amplitude, <span class="math inline">\(\alpha\)</span> i <span class="math inline">\(\beta\)</span> čija je suma kvadrata 1</li>
+<li><span class="math inline">\(\alpha^2 + \beta^2 = 1\)</span> (što opisuje krug) nasuprot <span class="math inline">\(p + 1-p = 1\)</span></li>
+<li>Neka da je naš kvantni bit u stanju da je amplituda <span class="math inline">\(\alpha\)</span> 1 i amplituda <span class="math inline">\(\beta\)</span> 0, što je OK jer zadovoljava uslov. Šta je onda stanje bita ako odemo i pogledamo?</li>
+</ul>
+</section>
+<section id="merenje" class="slide level2">
+<h2>Merenje</h2>
+<ul>
+<li>Pre ili kasnije, moramo meriti stanje našeg kvantnog sistema.</li>
+<li>Merenje proizvodi ‘klasičan’ rezultat, tj. ili će biti 0 ili 1 kada se ode i pogleda.</li>
+<li>Postoje naravno verovatnoće da će biti 0 i verovatnoća da će biti 1. Koje su to verovatnoće?</li>
+<li>Pa <span class="math inline">\(p_0 = \alpha^2\)</span> i <span class="math inline">\(p_1 = \beta^2\)</span> naravno.</li>
+</ul>
+</section>
+<section id="merenje-1" class="slide level2">
+<h2>Merenje</h2>
+<ul>
+<li>Drugim rečima, naše kvantno stanje može da bude pomešano koliko god hoćete, u jednom trenutku će se svesti na merenje koje će proizvesti stohastički rezultat.</li>
+<li>Kada merimo, moramo da stanje merimo u nekoj bazi. To su dimenzije u odnosu kojih merimo stanje.</li>
+</ul>
+</section>
+<section id="čemu-amplitude" class="slide level2">
+<h2>Čemu amplitude?</h2>
+<ul>
+<li>Zašto je onda ikome korisno da priča o amplitudama kada se uvek stvari završe u verovatnoćama i konkretnim vrednostima?</li>
+<li>Zato što, ako imamo amplitude, onda možemo da radimo potpuno drugačije operacije nad našim kubitima (i drugim kvantnim sistemima) koje proizvode razna neobična stanja koja eventualno kolabiraju u verovatnoće.</li>
+<li>Ono što je između je ono što čini kvantne sisteme čudnim.</li>
+</ul>
+</section>
+<section id="kako-izgledaju-transformacije" class="slide level2">
+<h2>Kako izgledaju transformacije?</h2>
+<ul>
+<li>Ne možemo kvantnima stanjima da radimo šta god hoćemo: šta god da bude slučaj, svako kvantno stanje mora i dalje, predstavljeno kao vektor, da zadovoljava 2-normu.</li>
+<li>Kako izgleda, onda, opšta forma operacije koja normu čuva?</li>
+<li>To mora biti <strong>unitarna</strong> matrica. Unitarna matrica zadovoljava vrlo specifične uslove, naime, unitarna matrica A koja ima samo realne elemente mora da zadovoljava</li>
+<li><span class="math display">\[A^TA = AA^T = I\]</span></li>
+<li>Dakle, unitarna realna matrica (takođe: ortogonalna matrica) je takva da joj je inverzija jednaka transpoziciji.</li>
+</ul>
+</section>
+<section id="unitarne-matrice-sa-kompleksnim-elementima" class="slide level2">
+<h2>Unitarne matrice sa kompleksnim elementima</h2>
+<ul>
+<li>U opštijem slučaju unitarne matrice sa kompleksnim elementima važi <span class="math inline">\(A^*A = AA^* = I\)</span> odnosno, inverzija matrice je jednaka njenoj hermitijanskoj transpoziciji.</li>
+<li>Hermitijanska transpozicija je rezultat koji se dobije ako se za neku matricu prvo nađe transponovana, a onda se za svaki element individualno uzme kompleksna konjugovana vrednost, tj. obrne se znak imaginarnog dela.</li>
+<li>Bilo koja matrica koja ispunjava ovaj uslov predstavlja smislenu transformaciju nad nekim kvantnim stanjem.</li>
+</ul>
+</section>
+<section id="primer-unitarne-matrice" class="slide level2">
+<h2>Primer unitarne matrice</h2>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 0 \\ 
+0 &amp; -i
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="matrica-hadamardove-transformacije-prvog-reda" class="slide level2">
+<h2>Matrica Hadamardove transformacije prvog reda</h2>
+<p><span class="math display">\[
+H = \frac{1}{\sqrt{2}} \begin{bmatrix}
+1 &amp; 1 \\ 
+1 &amp; -1
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="tofolijeva-matrica" class="slide level2">
+<h2>Tofolijeva matrica</h2>
+<p><span class="math display">\[
+T = \begin{bmatrix}
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\ 
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\ 
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\ 
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\ 
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="dirakova-ket-notacija" class="slide level2">
+<h2>Dirakova ket notacija</h2>
+<ul>
+<li>Kad pričamo o kvantnom sistemu dobro je imati lepu kompaktnu notaciju</li>
+<li>Istorijski se koristi Dirakova ket notacija</li>
+<li>Tako da ako želimo da opišemo onaj kubit sa početka priče gde je ampltuda nula <span class="math inline">\(\alpha\)</span> a amplituda jedan <span class="math inline">\(\beta\)</span> pisali bi</li>
+<li><span class="math inline">\(\alpha|0\rangle + \beta|1\rangle\)</span></li>
+</ul>
+</section>
+<section id="primer-kvantne-interakcije" class="slide level2">
+<h2>Primer kvantne interakcije</h2>
+<p>Neka imamo stanje <span class="math inline">\(v = 1|0\rangle\)</span> i matricu <span class="math display">\[
+U =  \begin{bmatrix}
+\frac{1}{\sqrt{2}} &amp; \frac{1}{\sqrt{2}}  \\ 
+\frac{1}{\sqrt{2}}  &amp; -\frac{1}{\sqrt{2}} 
+\end{bmatrix}
+\]</span> onda <span class="math inline">\(v&#39; = Uv = \frac{1}{\sqrt{2}}|0\rangle + \frac{1}{\sqrt{2}}|1\rangle\)</span> A ako primenimo transformaciju opet onda <span class="math inline">\(v&#39;&#39; = Uv&#39; = 1|1\rangle\)</span></p>
+</section>
+<section id="primer-kvantne-interakcije-1" class="slide level2">
+<h2>Primer kvantne interakcije</h2>
+<ul>
+<li>Šta se ovde desilo?</li>
+<li>Imamo operaciju koja bi trebalo da ubacuje slučajnost. Počnemo sa apsolutno sigurnim stanjem i ubacimo transformaciju koja čini obe mogućnosti jednako verovatnim. Tj. ako merimo vrednost međurezultata dobićemo ili 1 ili 0. sa verovatnoćom ravno 0.5.</li>
+<li>Onda primenimo istu tu operaciju. U svetu obične verovatnoće, nema tih slučajnosti koje bi mogli dodati koji bi nas vratili na sigurnu verovatnoću.</li>
+<li>Ali ovde, ista ta operacija nam obrne vrednost, drugim rečima pretvori ekviprobabilne događaje u sigurno dobijanje vrednosti 1.</li>
+</ul>
+</section>
+<section id="dijagram-prelaza-stanja" class="slide level2">
+<h2>Dijagram prelaza stanja</h2>
+<p><img data-src="img/2023-01-08-15-31-18.png" /></p>
+</section>
+<section id="dijagram-prelaza-stanja-1" class="slide level2">
+<h2>Dijagram prelaza stanja</h2>
+<ul>
+<li>Jedna interpretacija ovoga jeste da se posmatraju staze kroz ovaj dijagram prelaza stanja. Do konačne 0 dolaze dve staze (0 do 0, pa do 0, i 0 do 1 pa do 0) ali te staze, kada se pogleda, imaju pozitivnu i negativnu amplitudu.</li>
+<li>Ovo znači da su u poziciji <em>destruktivne</em> interferencije.</li>
+<li>Kao rezultat: nikad se ne dese.</li>
+<li>Putanje koje vode do 1 imaju pozitivne amplitude te interferiraju <em>konstruktivno.</em></li>
+</ul>
+</section>
+<section id="mešana-stanja" class="slide level2">
+<h2>Mešana stanja</h2>
+<ul>
+<li>Šta bude ako imamo mešana stanja: malo probabilistička, malo kvantna.</li>
+<li>U takvim stanjima imamo određenu verovatnoću da smo u jednom kubit-stanju, i određenu, drugu, verovatnoću da smo u drugom kubit-stanju.</li>
+<li>Ovo se rešava kroz matematički konstrukt poznat kao matrica gustine.</li>
+<li>Za neki vektor amplituda sa <span class="math inline">\(N\)</span> elemenata se posmatra, prvo, <span class="math inline">\(NxN\)</span> matrica gde je svaki element <span class="math inline">\(N_{i,j}\)</span> proizvod <span class="math inline">\(i\)</span>-tog i <span class="math inline">\(j\)</span>-tog elementa tog vektora amplituda.</li>
+<li>Da skratimo priču, to zovemo NN matrica. (Nije zvaničan termin).</li>
+</ul>
+</section>
+<section id="matrica-gustine" class="slide level2">
+<h2>Matrica gustine</h2>
+<ul>
+<li>Ako imamo nekoliko vektora nad kojim imamo distribuciju verovatnoće (klasične verovatnoće) onda je matrica gustina ponderisana suma NN matrica za sve te vektore gde su faktori ponderisanja relativne verovatnoće.</li>
+</ul>
+</section>
+<section id="matrica-gustine-1" class="slide level2">
+<h2>Matrica gustine</h2>
+<p>Za 0.25 verovatnoću <span class="math inline">\(\alpha|0\rangle + \beta|1\rangle\)</span> i 0.75 verovatnoću <span class="math inline">\(\alpha|0\rangle - \beta|1\rangle\)</span> imali bi <span class="math display">\[
+D = 0.25 \cdot \begin{bmatrix}
+\alpha^2 &amp; \alpha\beta  \\ 
+\beta\alpha  &amp; \beta^2 
+\end{bmatrix} + 0.75 \cdot \begin{bmatrix}
+\alpha^2 &amp; -\alpha\beta  \\ 
+-\beta\alpha  &amp; \beta^2 
+\end{bmatrix} = \begin{bmatrix}
+\alpha^2 &amp; -0.5\alpha\beta  \\ 
+-0.5\beta\alpha  &amp; \beta^2 
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="matrica-gustine-i-nerazlučivost" class="slide level2">
+<h2>Matrica gustine i nerazlučivost</h2>
+<ul>
+<li>Mešana stanja su nerazlučiva</li>
+<li>To znači da ako odradimu kvantnu operaciju nad mešanim stanjem opisanim matricom gustine kao izlaz dobijemo još jedno mešano stanje</li>
+</ul>
+</section>
+<section id="kombinovanje-kvantnih-stanja" class="slide level2">
+<h2>Kombinovanje kvantnih stanja</h2>
+<ul>
+<li>Šta da radimo ako imamo više kvantnih stanja sa poznatim amplitudama i hoćemo da opišemo kvantno stanje koje je rezultat kombinacije svih tih stanja?</li>
+<li>Ovo nije nerealistična situacija: ako imamo kvantni računar koji operiše nad reči sa, npr, 16 kubita možemo da pričamo o stanju celog računara kao jednom kvantnom stanju? Da li je to moguće?</li>
+<li>Da, kroz operaciju <em>tenzorskog proizvoda.</em></li>
+</ul>
+</section>
+<section id="tenzorski-proizvod-kvantnog-stanja" class="slide level2">
+<h2>Tenzorski proizvod kvantnog stanja</h2>
+<p><span class="math display">\[
+(\alpha|0\rangle + \beta|1\rangle) \otimes (\gamma|0\rangle + \delta|1\rangle) = \alpha\gamma|00\rangle + \alpha\delta|01\rangle + \beta\gamma|10\rangle + \beta\delta|11\rangle 
+\]</span></p>
+</section>
+<section id="razdvojiva-i-spregnuta-stanja" class="slide level2">
+<h2>Razdvojiva i spregnuta stanja</h2>
+<ul>
+<li>Ako neko dvo-kubitno stanje možemo da napišemo kroz tenzorski proizvod dva jednokubitna stanja, onda za to stanje kažemo da je razdvojivo (eng. Separable).</li>
+<li>Ako, sa druge strane, imamo dvokubitno stanje takvo da je predstavljanje stanja kroz tenzorski proizvod jednokubitnih stanja nemoguće, onda imamo spregnuto (eng. Entangled) stanje.</li>
+<li>Da, ono koje je legendarno u naučnoj fantastici i popularnoj nauci.</li>
+<li>Evo čuvenog primera, prilagođenog iz rada Ajnštajna, Podolskog, i Rozena <span class="math inline">\(\frac{1}{\sqrt{2}}|00\rangle + \frac{1}{\sqrt{2}}|11\rangle\)</span></li>
+</ul>
+</section>
+<section id="interpretacija-epr" class="slide level2">
+<h2>Interpretacija EPR</h2>
+<ul>
+<li>Iz primera se može videti što se ovo zove i ‘upletenost’</li>
+<li>Zamislite za momenat (znam da smo obećali da nas ne zanima šta su fizički nosioci kvantnog ponašanja) da su u pitanju dva elektrona i kvantno obeležije je spin koji može biti <span class="math inline">\(-\frac{1}{2}\)</span> ili <span class="math inline">\(\frac{1}{2}\)</span></li>
+<li>Ovo kaže da ako izmerimo ovaj sistem 50% vremena će imati stanja koja su 00 i 50% vremena 11, odnosno, spin će biti ili jedan ili drugi, ali će biti isti u oba stanja.</li>
+<li>Ova dva elektrona su, onda, upletena.</li>
+</ul>
+</section>
+<section id="teorema-o-nemogućnosti-kloniranja" class="slide level2">
+<h2>Teorema o nemogućnosti kloniranja</h2>
+<p>Nema te procedure konzistentne sa kvantnom mehanikom koja kao ulaz uzme nepoznatno kvantno stanje i kao izlaz proizvede dva primerka tog istog, nepoznatnog stanja.</p>
+</section>
+<section id="dokaz-teoreme-o-nemogućnosti-kloniranja" class="slide level2">
+<h2>Dokaz teoreme o nemogućnosti kloniranja</h2>
+<p>Neka je kopirano stanje kubit <span class="math inline">\(\alpha|0\rangle + \beta|0\rangle\)</span> onda procedura kloniranja uzima taj kubit i prazan kubit i proizvede kao izlaz taj isti kubit i kopiju u praznom kubitu. Dakle: <span class="math display">\[(\alpha|0\rangle + \beta|1\rangle|0\rangle) \mapsto (\alpha|0\rangle + \beta|1\rangle) \otimes (\alpha|0\rangle + \beta|1\rangle)\]</span> <span class="math display">\[=\alpha^2|0\rangle|0\rangle + \alpha\beta|0\rangle|1\rangle + \alpha\beta|1\rangle|0\rangle + \beta^2|1\rangle|1\rangle\]</span> Ali ovo je jasno nelinearno, a sve unitarne matrice su i linearne. Dakle nema takve matrice i konsekventno nema takve operacije koja klonira proizvoljno stanje.</p>
+</section>
+<section id="fizička-interpretacija" class="slide level2">
+<h2>Fizička interpretacija</h2>
+<ul>
+<li>Ova teorema takođe proizilazi direktno iz Hajzenbergovog principa neodređenosti, budući da ako bi imali kvantni sistem od jedne čestice, i ako bi mogli da ga kloniramo, onda bi mogli da napravimo dve kopije i kod jedne izmerimo impuls, do proizvoljne preciznosti, a kod druge poziciju, do proizvoljne preciznosti, te ako ima kloniranja nema principa neodređenosti.</li>
+<li>Sa druge strane, ako nema principa neodređenosti, onda bi u principu merenjem mogli da odredimo sve osobine nekog stanja i da ga kloniramo tako.</li>
+</ul>
+</section>
+<section id="programerska-interpretacija" class="slide level2">
+<h2>Programerska interpretacija</h2>
+<ul>
+<li>Ovo je jako bizarno budući da to predstavlja nešto što rad sa klasičnim sistemima čini trivijalnim, a kvantni sistemi čine nemogućim.</li>
+<li>Ako imamo bajt 1010 1100 možemo ga kopirati u 1010 1100 trivijalno. To je manje-više i najlakša stvar koju možemo raditi sa njim.</li>
+<li>Ista stvar sa kubitima je apsolutno nemoguća. Ovo čini transfer kubita jako teškim.</li>
+<li>Jedini mogući metod je ’kvantna teleportacija’ koja omogućava da se neki kubiti prebace sa jednog mesta na drugo kroz klasičan kanal, uz to da se original uništi.</li>
+<li>Ovo se sa klasičnom informacijom ne zove ’teleportacija’ no samo, ‘premeštanje.’</li>
+</ul>
+</section></section>
+<section>
+<section id="kvantno-računarstvo-u-praksi" class="title-slide slide level1">
+<h1>Kvantno računarstvo u praksi</h1>
+<p>Kapije, kola, i osnove</p>
+</section>
+<section id="bpp-klasa-problema" class="slide level2">
+<h2>BPP klasa problema</h2>
+<ul>
+<li>Pre nego se zaletimo na priču o kvantnom računarsvu malo o teoriji kompleksnosti.</li>
+<li>BPP klasa problema (bounded-error probabilistic polynomial time) je klasa problema gde:
+<ul>
+<li>Algoritam daje odgovor koji je DA ili NE</li>
+<li>Sme da ’baca novčić’ da dobije slučajan bit i sme da pravi nasumične odluke.</li>
+<li>Algoritam garantovano radi u polinomijalnom vremenu.</li>
+<li>Na bilo kom izvršavanju algoritma BPP ima verovatnoću od najviše 1/3 da da netačan odgovor, bez obzira da li je odgovor DA ili NE.</li>
+</ul></li>
+</ul>
+</section>
+<section id="bpp-klasa-problema-1" class="slide level2">
+<h2>BPP klasa problema</h2>
+<ul>
+<li>Ova klasa je više zanimljiva zbog svojih teoretskih osobina.</li>
+<li>Štaviše trenutna intuicija struke je BPP = P</li>
+<li>No ono što mi treba da ponesemo iz ovoga je ideja algoritma koji moramo izvršiti N puta da bi dobili odgovarajuću verovatnoću uspeha.</li>
+<li>U slušaju BPP-a ako izvršimo algoritam, npr. 10 puta i prihvatimo odgovor samo ako dobijemo 10 istih rezultata, onda možemo da očekujemo verovatnoću tačnog rezultata od ~99.9983%.</li>
+<li>Ako hoćemo veću verovatnoću, moramo probati više puta.</li>
+</ul>
+</section>
+<section id="bqp" class="slide level2">
+<h2>BQP</h2>
+<ul>
+<li>BQP je BPP izvršavan na kvantnom računaru, odn. računaru koji operiše sa ne klasično-izmerenim vrednostima no sa kvantnim vrednostima.</li>
+<li>Intuitivno govoreći BPP je klasa svih problema koji su efektno rešivi na klasičnom računaru.</li>
+<li>BQP je klasa svih problema koji su efektno rešivi na kvantnom računaru.</li>
+<li>Ideja bavljenja kvantnim računarstvom se vrti oko teze da BQP nije jednak BPP no sadrži BPP.</li>
+<li>Ovo je dokazano.</li>
+</ul>
+</section>
+<section id="bqp-i-np" class="slide level2">
+<h2>BQP i NP</h2>
+<ul>
+<li>Da li je NP podskup BQP?</li>
+<li>Ne znamo. <em>Nemamo ni najblažu predstavu.</em></li>
+<li>Kada su u pitanju klase kompleksnosti lista stvari koje ne možemo da dokažemo je… poduža.</li>
+<li>Ako imamo problem gde pretražujemo prostor od 2n mogućnosti i sve što možemo jeste da testiramo svaki kandidat to je problem nestruktuirane pretrage za koji važi:
+<ul>
+<li>Kvantni računari daju ubrzanje</li>
+<li>To ubrzanje je kvadratno, ne eksponencijalno (Groverov algoritam)</li>
+<li>Groverov algoritam je optimalan.</li>
+</ul></li>
+</ul>
+</section>
+<section id="koraci-bqp-problema" class="slide level2">
+<h2>Koraci BQP problema</h2>
+<ul>
+<li><strong>Incijalizacija.</strong> Gde imamo na početku sistem od n kubita koji su svi na početku na nekom unapred poznatom stanju. Tipično to je ulaz u algoritam x i onoliko 0 vrednosti sa amplitudom 1 koliko nam treba za naš algoritam.</li>
+<li><strong>Transformacija.</strong> Naš sistem od n qubita je u bilo kom trenutku superpozicija svih mogućih bit stringova sa n bita sa različitim amplitudama za svaku mogućnost. Mi vršimo transformaciju svih tih sa kvantim kapijama. Ovo su operacije sasvim analogne bulovim kapijama koje koristi običan računar.</li>
+<li><strong>Merenje.</strong> Na kraju algoritma neki kubit je naš odgovor. Izmerimo ga i dobijemo ili 0 ili 1. Naš algoritam treba da je takav da grešimo najviše 1/3 vremena, baš kao BPP. Ako hoćemo veću verovatnoću, probamo više puta.</li>
+</ul>
+</section>
+<section id="neke-kvantne-kapije" class="slide level2">
+<h2>Neke kvantne kapije</h2>
+<ul>
+<li>Svaka kvantna kapija je u duši unitarna matrica, ali je lakše ponekad posmatrati ih ne kao matrice, nego kao mapiranja, tj. kao tabele istinosnih vrednosti. Drugim rečima tretirati ih kao bilo kakvu drugu kapiju.</li>
+<li>U praksi, želimo da formiramo sve naše transformacije kao kompozicije određenih fundamentalnih kapija koje su efikasne za implementaciju.</li>
+<li>Deo te efikasnosti jeste da kvantne kapije operišu na 1, 2, ili 3 kubita.</li>
+</ul>
+</section>
+<section id="hadamardova-kapija-1-kubita" class="slide level2">
+<h2>Hadamardova kapija 1 kubita</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ulaz</th>
+<th>Izlaz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(|0\rangle\)</span></td>
+<td><span class="math inline">\(\frac{|0\rangle + |1\rangle}{\sqrt{2}}\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(|1\rangle\)</span></td>
+<td><span class="math inline">\(\frac{|0\rangle - |1\rangle}{\sqrt{2}}\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tofolijeva-kapija-3-kubita" class="slide level2">
+<h2>Tofolijeva kapija 3 kubita</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Ulaz</th>
+<th>Izlaz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>000</td>
+<td>000</td>
+</tr>
+<tr class="even">
+<td>001</td>
+<td>001</td>
+</tr>
+<tr class="odd">
+<td>010</td>
+<td>010</td>
+</tr>
+<tr class="even">
+<td>011</td>
+<td>011</td>
+</tr>
+<tr class="odd">
+<td>100</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>101</td>
+<td>101</td>
+</tr>
+<tr class="odd">
+<td>110</td>
+<td>111</td>
+</tr>
+<tr class="even">
+<td>111</td>
+<td>110</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tofolijeva-kapija-i-klasičan-računar" class="slide level2">
+<h2>Tofolijeva kapija i klasičan računar</h2>
+<ul>
+<li>Možda ste primetili da Tofolijeva kapija radi sasvim veselo i na klasičnom računaru.</li>
+<li>Ovo je sasvim tačno.</li>
+<li>Naravno to znači da ako bi samo imali Tofolijevu kapiju naš kvantni računar bi bio sasvim lak za simulaciju kroz klasičan računar.</li>
+<li>To bi značilo da ne bi mogli da ostvarimo nikakvo ubrzanje.</li>
+<li>Ovo je loše.</li>
+</ul>
+</section>
+<section id="univerzalnost" class="slide level2">
+<h2>Univerzalnost</h2>
+<ul>
+<li>Ali ako imamo Tofolijevu kapiju i Hadamardovu kapiju, iznenada smo spašeni.</li>
+<li>Te dve kapije su univerzalan skup koji zahvaljujući Šijevoj teoremi znamo da može da simulira bilo koju kvantnu kapiju (čija je unitarna matrica matrica realnih vrednosti što je za proračune dosta) sa proizvoljnom tačnošću.</li>
+<li>Još bolje, kroz rezultat kojise zove Solovaj-Kitajeva teorema, možemo da tvrdimo da je makoji univerzalni skup kapija efikasno (sa najviše polinomijalnim povećanjem broja kapija) simulira bilo koji univerzalni skup kapija.</li>
+<li>Drugim rečima koje kapije koristimo je tehnički problem, ništa više.</li>
+</ul>
+</section></section>
+<section>
+<section id="šorov-algoritam" class="title-slide slide level1">
+<h1>Šorov algoritam</h1>
+<p>Pojednostavljen primer primene</p>
+</section>
+<section id="šta-je-naš-problem" class="slide level2">
+<h2>Šta je naš problem</h2>
+<ul>
+<li>Imamo složeni broj N koji hoćemo da razbijemo na proste činioce. Ovo se još zove faktorizacija tog broja.</li>
+<li>Ovo je teško: klasični računari ovo rade u eksponencijalnom vremenu.</li>
+<li>Najefikasniji glasični algoritam ovo radi sa eksponentom od <span class="math inline">\(d^{\frac{1}{3}}\)</span> gde je d broj cifara. Dakle vreme je, za neku bazu b, <span class="math inline">\(b^{d^{\frac{1}{3}}}\)</span></li>
+<li>Rekord je d = 232 što je, distribuirano, oduzelo oko 2000 CPU-godina na modernim procesorima.</li>
+<li>Drugim rečima, dovoljno veliki brojevi ne mogu da se razbiju na proste činioce. Moderna kriptografija je bazirana na ovome.</li>
+</ul>
+</section>
+<section id="šorov-algoritam-1" class="slide level2">
+<h2>Šorov algoritam</h2>
+<ul>
+<li>1995 Šor je pokazao da, sa kvantnim računarom, je moguće problem rešiti u vremenu koje je polinomijalno. Trenutni najbolji rezulatti zahtevaju <span class="math inline">\(10d\)</span> kubita i <span class="math inline">\(d^3\)</span> vremena.</li>
+<li>Ovo znači da sa dovoljno dobrim kvantnim računarom, faktorizacija brojeva je trivijalan problem.</li>
+<li>Ovo je… uzbudljiv rezultat budući da se trenutno jako puno uzdamo u kriptografiju.</li>
+</ul>
+</section>
+<section id="traženje-perioda" class="slide level2">
+<h2>Traženje perioda</h2>
+<ul>
+<li>Šorov algoritam počinje napadom na problem vezan za faktorizaciju: traženje perioda modularne eksponent funkcije.</li>
+<li>Kratko rečeno: Ako imamo celi broj N i a, treba da nađemo najmanji pozitivni celi broj r, takav da je <span class="math inline">\(a^r - 1\)</span> umnožak N. Broj r je onda period <span class="math inline">\(a mod N\)</span>.</li>
+<li>Šta to znači? To znači da kada bi posmatrali niz stepena modulo N neke baze a, onda bi ona počela da ponavlja vrednosti posle r koraka.</li>
+</ul>
+</section>
+<section id="primer-traženja-perioda" class="slide level2">
+<h2>Primer traženja perioda</h2>
+<p>Neka je N=15 i a=7. Onda se vidi da: <span class="math display">\[
+7^1 - 1 = 6
+\]</span> <span class="math display">\[
+7^2 - 1 = 48
+\]</span> <span class="math display">\[
+7^3 - 1 = 342
+\]</span> <span class="math display">\[
+7^4 - 1 = 2400 = 160 * 15
+\]</span></p>
+</section>
+<section id="primer-traženja-perioda-1" class="slide level2">
+<h2>Primer traženja perioda</h2>
+<p>Dakle, iz ovoga sledi da je periodičnost 4, i zaista ako izračunamo ostatak sa 15 za vrednosti <span class="math inline">\(7^i\)</span> za i od 1 do 9 dobijemo: 1, 7, 4, 13, 1, 7, 4, 13, 1, 7. Mesto gde je modulo 1 je tačka perioda i prvo takvo mesto je mesto gde će baza otići na r-ti stepen.</p>
+</section>
+<section id="od-periodičnosti-do-faktorizacije" class="slide level2">
+<h2>Od periodičnosti do faktorizacije</h2>
+<ul>
+<li>Ako zamislimo da imamo magični algoritam za traženje perioda (uskoro) onda kako da to pretvorimo u sistem faktorizacije?</li>
+<li>Zamislimo da znamo da je <span class="math inline">\(N = p_1p_2\)</span>, broj sa dva faktora. Ako napadamo RSA to je i slučaj.</li>
+<li>Prvo: Odaberemo slučajno <span class="math inline">\(a\)</span> između <span class="math inline">\(2\)</span> i <span class="math inline">\(N-1\)</span></li>
+<li>Drugo: Proračunamo najveći zajednički delilac <span class="math inline">\(N\)</span> i <span class="math inline">\(a\)</span>.</li>
+<li>Treće, ako je rezultat različit od <span class="math inline">\(1\)</span>, to je <span class="math inline">\(p_1\)</span>, i mi smo gotovi.</li>
+<li>Četvrto, ako je rezultat <span class="math inline">\(1\)</span>, magično sračunamo period <span class="math inline">\(a_i mod N\)</span> koji je <span class="math inline">\(r\)</span>.</li>
+<li>Peto, ako je <span class="math inline">\(r\)</span> neparan, skačemo na prvi korak.</li>
+</ul>
+</section>
+<section id="od-periodičnosti-do-faktorizacije-1" class="slide level2">
+<h2>Od periodičnosti do faktorizacije</h2>
+<ul>
+<li>Eventualno <span class="math inline">\(r\)</span> će biti parno i to će biti najmanji celi broj takav da <span class="math inline">\(a^r - 1\)</span> je umnožak <span class="math inline">\(N\)</span>. Onda:</li>
+<li><span class="math inline">\(a^r - 1 = (a^{\frac{r}{2}} - 1)(a^{\frac{r}{2}} + 1)\)</span></li>
+<li>Znamo da <span class="math inline">\(a^r - 1\)</span> nije umnožak broja <span class="math inline">\(N\)</span> zato što bi onda period bio <span class="math inline">\(\frac{r}{2}\)</span> a znamo da to nije. Ako uzmemo kao predpostavku da <span class="math inline">\(a^r + 1\)</span> takođe nije umnožak <span class="math inline">\(N\)</span> onda imamo situaciju dva broja, nikoji od kojih nije umnožak <span class="math inline">\(N\)</span> čiji proizvod jeste umnožak <span class="math inline">\(N\)</span>. To može samo da bude ako je jedan od činilaca <span class="math inline">\(a^{\frac{r}{2}} - 1\)</span> <span class="math inline">\(p_1\)</span> a jedan od činilaca <span class="math inline">\(a^{\frac{r}{2}} + 1\)</span> <span class="math inline">\(p_2\)</span> ili obratno.</li>
+</ul>
+</section>
+<section id="od-periodičnosti-do-faktorizacije-2" class="slide level2">
+<h2>Od periodičnosti do faktorizacije</h2>
+<ul>
+<li>Onda sve što moramo da uradimo jeste da sračunamo najveći zajednički delilac za <span class="math inline">\(N\)</span> i za <span class="math inline">\(a^{\frac{r}{2}} \pm 1\)</span> i rešili smo naš problem.</li>
+<li>Ako je slučaj da je baš <span class="math inline">\(a^{\frac{r}{2}}+1\)</span> umnožak <span class="math inline">\(N\)</span> onda moramo odbaciti vrednost koju smo izabrali i pokušati opet.</li>
+<li>Ovo će biti retko, ali je moguće.</li>
+</ul>
+</section>
+<section id="šta-može-kvantni-računar" class="slide level2">
+<h2>Šta može kvantni računar</h2>
+<ul>
+<li>Popularna miskoncepcija je da kvantni računari, zbog superpozicija, ‘probaju sve opcije odjednom’</li>
+<li>Oni apslutno tako ne rade, uprkos tome, postoji kvantni paralelizam nekakve vrste</li>
+<li>Njega odlikuje sposobnost da se uzme kompleksna funkcija i da se odrede (brzo) njene globalne osobine koje nisu izračunljive iz njene evaluacije na relativno malom broju tačaka</li>
+<li>Periodicitet modularne eksponencijacije je baš jedna takva osobina.</li>
+</ul>
+</section>
+<section id="kako-radi-magični-algoritam" class="slide level2">
+<h2>Kako radi ‘magični’ algoritam?</h2>
+<p>Za unitarni operator <span class="math inline">\(U_a\)</span> koji implementira modularno množenje <span class="math inline">\(x \mapsto ax mod N\)</span> sopstvene vrednosti odgovarajuće matrice će imati formu <span class="math inline">\(e^{j\phi}\)</span> gde je <span class="math inline">\(\phi = \frac{2 \pi k}{r}\)</span> za <span class="math inline">\(k \in \mathbb{Z}\)</span>.</p>
+</section>
+<section id="kako-radi-magični-algoritam-1" class="slide level2">
+<h2>Kako radi ‘magični’ algoritam</h2>
+<ul>
+<li>Tačna procedura računanja kvantne faze koju nameće operator (to je ovo <span class="math inline">\(\phi\)</span>) je spektakularno kompleksna, ali srećom je već odrađena za nas.</li>
+<li>Detalji su ovde: https://qiskit.org/textbook/ch-algorithms/quantum-phase-estimation.html</li>
+<li>Kratko rečeno: ovo je moćna operacija i notacija za nju je QPE.</li>
+</ul>
+</section>
+<section id="šorov-algoritam-i-qpe" class="slide level2">
+<h2>Šorov algoritam i QPE</h2>
+<ul>
+<li>Proračunamo QPE vrednosti za porodicu operatora <span class="math inline">\(U_b\)</span> gde je <span class="math inline">\(b = a,a^2,a^4,a^8...\)</span> i tako sve do stepena <span class="math inline">\(a\)</span> koji odgovara grubo vrednosti N.</li>
+<li>Ovo merenje se može potpuno paralelizovati</li>
+<li>QPE je jedna od onih stvari koje imaju nasumičnu šansu greške, ali uz dovoljno merenja signal će nadjačati šum.</li>
+<li>Kada imamo fazu, možemo naći r.</li>
+</ul>
+</section>
+<section id="kako-raditi-modularno-množenje" class="slide level2">
+<h2>Kako raditi modularno množenje?</h2>
+<ul>
+<li>Kvantni algoritmi apsolutno mogu da pozivaju potpuno klasične pod-funkcije.</li>
+<li>Ako je BPP podskup BQP onda su valjda naši klasični programi samo ne osobito bistri kvantni programi?</li>
+<li>Ne baš, ali blizu.</li>
+<li>Problem je u tome što klasičan kod kvari superpozicije. Da to ne bi radio mora biti konvertovan u reverzibilnu formu.</li>
+<li>To znači da, prvo, mora biti napravljen od kvantnih kapija i, drugo</li>
+<li>Mora da ‘počisti iza sebe’ odnosno da iza izvršavanja ima samo izlaz, ništa od pod-rezultata, tj. da ne pravi pobočna dejstva.</li>
+</ul>
+</section>
+<section id="reverzibilnost" class="slide level2">
+<h2>Reverzibilnost</h2>
+<ul>
+<li>Centralna ideja je da se svaka klasična kapija pretvori u varijantu koja ima isti broj ulaza i izlaza i radi jednako dobro u oba smera</li>
+<li>Onda se napravi blok koi radi proračun kroz te kapije, neka su <span class="math inline">\(G_1, G_2, G_3, G_4, G_5\)</span> recimo</li>
+<li>Zbog toga kako kapije rade u njih ulazi sva memorija koju će da koriste kao ulaz</li>
+<li>Kad dobijemo njihov izlaz mi moramo da počistimo tu memoriju. To radimo tako što pokrenemo <span class="math inline">\(G_5, G_4, G_3, G_2, G_1\)</span> i uradimo sve što smo radili ranije <em>unazad</em></li>
+<li>Ovo se zove ‘uncomputing’</li>
+<li>Rezultat ovoga je da se ovo ponaša kao žica, a da mi iz sredine ‘ukrademo’ f(x)</li>
+</ul>
+</section>
+<section id="reverzibilnost-1" class="slide level2">
+<h2>Reverzibilnost</h2>
+<p><img data-src="img/2023-01-09-14-30-24.png" /></p>
+</section>
+<section id="reverzibilnost-2" class="slide level2">
+<h2>Reverzibilnost</h2>
+<p>Izvor slike: https://quantum-computing.ibm.com/docs/iqx/guide/shors-algorithm (C) IBM.</p>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: false,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
