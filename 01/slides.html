@@ -8,8 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4/dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4/dist/reveal.css">
   <style>
     .reveal .sourceCode {  /* see #7635 */
       overflow: visible;
@@ -19,12 +19,17 @@
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
     ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
       width: 0.8em;
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -89,7 +94,7 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4/dist/theme/night.css" id="theme">
   <link rel="stylesheet" href="slides.css"/>
 </head>
 <body>
@@ -99,7 +104,7 @@
 <section id="title-slide">
   <h1 class="title">Uvod</h1>
   <p class="author">Veljko Petrović</p>
-  <p class="date">Oktobar, 2022</p>
+  <p class="date">Novembar, 2025</p>
 </section>
 
 <section>
@@ -111,8 +116,7 @@
 <h2>Malo o predavaču</h2>
 <ul>
 <li>Veljko Petrović</li>
-<li>Sedim u NTP 330 kancelariji</li>
-<li>Termin konsultacija je za sada Sreda u 16:15</li>
+<li>Sedim u %NTP% 330 kancelariji</li>
 <li>Uvek je dobro najaviti se na konsultacije</li>
 <li>Konsultacije mogu i po posebnom dogovoru kada je potrebno</li>
 <li>Možemo da se čujemo i online, naravno.</li>
@@ -121,21 +125,21 @@
 <section id="kontaktiranje---elektronska-pošta" class="slide level2">
 <h2>Kontaktiranje - elektronska pošta</h2>
 <ul>
-<li>Najbolje me je tražiti na pveljko@uns.ac.rs</li>
+<li>Najbolje me je tražiti na %pveljko@uns.ac.rs%</li>
 <li>Vodite računa da neretko dobijam čitav <em>tsunami</em> elektronske
 pošte, možda vašu ne vidim ili ne vidim na vreme.</li>
 <li>Ako ste zabrinuti da vam nisam video poruku, slobodno je šaljite
 opet.</li>
 <li>Ako želite da dobijete odmah odgovor (makar on bio samo ‘video’)
-molim stavite reč HITNO u subject poruke.</li>
+molim stavite reč HITNO u %subject% poruke.</li>
 </ul>
 </section>
 <section id="šta-je-rvp" class="slide level2">
 <h2>Šta je RVP</h2>
 <ul>
-<li>U pitanju je prevod—tehnički kalk—engleskog termina ‘High
-Performance Computing’ čiju ću skraćenicu (HPC) ja koristiti kao ime
-kursa u budućnosti.</li>
+<li>U pitanju je prevod—tehnički kalk—engleskog termina %% ‘High
+Performance Computing’ %% čiju ću skraćenicu %(HPC)% ja koristiti kao
+ime kursa u budućnosti.</li>
 <li>Opšte govoreći, videćete neobično puno engleskih termina u ovim
 predavanjima.</li>
 <li>Što?
@@ -175,12 +179,12 @@ da idu jako <strong>jako</strong> brzo.</li>
 <ul>
 <li>Dokumentacija, ovi slajdovi, i beleške sa predavanja bi trebali da
 budu sasvim dovoljni.</li>
-<li>Predavanja su bazirana u velikoj meri na izvrsnoj knjizi “High
+<li>Predavanja su bazirana u velikoj meri na izvrsnoj knjizi %% “High
 Performance Computing: Modern System and Practices” čiji su autori T.
-Sterling, M. Anderson, i M. Brodowicz. Takođe se preporučuje:
+Sterling, M. Anderson, i M. Brodowicz. %% Takođe se preporučuje: %%
 “Introduction to High Performance Scientific Computing,” Victor Eijkhout
-koja je dostupna kroz CreativeCommons licencu.
-http://pages.tacc.utexas.edu/~eijkhout/Articles/EijkhoutIntroToHPC.pdf</li>
+%% koja je dostupna kroz %CreativeCommons% licencu.
+%http://pages.tacc.utexas.edu/~eijkhout/Articles/EijkhoutIntroToHPC.pdf%</li>
 </ul>
 </section>
 <section id="sterlingova-knjiga" class="slide level2">
@@ -193,10 +197,10 @@ http://pages.tacc.utexas.edu/~eijkhout/Articles/EijkhoutIntroToHPC.pdf</li>
 <li>Slajdovi su novi za ovu generaciju i predstavljaju proširenu verziju
 slajdova ranijih godina</li>
 <li>Promenila se i tehnologija slajdova koji se sada generišu u dve
-forme, statičan PDF i interaktivna HTML prezentacija</li>
-<li>PDF prezentacija će biti na ACS repozitorijumu, dok će HTML verzija
-biti dostupna online</li>
-<li>Možete pratiti prezentaciju dok je slušate preko online
+forme, statičan %PDF% i interaktivna %HTML% prezentacija</li>
+<li>%PDF% prezentacija će biti na %ACS% repozitorijumu, dok će %HTML%
+verzija biti dostupna %online%</li>
+<li>Možete pratiti prezentaciju dok je slušate preko %online%
 verzije.</li>
 </ul>
 </section>
@@ -215,63 +219,64 @@ usmen i pokrivaće gradivo koje ste radili na predmetu.</li>
 <ul>
 <li>Budući da je predmet zahtevan, nemamo baš najbolju moguću podršku u
 laboratorijama fakulteta</li>
-<li>Trebaće vam Linux, idealno najsvežija Fedora ili Ubuntu bilo
+<li>Trebaće vam %Linux,% idealno najsvežija %Fedora% ili %Ubuntu% bilo
 direktno instaliran, bilo u virtuelnoj mašini.</li>
 <li>Dosta posla će se raditi iz komandne linije.</li>
-<li>Naš primarni jezik je C/C++, mada će biti i malo Python-a i R-a
-kasnije.</li>
-<li>Sav naš alat će biti Open Source izuzimajući, opciono, CLion IDE.
+<li>Naš primarni jezik je %C/C++,% mada će biti i malo %% Python-a %% i
+%% R-a %% kasnije.</li>
+<li>Sav naš alat će biti %% Open Source %% izuzimajući, opciono, %CLion%
+%IDE.%
 <ul>
-<li>CLion se plaća i to puno, ali kao studenti FTN-a imate pravo na
-besplatnu JetBrains licencu.</li>
-<li>Ako ne želite IDE, Visual Studio Code / Codium je sasvim prikladan
-ili naravno neki drugi editor u kome uživate.</li>
+<li>%CLion% se plaća i to puno, ali kao studenti FTN-a imate pravo na
+besplatnu %JetBrains% licencu.</li>
+<li>Ako ne želite IDE, %% Visual Studio Code / Codium %% je sasvim
+prikladan ili naravno neki drugi editor u kome uživate.</li>
 </ul></li>
 </ul>
 </section>
 <section id="linux" class="slide level2">
-<h2>Linux?</h2>
+<h2>%Linux?%</h2>
 <ul>
-<li class="fragment">Da, Linux.</li>
+<li class="fragment">Da, %Linux.%</li>
 <li class="fragment">Ispostavilo se, avaj, da nijedna godina nije godina
-Linux-a na desktop-u ali kao utešna nagrada, svaka godina je godina
-Linux-a u HPC primenama.</li>
+%% Linux-a %% na %% desktop-u %%, ali kao utešna nagrada, svaka godina
+je godina %% Linux-a %% u %HPC% primenama.</li>
 <li class="fragment">Upotreba bilo čega drugog nije ni opcija za
 nas.</li>
-<li class="fragment">Ako vam rad sa Linux-om nije udoban, krajnje je
-vreme da se naviknete.</li>
-<li class="fragment"> <strong>Embrace the penguin.</strong> </li>
+<li class="fragment">Ako vam rad sa %% Linux-om %% nije udoban, krajnje
+je vreme da se naviknete.</li>
+<li class="fragment">%% <strong>Embrace the penguin.</strong> %%</li>
 </ul>
 </section>
 <section id="komandna-linija" class="slide level2">
 <h2>Komandna linija</h2>
 <ul>
-<li>Resursima HPC sistema se pristupa manje-više isključivo iz komandne
-linije i dosta alata se može, u stvari, samo razumeti u kontekstu
-komandne linije i nikako drugačije.</li>
+<li>Resursima %HPC% sistema se pristupa manje-više isključivo iz
+komandne linije i dosta alata se može, u stvari, samo razumeti u
+kontekstu komandne linije i nikako drugačije.</li>
 <li>Treba će vam razumevanje osnovnih komandi i sistemskih promenljivih
 da bi razumeli kako alati koje mi koristimo rade.</li>
 </ul>
 </section>
 <section id="cc" class="slide level2">
-<h2> C/C++ </h2>
+<h2>%% C/C++ %%</h2>
 <ul>
 <li>Nemamo izbora.</li>
-<li>Ovo, baš ovo, je mesto gde C i C++ briljiraju.</li>
+<li>Ovo, baš ovo, je mesto gde %C% i %C++% briljiraju.</li>
 <li>Ima modernih jezika koji su interesantni i obećavaju da će
-eventualno smaknuti u ovoj oblasti primenu C i C++-a, ali još nisu u
+eventualno smaknuti u ovoj oblasti primenu %C% i %C++-a,% ali još nisu u
 potpunosti zavladali
 <ul>
-<li>Rust je naročito bitan jezik</li>
-<li>Go je takođe bitan kada se govori o performantnim sistemima</li>
+<li>%Rust% je naročito bitan jezik</li>
+<li>%Go% je takođe bitan kada se govori o performantnim sistemima</li>
 </ul></li>
-<li>C/C++ je tehnički… pipav termin. Ono što ja ovde mislim jeste C i,
-gde možemo, moderan C++.</li>
-<li>Budite srećni, mogli smo da koristimo FORTRAN.</li>
+<li>%C/C++% je tehnički… pipav termin. Ono što ja ovde mislim jeste %C%
+i, gde možemo, moderan %C++.%</li>
+<li>Budite srećni, mogli smo da koristimo %FORTRAN.%</li>
 </ul>
 </section>
 <section id="python-i-r" class="slide level2">
-<h2>Python i R</h2>
+<h2>%Python% i %R%</h2>
 <ul>
 <li>Biće malo ova dva jezika kada budemo pričali o vizuelizaciji.</li>
 <li>HPC rad je retko rad sam za sebe—tipično rešavamo nekakav problem.
@@ -299,9 +304,10 @@ učenje.</li>
 </ul></li>
 <li>Teoretske performanse su apsolutni maksimum koji neki hardverski
 sistem može da izvuče i meri se u broju nekakvih operacija u sekundi.
-Najčešće, jedinica je FLOPS—FLoating point OPeration per Second. </li>
+Najčešće, jedinica je %% FLOPS—FLoating point OPeration per Second.
+%%</li>
 <li>Računari kakve vi, realistično, imate imaju performanse koje se mere
-u desetinama gigaFLOPSa ne računajući GPU.</li>
+u desetinama %% gigaFLOPSa %%, ne računajući %GPU.%</li>
 <li>Najbrži računar? Frontier. 1679.82 petaflops. 8 699 904 jezgara.
 Čudo šta 22.7MW može da uradi.</li>
 </ul>
@@ -336,7 +342,7 @@ jedinicu vremena <span class="math inline">\(t_i\)</span>.</li>
 </ul>
 </section>
 <section id="oh-sweet-child-of-summer" class="slide level2">
-<h2> Oh, sweet child of summer… </h2>
+<h2>%% Oh, sweet child of summer… %%</h2>
 <ul>
 <li>…svi vi, znate, nadam se, da ovo nije tačno.</li>
 <li>Ali možda ne znate <em>koliko</em> nije tačno.</li>
@@ -387,8 +393,8 @@ class="slide level2">
 radnom stolu.</li>
 <li>Prvo, ima više jezgara.</li>
 <li>Drugo, instrukcije mogu da traju različiti broj ciklusa.</li>
-<li>Dalje ima paralelizam na nivou instrukcija (eng. Instruction Level
-Paralelism) </li>
+<li>Dalje ima paralelizam na nivou instrukcija (eng. %% Instruction
+Level Paralelism) %%</li>
 <li>Memorija ima striktnu hijerarhiju</li>
 </ul>
 </section>
@@ -398,7 +404,7 @@ Paralelism) </li>
 <li>Nezavisne instrukcije mogu da krenu da se izvršavaju u isto vreme,
 koristeći paralelne strukture u samom silikonu.</li>
 <li>Zahvaljujući sekvenci izvršavanja, više funkcija može da ide jedno
-za drugim u protočnom režimu (eng. “pipelining” </li>
+za drugim u protočnom režimu (eng. %% “pipelining” %%)</li>
 <li>Da ne bi bilo praznog hoda, procesor izvršava grane u vašem kodu pre
 nego što se zna u koju će se ući. Ako je pogodio kako treba, odlično,
 ako ne rezultat se baca i program se vraća u prethodno stanje.</li>
@@ -409,7 +415,7 @@ spekulativno, tj. ako se misli da će možda trebati.</li>
 </ul>
 </section>
 <section id="dijagram-pipeline-pristupa" class="slide level2">
-<h2>Dijagram pipeline pristupa</h2>
+<h2>Dijagram %pipeline% pristupa</h2>
 <p><img data-src="pipelineDiagram.png" /></p>
 </section>
 <section id="pipeline-ubrzanje" class="slide level2">
@@ -434,7 +440,7 @@ t(n) = n \cdot l \cdot \tau
 \]</span></p>
 </section>
 <section id="brzina-ilp-izvršavanja" class="slide level2">
-<h2>Brzina ILP izvršavanja</h2>
+<h2>Brzina %ILP% izvršavanja</h2>
 <p><span class="math display">\[
 t(n) = (s + l + n - 1) \cdot \tau
 \]</span></p>
@@ -448,45 +454,45 @@ t(n) = (s + l + n - 1) \cdot \tau
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr class="header">
+<tr>
 <th>Tip memorije</th>
 <th>Red veličine</th>
 <th>Brzina učitavanja</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Registar</td>
 <td>128 bajtova</td>
 <td>Koliko i procesor</td>
 </tr>
-<tr class="even">
-<td>L1 Keš</td>
+<tr>
+<td>%L1% Keš</td>
 <td>~16KB</td>
 <td>Pola procesora</td>
 </tr>
-<tr class="odd">
-<td>L2 Keš</td>
+<tr>
+<td>%L2% Keš</td>
 <td>~256KB</td>
 <td>Oko šestina procesora</td>
 </tr>
-<tr class="even">
-<td>L3 Keš</td>
+<tr>
+<td>%L3% Keš</td>
 <td>~8MB</td>
 <td>Oko <span class="math inline">\(\frac{1}{12}\)</span> procesora</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Glavna memorija</td>
 <td>~16GB</td>
 <td>100 ciklusa sa oko 5% protoka</td>
 </tr>
-<tr class="even">
-<td>SSD disk</td>
+<tr>
+<td>%SSD% disk</td>
 <td>~512GB</td>
 <td>Jako dugo</td>
 </tr>
-<tr class="odd">
-<td>HDD disk</td>
+<tr>
+<td>%HDD% disk</td>
 <td>~2TB</td>
 <td>Večnost.</td>
 </tr>
@@ -497,12 +503,12 @@ t(n) = (s + l + n - 1) \cdot \tau
 <h2>Keš</h2>
 <ul>
 <li>Nikad nema dovoljno.</li>
-<li>Ko se seća Celerona, Durona, i sl.?</li>
+<li>Ko se seća %Celerona,% %Durona,% i sl.?</li>
 <li>U praksi, automatski mehanizmi pokušavaju da u kešu drže podatke
 koje nama trebaju.</li>
 <li>Ako, kada program zatraži podatak, on stoji u kešu odlično. Imamo
 ubrzanje.</li>
-<li>Ako ne, imamo omašaj, ond. “cache miss.” </li>
+<li>Ako ne, imamo omašaj, ond. %% “cache miss.” %%</li>
 </ul>
 </section>
 <section id="katalog-omašaja" class="slide level2">
@@ -534,14 +540,14 @@ podatka.</li>
 <ul>
 <li>Instrukcije ne mogu da direktno adresiraju keš</li>
 <li>I dalje misle da pričaju sa glavnom memorijom</li>
-<li>Ovo je česta apstrakcija odgovorna i za, npr. memory-mapped I/O
-</li>
+<li>Ovo je česta apstrakcija odgovorna i za, npr. %% memory-mapped I/O
+%%</li>
 <li>Iza kulisa, mikrokontroler procesora uzima podatke iz memorije i
 smešta ih u keš u jedinicama fiksne veličine (blokovima).</li>
 <li>Tipično, 128 bajtova. To znači da dobijamo ceo taj komad memorije
 hteli mi to ili ne.</li>
 <li>Zatim se beleži koji deo memorije je mapiran na koji deo keša i,
-kada ponestane prostora, menja se najdavnije korišćeni deo. LRU
+kada ponestane prostora, menja se najdavnije korišćeni deo. %LRU%
 <ul>
 <li>Ovo je laž. Više o tome kasnije.</li>
 </ul></li>
@@ -556,15 +562,15 @@ class="slide level2">
 element, uz njega dolazi <span class="math inline">\(N\)</span> sledećih
 džabe.</li>
 <li>Ako procesiramo svaki element, onda to je to.</li>
-<li>Ali šta ako je ovo niz tačaka u 3D prostoru a nas samo zanima <span
-class="math inline">\(X\)</span> vrednost.</li>
+<li>Ali šta ako je ovo niz tačaka u %3D% prostoru a nas samo zanima
+<span class="math inline">\(X\)</span> vrednost.</li>
 <li>Imamo jako puno bačenih učitavanja.</li>
 <li>Ako znamo kako će neki podaci biti procesirani, isplati se da se
 upakuju tako da podaci koji se zajedno koriste budu blizu.</li>
 </ul>
 </section>
 <section id="array-stride" class="slide level2">
-<h2> Array Stride </h2>
+<h2>%% Array Stride %%</h2>
 <ul>
 <li>Recimo da hoćemo da saberemo dva niza kompleksnih brojeva.</li>
 <li>To znači (ako koristimo double preciznost) da nam treba 16 bajtova
@@ -583,7 +589,7 @@ prepletu u jedan niz.
 </ul>
 </section>
 <section id="address-alignment" class="slide level2">
-<h2>Address alignment</h2>
+<h2>%Address% %alignment%</h2>
 <ul>
 <li>Lukaviji možda mogu da primete da ja mogu da adresiram bilo koju
 adresu u glavnoj memoriji na bajt nivou, čak i ako radim na nivou
@@ -597,7 +603,7 @@ memorije?</li>
 </ul>
 </section>
 <section id="address-alignment-1" class="slide level2">
-<h2> Address alignment </h2>
+<h2>%% Address alignment %%</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -633,7 +639,7 @@ class="math inline">\(k\)</span>-struki asocijativan keš.</li>
 memorji na lokaciju u kešu na više mogućih načina. Tipično od 2 do
 8.</li>
 <li>Onda, u slučaju konflikta u mapiranju, koristi se jedna od dodatnih
-lokacija oslobođena po LRU principu.</li>
+lokacija oslobođena po %LRU% principu.</li>
 </ul>
 </section>
 <section id="šta-je-sve-ovo-trebalo-da-me-nauči" class="slide level2">
@@ -650,7 +656,7 @@ izazovno.</li>
 <section>
 <section id="uvod-u-koncept-modernog-hpc-a"
 class="title-slide slide level1">
-<h1>Uvod u koncept modernog HPC-a</h1>
+<h1>Uvod u koncept modernog %HPC-a%</h1>
 <p>Šta kada procesor jednostavno nije dovoljno brz…?</p>
 </section>
 <section id="paralelizam" class="slide level2">
@@ -709,9 +715,9 @@ izvršavaju na pravom mestu radi brzine.</li>
 <li>Superračunar tipično ima neki broj čvorova.</li>
 <li>Čvor se može zamisliti kao jedan računar.</li>
 <li>Trenutno najbrži računar na svetu je Frontier</li>
-<li>Svaki čvor Sadrži 1 procesor (To je AMD Epyc model) koji ima 2 seta
-memorije plus 4 GPU odnosno akcelerator kartice (Opet AMD specifično
-njihove Instinct kartice)</li>
+<li>Svaki čvor Sadrži 1 procesor (To je %AMD% %Epyc% model) koji ima 2
+seta memorije plus 4 %GPU% odnosno akcelerator kartice (Opet %AMD%
+specifično njihove %Instinct% kartice)</li>
 <li>Što 2 memorije? Usko grlo paralelizacije.</li>
 </ul>
 </section>
@@ -719,25 +725,25 @@ njihove Instinct kartice)</li>
 <h2>Anatomija jednog superračunara</h2>
 <figure>
 <img data-src="frontierArch.png"
-alt="Izvor https://www.olcf.ornl.gov/frontier" />
+alt="Izvor %https://www.olcf.ornl.gov/frontier%" />
 <figcaption aria-hidden="true">Izvor
-https://www.olcf.ornl.gov/frontier</figcaption>
+%https://www.olcf.ornl.gov/frontier%</figcaption>
 </figure>
 </section>
 <section id="primer-za-ibm-summit" class="slide level2">
-<h2>Primer za IBM Summit </h2>
+<h2>Primer za %% IBM Summit %%</h2>
 <ul>
-<li> IBM Summit je još jedan super-računar, trenutno peti u svetu, o
-čijoj arhitekturi znamo nešto više</li>
+<li>%% IBM Summit %% je još jedan super-računar, trenutno peti u svetu,
+o čijoj arhitekturi znamo nešto više</li>
 <li>Svaki čvor je jako moćan i sadrži više procesora (2) sa više jezgara
 (21) gde svako jezgro podržava 4 nezavisna izvršavanja i više izuzetno
-moćnih GPU-ova (6).</li>
-<li>Takođe ima oko 1600 GB memorije po čvoru.</li>
+moćnih %% GPU-ova %% (6).</li>
+<li>Takođe ima oko 1600 %GB% memorije po čvoru.</li>
 <li>I on ima dvostruku memoriju</li>
 </ul>
 </section>
 <section id="ibm-summit" class="slide level2">
-<h2> IBM Summit </h2>
+<h2>%% IBM Summit %%</h2>
 <p><img data-src="summitArch.png" /></p>
 </section>
 <section id="mnogo-paralelizama" class="slide level2">
@@ -758,23 +764,23 @@ Gledano iz ptičije perspektive</li>
 <h2>Mnogo paralelizama</h2>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>Hardverski nivo paralelizma</th>
 <th>Tehnologija</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Unutar jednog procesora</td>
-<td>pThreads / OpenMP</td>
+<td>%pThreads% / %OpenMP%</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Između čvorova</td>
-<td>MPI</td>
+<td>%MPI%</td>
 </tr>
-<tr class="odd">
-<td>Na GPU uređajima</td>
-<td>OpenACC / CUDA / ROCm</td>
+<tr>
+<td>Na %GPU% uređajima</td>
+<td>%OpenACC% / %CUDA% / %ROCm%</td>
 </tr>
 </tbody>
 </table>
@@ -804,34 +810,34 @@ povećanje brzine.</li>
 <section id="šta-smeta-skaliranju" class="slide level2">
 <h2>Šta smeta skaliranju</h2>
 <ul>
-<li>Koristi se mnemonik SLOW za faktore koji sprečavaju da sistem
+<li>Koristi se mnemonik %SLOW% za faktore koji sprečavaju da sistem
 dostigne svoj teoretski maksimum. SLOW su:</li>
-<li>Starvation
+<li>%Starvation%
 <ul>
 <li>Nema dovoljno posla da se uposle svi resursi sistema.</li>
 <li>Možda sistem može da radi 600 svari istovremeno, ali ako trenutno
 postoji samo 6 nezavisnih zadataka, sistem radi na 1% svojih
 performansi.</li>
 </ul></li>
-<li>Latency
+<li>%Latency%
 <ul>
 <li>Sistem može da bude veliki, i ako informacija sa jednog kraja
 sistema bude neophodna na drugom, čekanje na nju proizvodi značajno
 usporenje. Setite se dijagram od ranije i različitih protoka
 podataka.</li>
 </ul></li>
-<li>Overhead
+<li>%Overhead%
 <ul>
 <li>Sav taj kod koji deli podatke i vodi računa ko radi kada šta i
 integriše rezultate itd. itd. itd. oduzima neko vreme i neke resurse da
 se izvrši.</li>
 </ul></li>
-<li>Waiting
+<li>%Waiting%
 <ul>
 <li>Čim ima više niti izvršavanja može doći do problema nadmetanja
-(%contention%) oko deljenih resursa. Ovo se rešava čekanjem. In a
+(%contention%) oko deljenih resursa. Ovo se rešava čekanjem. %% In a
 stunning turn of events, waiting turns out to be bad for performance.
-Who knew? </li>
+Who knew? %%</li>
 </ul></li>
 </ul>
 </section></section>
@@ -850,11 +856,12 @@ računanja.</li>
 za nekakvo pomoćno ustrojstvo.</li>
 <li>Drevni Rimljani su imali brojeve koji su bili prilično teški za
 mehaničku manipulaciju</li>
-<li>Mislim, koliko je LXVII puta XI? A da ne prebacite prvo u arapske
-brojeve?</li>
+<li>Mislim, koliko je %LXVII% puta %XI?% A da ne prebacite prvo u
+arapske brojeve?</li>
 <li>Rimljani su imali metod koji je uključivao pažljivo napravljenu
 tablicu i kamenčiće.</li>
-<li>Deminutivska množina reči za ’kamen’ na latinskom je ’calculi’</li>
+<li>Deminutivska množina reči za ’kamen’ na latinskom je
+%’calculi’%</li>
 <li>Odatle kalkulator, kalkulisanje, itd. itd.</li>
 </ul>
 </section>
@@ -864,11 +871,11 @@ tablicu i kamenčiće.</li>
 <li>Ovo je nastalo, toliko da su ljudi koji su radili sa novcem (te
 mnogo računali) u kasnosrednjevekovnoj Italiji uvek imali pri ruci klupu
 sa ucrtanom šemom za račun.</li>
-<li>Termin za klupa je bio ’banca’</li>
+<li>Termin za klupa je bio %’banca’%</li>
 <li>Kasnije su prešli na novi, divni metod za računanje koji ne zahteva
 klupu no upotrebljava čudne strane cifre. Taj metod su zvali po
-iskvarenom imenu osobe koju su držali za njegovog kreatora, (Muhammad
-ibn Musa al-Khwarizmi), ’algorismus’ </li>
+iskvarenom imenu osobe koju su držali za njegovog kreatora, %% (Muhammad
+ibn Musa al-Khwarizmi), ’algorismus’ %%</li>
 <li>Mušterije nisu verovale ovakom algorismičnom bankarstvu i hteli su
 klupe nazad. Naročito omrznuta je bio potpuno novi simbol—nula. Toliko
 je bila omrznuta da je arapsko ime za nju— %al sifr% —ušlo u skoro sve
@@ -896,7 +903,7 @@ evropske jezike.</li>
 <p><img data-src="paskalina.jpg" /></p>
 </section>
 <section id="curta" class="slide level2">
-<h2>Curta</h2>
+<h2>%Curta%</h2>
 <p><img data-src="curta.jpg" /></p>
 </section>
 <section id="da-li-su-ovo-računari" class="slide level2">
@@ -929,7 +936,7 @@ osobinu <em>univerzalne izračunljivosti</em></li>
 </ul>
 </section>
 <section id="the-difference-engine" class="slide level2">
-<h2> The Difference Engine </h2>
+<h2>%% The Difference Engine %%</h2>
 <p><img data-src="differenceEngine.jpg" /></p>
 </section>
 <section id="računar" class="slide level2">
@@ -942,7 +949,7 @@ osobinu <em>univerzalne izračunljivosti</em></li>
 </ul>
 </section>
 <section id="the-analytic-engine" class="slide level2">
-<h2> The Analytic Engine </h2>
+<h2>%% The Analytic Engine %%</h2>
 <p><img data-src="analytic.jpg" /></p>
 </section>
 <section id="prvi-pravi-računar" class="slide level2">
@@ -963,21 +970,21 @@ investicija bila neverovatna.</li>
 <li>Tradicionalno ovo se deli u epohe gde svaku karakteriše dominacija
 određenih tehnologija.</li>
 <li>Te epohe su kao, npr. ‘generacije’ u koju se dele igračke konzole:
-konvencionalne i donekle ad hoc </li>
+konvencionalne i donekle %% ad hoc %%</li>
 </ul>
 </section>
 <section id="epoha-1---era-elektromehanike" class="slide level2">
 <h2>Epoha 1 - Era elektromehanike</h2>
 <figure>
-<img data-src="z1.jpg" alt=" Zuse 1 " />
-<figcaption aria-hidden="true"> Zuse 1 </figcaption>
+<img data-src="z1.jpg" alt="%% Zuse 1 %%" />
+<figcaption aria-hidden="true">%% Zuse 1 %%</figcaption>
 </figure>
 </section>
 <section id="epoha-1---era-elektromehanike-1" class="slide level2">
 <h2>Epoha 1 - Era elektromehanike</h2>
 <figure>
-<img data-src="hvmk1.jpg" alt=" Harvard Mk 1 " />
-<figcaption aria-hidden="true"> Harvard Mk 1 </figcaption>
+<img data-src="hvmk1.jpg" alt="%% Harvard Mk 1 %%" />
+<figcaption aria-hidden="true">%% Harvard Mk 1 %%</figcaption>
 </figure>
 </section>
 <section id="epoha-1---era-elektromehanike-2" class="slide level2">
@@ -993,11 +1000,11 @@ konvencionalne i donekle ad hoc </li>
 class="slide level2">
 <h2>Epoha 2 - Fon Nojmanova Arhitektura i Vakumske Cevi</h2>
 <ul>
-<li> ENIAC</li>
+<li>%% ENIAC</li>
 <li>EDSAC (1949)</li>
 <li>Colossus</li>
-<li>IBM 704 (Rana veštačka inteligencija) </li>
-<li>UNIVAC (1951) </li>
+<li>IBM 704 %% (Rana veštačka inteligencija) %%</li>
+<li>UNIVAC (1951) %%</li>
 </ul>
 </section>
 <section id="epoha-2---fon-nojmanova-arhitektura-i-vakumske-cevi-1"
@@ -1039,8 +1046,8 @@ id="epoha-3-paralelizam-na-nivou-instrukcije-i-uspon-tranzistora-1"
 class="slide level2">
 <h2>Epoha 3 — Paralelizam na nivou instrukcije i uspon tranzistora</h2>
 <figure>
-<img data-src="cdc6600.jpg" alt="CDC 6600" />
-<figcaption aria-hidden="true">CDC 6600</figcaption>
+<img data-src="cdc6600.jpg" alt="%CDC% 6600" />
+<figcaption aria-hidden="true">%CDC% 6600</figcaption>
 </figure>
 </section>
 <section
@@ -1048,12 +1055,12 @@ id="epoha-3-paralelizam-na-nivou-instrukcije-i-uspon-tranzistora-2"
 class="slide level2">
 <h2>Epoha 3 — Paralelizam na nivou instrukcije i uspon tranzistora</h2>
 <ul>
-<li>CDC6600 je imao
+<li>%CDC6600% je imao
 <ul>
-<li>1 MFLOPS!</li>
-<li>10 MHz takt!</li>
+<li>1 %MFLOPS!%</li>
+<li>10 %MHz% takt!</li>
 <li>10 logičkih jedinica!</li>
-<li>Prvi ILP!</li>
+<li>Prvi %ILP!%</li>
 <li>Jedan od prvih uređaja koji se zvao „superkompjuter“</li>
 </ul></li>
 </ul>
@@ -1066,7 +1073,7 @@ class="slide level2">
 <ul>
 <li>Sasvim moguće <em>najlepši</em> računar svih vremena</li>
 </ul></li>
-<li>Karakteriše ga izuzetno dugačak pipeline.</li>
+<li>Karakteriše ga izuzetno dugačak %pipeline.%</li>
 <li>Pošto je ovaj pristup doneo tolike dividende prošli put u ovoj epohi
 je odguran onoliko daleko koliko može da ide.</li>
 </ul>
@@ -1075,8 +1082,8 @@ je odguran onoliko daleko koliko može da ide.</li>
 class="slide level2">
 <h2>Epoha 4—Vektorski procesori i integrisana kola</h2>
 <figure>
-<img data-src="Cray.jpg" alt="Cray-1" />
-<figcaption aria-hidden="true">Cray-1</figcaption>
+<img data-src="Cray.jpg" alt="%Cray-1%" />
+<figcaption aria-hidden="true">%Cray-1%</figcaption>
 </figure>
 </section>
 <section id="epoha-4vektorski-procesori-i-integrisana-kola-2"
@@ -1085,27 +1092,27 @@ class="slide level2">
 <ul>
 <li>Krej-1 je mogao
 <ul>
-<li>80 MHz!</li>
-<li>160 MFLOPS!</li>
-<li>8.39 MB memorije!</li>
-<li>303 MB diska!</li>
+<li>80 %MHz!%</li>
+<li>160 %MFLOPS!%</li>
+<li>8.39 %MB% memorije!</li>
+<li>303 %MB% diska!</li>
 </ul></li>
 </ul>
 </section>
 <section id="epoha-5-simd-i-spor-uspon-mikroprocesora"
 class="slide level2">
-<h2>Epoha 5 — SIMD i spor uspon mikroprocesora</h2>
+<h2>Epoha 5 — %SIMD% i spor uspon mikroprocesora</h2>
 <ul>
-<li>SIMD je jedna od fundamentalnih HPC arhitektura po Flinovoj
+<li>%SIMD% je jedna od fundamentalnih %HPC% arhitektura po Flinovoj
 taksonomiji (vidi kasnije)</li>
 <li>Podelimo podatke na blokove, a onda radimo istu stvar svakom bloku
 podataka.</li>
-<li> SIMD — Single Instruction Multiple Data </li>
-<li>Problem sa SIMD-om jeste što su algoritmi bili fantastični za neke
+<li>%% SIMD — Single Instruction Multiple Data %%</li>
+<li>Problem sa %SIMD-om% jeste što su algoritmi bili fantastični za neke
 stvari i potpuno beskorisni za sve ostalo.</li>
-<li>SIMD i dalje živi—postoji način na koji je svaki GPU u stvari široka
-SIMD implementacija.</li>
-<li> NEC SX-2
+<li>SIMD i dalje živi—postoji način na koji je svaki %GPU% u stvari
+široka %SIMD% implementacija.</li>
+<li>%% NEC SX-2 %%
 <ul>
 <li>Prvi računar da probije GFLOPS barijeru</li>
 </ul></li>
@@ -1114,16 +1121,16 @@ SIMD implementacija.</li>
 <section id="epoha-6-mnogo-procesora" class="slide level2">
 <h2>Epoha 6 — Mnogo Procesora</h2>
 <ul>
-<li> Touchstone Paragon (1994)</li>
+<li>%% Touchstone Paragon (1994)</li>
 <li>IBM SP-2</li>
-<li>Thinking Machines Corporation CM-5 (1992) </li>
+<li>Thinking Machines Corporation CM-5 (1992) %%</li>
 <li>Prvi moderni superkompjuteri</li>
 <li>Prosleđivanje poruka i odvojena memorija, po prvi put.</li>
 <li>Takođe, prvi put se pojavio potrošački klaster (commodity cluster)
-</li>
+%%</li>
 <li>UC Berkley NOW</li>
 <li>Beowulf</li>
-<li>PC + Linux + Ethernet + MPI = Supercomputing For Everyone </li>
+<li>PC + Linux + Ethernet + MPI = Supercomputing For Everyone %%</li>
 </ul>
 </section>
 <section id="epoha-7" class="slide level2">
@@ -1132,15 +1139,16 @@ SIMD implementacija.</li>
 <li>Mi smo ovde.</li>
 <li>I dalje su dominantne tehnologije iz šeste epohe ali uz dodatak
 ekstremne heterogenosti.</li>
-<li>U jednom čvoru imamo i SIMD i shared-memory i message-passing.</li>
-<li>Moglo bi se reći da ovo predstavlja odrastanje HPCa.</li>
+<li>U jednom čvoru imamo i %SIMD% i %shared-memory% i
+%message-passing.%</li>
+<li>Moglo bi se reći da ovo predstavlja odrastanje %HPCa.%</li>
 </ul>
 </section>
 <section id="dalje" class="slide level2">
 <h2>Dalje?</h2>
 <ul>
 <li>Masivne online mreže.</li>
-<li>3D čipovi i sintetički dijamant</li>
+<li>%3D% čipovi i sintetički dijamant</li>
 <li>Neuroprocesori i domain specific arhitekture</li>
 <li>Kvantni računari</li>
 </ul>
@@ -1148,13 +1156,13 @@ ekstremne heterogenosti.</li>
     </div>
   </div>
 
-  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4/dist/reveal.js"></script>
 
   <!-- reveal.js plugins -->
-  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
-  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4/plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4/plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4/plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4/plugin/math/math.js"></script>
 
   <script>
 
